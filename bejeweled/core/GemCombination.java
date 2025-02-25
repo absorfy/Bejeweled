@@ -3,12 +3,12 @@ package bejeweled.core;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GemsCombination {
+public class GemCombination {
     private final List<Point> points;
     private Point movedPoint;
     private static int comboCounter = 0;
 
-    public GemsCombination() {
+    public GemCombination() {
         movedPoint = null;
         points = new ArrayList<>();
         comboCounter++;

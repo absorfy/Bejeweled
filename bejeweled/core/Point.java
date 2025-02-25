@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Objects;
 
 public class Point {
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     public Point(int row, int col) {
         this.row = row;
@@ -28,8 +28,8 @@ public class Point {
         return this.row == p.row && this.col == p.col;
     }
 
-    public boolean isValid(int width, int height) {
-        return row >= 0 && col >= 0 && row < height && col < width;
+    public boolean isValid(int colCount, int rowCount) {
+        return row >= 0 && col >= 0 && row < rowCount && col < colCount;
     }
 
     @Override
@@ -46,6 +46,27 @@ public class Point {
 
     public static Iterable<Point> iterate(int width, int height) {
         return iterate(new Point(0, 0), new Point(height - 1, width - 1));
+    }
+
+    public Point toNorth() {
+        return new Point(row-1, col);
+    }
+
+    public Point toEast() {
+        return new Point(row, col+1);
+    }
+
+    public Point toSouth() {
+        return new Point(row+1, col);
+    }
+
+    public Point toWest() {
+        return new Point(row, col-1);
+    }
+
+
+    public static Iterable<Point> iterate(int row1, int col1, int row2, int col2) {
+        return iterate(new Point(row1, col1), new Point(row2, col2));
     }
 
     public static Iterable<Point> iterate(Point fromPoint, Point toPoint) {
@@ -73,5 +94,10 @@ public class Point {
                 return p;
             }
         };
+    }
+
+    @Override
+    public String toString() {
+        return "row: " + row + "; col: " + col + ";";
     }
 }

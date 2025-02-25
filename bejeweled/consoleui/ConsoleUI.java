@@ -1,14 +1,13 @@
 package bejeweled.consoleui;
 
 import bejeweled.core.*;
-import com.sun.management.HotSpotDiagnosticMXBean;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class ConsoleUI {
 
-    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-9])([0-9])([WNSE]))$");
+    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-4])([0-4])([WNSE]))$");
     private final Scanner scanner = new Scanner(System.in);
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
 
@@ -19,10 +18,20 @@ public class ConsoleUI {
     }
 
     public void play() {
+        printField();
         while (true) {
-            printField();
             processInput();
+
+            while(field.getState() == FieldState.BREAKING) {
+                printField();
+                field.fillEmpties();
+                printField();
+                field.checkMovedPoints();
+            }
+
+            if(FieldState.NO_POSSIBLE_MOVE == field.getState()) break;
         }
+        System.out.println("No possible moves!");
     }
 
     private void processInput() {
@@ -56,22 +65,19 @@ public class ConsoleUI {
 
     private void printField() {
         System.out.print("   ");
-        for(int col = 0; col < field.getWidth(); col++) {
+        for(int col = 0; col < field.getColCount(); col++) {
             System.out.print(col + "  ");
         }
-        for(Point p : Point.iterate(field.getWidth(), field.getHeight())) {
+        for(Point p : Point.iterate(field.getColCount(), field.getRowCount())) {
             if(p.getCol() == 0) { System.out.print("\n" + RESET_TEXT_COLOR + p.getRow() + "  "); }
             printTile(field.getTile(p));
         }
-        System.out.println(RESET_TEXT_COLOR);
+        System.out.println(RESET_TEXT_COLOR + "\n\n");
     }
 
     private void printTile(Tile tile) {
         if(tile instanceof Gem) {
-            System.out.print(((Gem)tile).getColor().getColorCode() + "@  ");
-        }
-        else if(tile instanceof AirTile) {
-            System.out.print("   ");
+            System.out.print(((Gem)tile).getColor().getColorCode() + ((Gem) tile).getState().getCode() + "  ");
         }
         else if(tile instanceof LockTile) {
             System.out.print(((LockTile)tile).getGem().getColor().getColorCode() + "#  ");
