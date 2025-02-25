@@ -41,14 +41,125 @@ public class Field {
         else {
             state = FieldState.BREAKING;
             processCombinations(gemsComb1, gemsComb2);
+            if(!hasPossibleMoves()) {
+                shuffle();
+            }
         }
     }
+
+    public void shuffle() {
+        List<Gem> gems = new ArrayList<>();
+        List<Point> gemPoints = new ArrayList<>();
+        Random rand = new Random();
+
+        for(Point point : Point.iterate(getWidth(), getHeight())) {
+            Tile tile = getTile(point);
+            if(tile instanceof Gem) {
+                gems.add((Gem) tile);
+                gemPoints.add(point);
+            }
+        }
+
+        while(true) {
+            Collections.shuffle(gems, rand);
+            for(int i = 0; i < gems.size(); i++) {
+                setTile(gemPoints.get(i), gems.get(i));
+            }
+
+            boolean hasCombination = false;
+            for (Point p : gemPoints) {
+                if (findGemsCombination(p).isValid()) {
+                    hasCombination = true;
+                    break;
+                }
+            }
+
+            if(!hasCombination && hasPossibleMoves()) {
+                break;
+            }
+        }
+    }
+
+    public boolean hasPossibleMoves() {
+        int[] dx = {0, 1};
+        int[] dy = {1, 0};
+
+        for(Point point : Point.iterate(getWidth(), getHeight())) {
+            Tile tile = getTile(point);
+            if (!(tile instanceof Gem)) continue;
+
+            for (int d = 0; d < 2; d++) {
+                int newRow = point.getRow() + dx[d];
+                int newCol = point.getCol() + dy[d];
+
+                if(trySwapAt(point, new Point(newRow, newCol)))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean trySwapAt(Point point1, Point point2) {
+        if (!point1.isValid(getWidth(), getHeight()) || !point2.isValid(getWidth(), getHeight())) return false;
+
+        Tile tile1 = getTile(point1);
+        Tile tile2 = getTile(point2);
+        if (!(tile1 instanceof Gem) || !(tile2 instanceof Gem)) return false;
+
+        setTile(point1, tile2);
+        setTile(point2, tile1);
+
+        boolean foundCombination = findGemsCombination(point1).isValid() ||
+                findGemsCombination(point2).isValid();
+
+        setTile(point1, tile1);
+        setTile(point2, tile2);
+
+        return foundCombination;
+    }
+
 
     private void processCombinations(GemsCombination... gemsCombination) {
         for(GemsCombination gComb : gemsCombination) {
             if(gComb.isValid()) {
                 breakCombination(gComb);
             }
+        }
+        fillEmpties();
+    }
+
+
+
+    private void fillEmpties() {
+        List<Point> points = new ArrayList<>();
+        for (Point point : Point.iterate(getWidth(), getHeight())) {
+            points.add(point);
+        }
+        Collections.reverse(points);
+
+        for(Point point : points) {
+
+            Tile tile = getTile(point);
+            if(!(tile instanceof Gem)) continue;
+            Gem gem = (Gem)tile;
+            if(gem.getState() != GemState.FALLING) continue;
+
+            Tile topTile = getTile(point.toNorth());
+            if(topTile instanceof Gem) {
+                ((Gem) topTile).setFalling();
+            }
+
+            Point bottomPoint = point;
+            do {
+                bottomPoint = bottomPoint.toSouth();
+                if(!bottomPoint.isValid(getWidth(), getHeight())) break;
+            } while(getTile(bottomPoint) instanceof AirTile || getTile(bottomPoint.toSouth()) instanceof EmptyTile);
+
+            if(bottomPoint.isValid(getWidth(), getHeight()) && getTile(bottomPoint) instanceof EmptyTile) {
+                setTile(bottomPoint, gem);
+                setTile(point, new EmptyTile());
+            }
+            gem.setIdle();
         }
     }
 
@@ -89,34 +200,27 @@ public class Field {
 
     private GemsCombination findGemsCombination(Point point) {
         Set<Point> visited = new HashSet<>();
-        Stack<Point> stack = new Stack<>();
+        Stack<Point> stackAdjacent = new Stack<>();
         GemsCombination combination = new GemsCombination();
 
         if(!(getTile(point) instanceof Gem)) return combination;
+
         combination.setMovedPoint(point);
-
         Color combColor = ((Gem)getTile(point)).getColor();
-        stack.push(point);
+        stackAdjacent.push(point);
 
-        while(!stack.isEmpty()) {
-            Point current = stack.pop();
-            int row = current.getRow();
-            int col = current.getCol();
-
-            if(row < 0 || row >= getHeight() || col < 0 || col >= getWidth()) continue;
-            if(visited.contains(current)) continue;
-
-            if(getTile(current) == null || !(getTile(current) instanceof Gem)) continue;
-            if(((Gem) getTile(current)).getColor() != combColor) continue;
+        while(!stackAdjacent.isEmpty()) {
+            Point current = stackAdjacent.pop();
+            if(!current.isValid(getWidth(), getHeight()) || visited.contains(current)) continue;
+            if(!(getTile(current) instanceof Gem) || ((Gem) getTile(current)).getColor() != combColor) continue;
 
             visited.add(current);
             combination.addGemPoint(current);
 
-            stack.push(new Point(row - 1, col));
-            stack.push(new Point(row + 1, col));
-            stack.push(new Point(row, col - 1));
-            stack.push(new Point(row, col + 1));
-
+            stackAdjacent.push(current.toEast());
+            stackAdjacent.push(current.toWest());
+            stackAdjacent.push(current.toNorth());
+            stackAdjacent.push(current.toSouth());
         }
         return combination;
     }
@@ -130,13 +234,28 @@ public class Field {
     private void breakTile(Point point) {
         Tile tile = getTile(point);
         if(tile instanceof Gem) {
-            tiles[point.getRow()][point.getCol()] = new EmptyTile();
+            setTile(point, new EmptyTile());
+            setFallingGemFrom(point);
         }
         else if(tile instanceof LockTile) {
             LockTile lockTile = (LockTile) tile;
             if(lockTile.Break()) {
-                tiles[point.getRow()][point.getCol()] = lockTile.getGem();
+                Gem gem = lockTile.getGem();
+                gem.setFalling();
+                tiles[point.getRow()][point.getCol()] = gem;
+
             }
+        }
+    }
+
+    private void setFallingGemFrom(Point point) {
+        Tile tile = null;
+        do {
+            if(!point.isValid(getWidth(), getHeight())) break;
+            point = point.toNorth();
+        } while((tile = getTile(point)) instanceof AirTile);
+        if(tile instanceof Gem) {
+            ((Gem) tile).setFalling();
         }
     }
 
@@ -161,6 +280,7 @@ public class Field {
     }
 
     public Tile getTile(Point point) {
+        if(!point.isValid(getWidth(), getHeight())) return null;
         return tiles[point.getRow()][point.getCol()];
     }
 }

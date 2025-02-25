@@ -48,6 +48,24 @@ public class Point {
         return iterate(new Point(0, 0), new Point(height - 1, width - 1));
     }
 
+    public Point toNorth() {
+        return new Point(row-1, col);
+    }
+
+    public Point toEast() {
+        return new Point(row, col+1);
+    }
+
+    public Point toSouth() {
+        return new Point(row+1, col);
+    }
+
+    public Point toWest() {
+        return new Point(row, col-1);
+    }
+
+
+
     public static Iterable<Point> iterate(Point fromPoint, Point toPoint) {
         return () -> new Iterator<>() {
             private int row = fromPoint.getRow();

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class ConsoleUI {
 
-    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-9])([0-9])([WNSE]))$");
+    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-6])([0-6])([WNSE]))$");
     private final Scanner scanner = new Scanner(System.in);
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
 
@@ -68,7 +68,7 @@ public class ConsoleUI {
 
     private void printTile(Tile tile) {
         if(tile instanceof Gem) {
-            System.out.print(((Gem)tile).getColor().getColorCode() + "@  ");
+            System.out.print(((Gem)tile).getColor().getColorCode() + (((Gem)tile).getState() != GemState.FALLING ? "@  " : "!  "));
         }
         else if(tile instanceof AirTile) {
             System.out.print("   ");

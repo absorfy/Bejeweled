@@ -10,7 +10,7 @@ public class Gem extends Tile {
     public Gem(BreakImpact impact) {
         this.color = Color.values()[new Random().nextInt(Color.values().length)];
         this.impact = impact;
-        this.state = GemState.FALLING;
+        this.state = GemState.IDLE;
     }
 
     public Gem() {
@@ -27,5 +27,13 @@ public class Gem extends Tile {
 
     public GemState getState() {
         return state;
+    }
+
+    public void setFalling() {
+        this.state = GemState.FALLING;
+    }
+
+    public void setIdle() {
+        this.state = GemState.IDLE;
     }
 }
