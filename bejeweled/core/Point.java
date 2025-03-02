@@ -20,13 +20,7 @@ public class Point {
         return row;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false; // Якщо obj null або не Coordinate
-        Point p = (Point) obj;
-        return this.row == p.row && this.col == p.col;
-    }
+
 
     public boolean isValid(int colCount, int rowCount) {
         return row >= 0 && col >= 0 && row < rowCount && col < colCount;
@@ -37,6 +31,13 @@ public class Point {
         return Objects.hash(row, col);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false; // Якщо obj null або не Coordinate
+        Point p = (Point) obj;
+        return this.row == p.row && this.col == p.col;
+    }
 
 
     public boolean isAdjacent(Point point) {
@@ -46,6 +47,16 @@ public class Point {
 
     public static Iterable<Point> iterate(int width, int height) {
         return iterate(new Point(0, 0), new Point(height - 1, width - 1));
+    }
+
+    public Point moveTo(Direction direction) {
+        switch (direction) {
+            case NORTH: return toNorth();
+            case EAST: return toEast();
+            case SOUTH: return toSouth();
+            case WEST: return toWest();
+            default: return this;
+        }
     }
 
     public Point toNorth() {

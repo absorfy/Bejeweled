@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class ConsoleUI {
 
-    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-4])([0-4])([WNSE]))$");
+    private final static Pattern INPUT_PATTERN = Pattern.compile("^(X)|(([0-9])([0-9])([WNSE]))$");
     private final Scanner scanner = new Scanner(System.in);
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
 

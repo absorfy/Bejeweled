@@ -234,6 +234,7 @@ public class Field {
             stackAdjacent.push(current.toNorth());
             stackAdjacent.push(current.toSouth());
         }
+        combination.identifyCombination();
         return combination;
     }
 

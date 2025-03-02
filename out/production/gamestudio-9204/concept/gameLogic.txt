@@ -1,21 +1,28 @@
 Generovanie herného poľa.  
 1. Náhodné generovanie drahokamov (gem) s možnými kombináciami na začiatku.  
-   Pri každej úspešnej výmene sa uvoľní miesto, pod ktoré sa budú generovať nové drahokamy, padajúce zhora nadol, ale bez záruky ďalších kombo.  
-2. Pri úspešnom kombo sa kryštály odstránia, zanechajúc po sebe prázdne miesta (emptyTile), ktoré budú nahradené novými kryštálmi.  
-   Pri špeciálnych kombináciách sa na mieste premiestneného kryštálu vytvorí nový s príslušným efektom deštrukcie.  
-3. V prípade, že neexistujú žiadne možné kombinácie pri akejkoľvek zmene kryštálov, pole sa premieša tak, aby táto možnosť určite bola.  
+    Pri každej úspešnej výmene sa uvoľní miesto, pod ktoré sa budú generovať nové drahokamy,
+    padajúce zhora nadol.
+2. Pri úspešnom kombo sa kryštály odstránia, zanechajúc po sebe prázdne miesta (emptyTile),
+ktoré budú nahradené novými kryštálmi.
+    Pri špeciálnych kombináciách sa na mieste premiestneného kryštálu vytvorí nový s príslušným
+    efektom deštrukcie.
 
-Špeciálne políčka.  
-1. Prázdne políčka (airTile) na poli budú prepúšťať drahokamy, ktoré padajú zhora nadol cez ne, ale neprenášajú kombinácie.  
-2. Zablokované políčka (lockTile) obsahujú konkrétny kryštál, ktorý je fixovaný na mieste, neprepúšťajú padajúce kryštály zhora nadol.  
-   Na ich odomknutie je potrebné nazbierať od 1 do 3 kombinácií na susedných políčkach.  
+Špeciálne políčka.
+1. Zablokované políčka (lockTile) obsahujú konkrétny kryštál, ktorý je fixovaný na mieste,
+neprepúšťajú padajúce kryštály zhora nadol.
+    Na ich odomknutie je potrebné nazbierať od 1 do 3 kombinácií na susedných políčkach.
 
-Po každej výmene kryštálov sa spustí mechanizmus spracovania kombinácií s následnou kontrolou ukončenia hry.  
-1. Ak hráč presunul kryštály, ale nevznikla žiadna kombinácia, vrátia sa na svoje miesta a hra čaká na ďalšie kombinácie.  
-2. V opačnom prípade sa spustí mechanizmus spracovania kombinácií, po ktorom sa prázdne miesta zaplnia novými kryštálmi a skontroluje sa ukončenie hry, teda počet získaných bodov.  
-3. Ak hra nie je ukončená – nebol dosiahnutý potrebný počet bodov, pokračuje ďalšou výmenou kryštálov hráčom.  
+Po každej výmene kryštálov sa spustí mechanizmus spracovania kombinácií s následnou kontrolou
+ukončenia hry.
+1. Ak hráč presunul kryštály, ale nevznikla žiadna kombinácia, vrátia sa na svoje miesta
+    a hra čaká na ďalšie kombinácie.
+2. V opačnom prípade sa spustí mechanizmus spracovania kombinácií, po ktorom sa prázdne
+    políčka vyplnia novými kryštálmi a skontroluje sa koniec hry, t. j. či sú pri presúvaní
+    kryštálov možné nejaké kombinácie.
+3. Ak hra nie je ukončená, pokračuje ďalšou výmenou
+    kryštálov hráčom.
 
-Hráč môže meniť iba polohu dvoch susedných kryštálov.  
-1. Kryštály môžu prejsť do stavu IN_COMBINATION v prípade úspešnej kombinácie po swapGems(Point point1, Point point2), po čom budú odstránené z poľa.  
-2. Pri odstránení kryštálu všetky ostatné nad ním v stĺpci prejdú do stavu FALLING.  
-3. Po vyplnení prázdnych miest sa vrátia do stavu IDLE.  
+Hráč môže meniť iba polohu dvoch susedných kryštálov.
+1. Kryštály môžu prejsť do stavu IN_COMBINATION v prípade úspešnej kombinácie po swapGems(Point point1, Point point2), po čom budú odstránené z poľa.
+2. Pri odstránení kryštálu všetky ostatné nad ním v stĺpci prejdú do stavu FALLING.
+3. Po vyplnení prázdnych miest sa vrátia do stavu IDLE.
