@@ -1,23 +1,20 @@
 package bejeweled.core;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Field {
     private final Tile[][] tiles;
-    private final int winScore;
     private int currentScore;
     private FieldState state;
-    private Queue<Point> movedPoints;
+    private final Queue<Point> brokenPoints;
 
-    public Field(int width, int height, int winScore) {
-        if(width < 3 || height < 3 || winScore <= 0 ) {
+    public Field(int width, int height) {
+        if(width < 3 || height < 3) {
             throw new IllegalArgumentException();
         }
 
         this.tiles = new Tile[height][width];
-        movedPoints = new ArrayDeque<>();
-        this.winScore = winScore;
+        brokenPoints = new ArrayDeque<>();
         this.currentScore = 0;
         this.state = FieldState.WAITING;
 
@@ -94,8 +91,8 @@ public class Field {
         if(state != FieldState.BREAKING) return;
 
         List<GemCombination> gemCombinations = new ArrayList<>();
-        while(!movedPoints.isEmpty()) {
-            GemCombination gemCombination = findCombination(movedPoints.poll());
+        while(!brokenPoints.isEmpty()) {
+            GemCombination gemCombination = findCombination(brokenPoints.poll());
             if(gemCombination.isValid())
                 gemCombinations.add(gemCombination);
         }
@@ -162,7 +159,7 @@ public class Field {
             setTile(bottomPoint, fallingGem);
             setTile(fromPoint, new EmptyTile());
         }
-        movedPoints.add(bottomPoint);
+        brokenPoints.add(bottomPoint);
         fallingGem.setIdle();
     }
 
@@ -240,12 +237,6 @@ public class Field {
         return combination;
     }
 
-
-    public boolean isWin() {
-        return currentScore >= winScore;
-    }
-
-
     private void breakTile(Point point) {
         Tile tile = getTile(point);
         if(tile instanceof Gem)
@@ -277,10 +268,6 @@ public class Field {
             ((Gem) tile).setFalling();
         }
         setTopGemFalling(point);
-    }
-
-    public int getFinishScore() {
-        return winScore;
     }
 
     public int getCurrentScore() {
