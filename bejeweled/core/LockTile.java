@@ -6,11 +6,11 @@ public class LockTile extends Tile {
     private int needBreakCount;
     private final Gem gemContainer;
 
-    public LockTile(int needBreakCount, Gem gem) {
+    public LockTile(int needBreakCount) {
         if(needBreakCount < 1 || needBreakCount > 3) throw new IllegalArgumentException();
 
         this.needBreakCount = needBreakCount;
-        this.gemContainer = gem;
+        this.gemContainer = new Gem();
     }
 
     public boolean Break() {

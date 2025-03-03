@@ -26,7 +26,7 @@ public class ConsoleUI {
                 printField();
                 field.fillEmpties();
                 printField();
-                field.checkMovedPoints();
+                field.checkMovedPointsAfterCombo();
             }
 
             if(FieldState.NO_POSSIBLE_MOVE == field.getState()) break;
@@ -49,11 +49,11 @@ public class ConsoleUI {
             Point point1 = new Point(row, col);
             Point point2;
             switch(mather.group(5).charAt(0)) {
-                case 'N': point2 = new Point(row-1, col); break;
-                case 'S': point2 = new Point(row+1, col); break;
-                case 'E': point2 = new Point(row, col+1); break;
-                case 'W': point2 = new Point(row, col-1); break;
-                default: point2 = new Point(row, col); break;
+                case 'N': point2 = point1.toNorth(); break;
+                case 'S': point2 = point1.toSouth(); break;
+                case 'E': point2 = point1.toEast(); break;
+                case 'W': point2 = point1.toWest(); break;
+                default: point2 = point1; break;
             }
 
             field.swapGems(point1, point2);
@@ -64,6 +64,9 @@ public class ConsoleUI {
     }
 
     private void printField() {
+        System.out.println("Score: " + field.getCurrentScore());
+        System.out.println("Combo: " + field.getLastCombo() + "\n");
+
         System.out.print("   ");
         for(int col = 0; col < field.getColCount(); col++) {
             System.out.print(col + "  ");
@@ -77,10 +80,11 @@ public class ConsoleUI {
 
     private void printTile(Tile tile) {
         if(tile instanceof Gem) {
-            System.out.print(((Gem)tile).getColor().getColorCode() + ((Gem) tile).getState().getCode() + "  ");
+            String gemCode = ((Gem) tile).getImpact() == BreakImpact.NONE ? ((Gem) tile).getState().getCode() : "%";
+            System.out.print(((Gem)tile).getColor().getColorCode() + gemCode + "  ");
         }
         else if(tile instanceof LockTile) {
-            System.out.print(((LockTile)tile).getGem().getColor().getColorCode() + "#  ");
+            System.out.print(((LockTile)tile).getGem().getColor().getColorCode() + ((LockTile) tile).getNeedBreakCount() + "  ");
         }
         else if(tile instanceof EmptyTile) {
             System.out.print(RESET_TEXT_COLOR + "-  ");

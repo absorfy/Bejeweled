@@ -5,6 +5,7 @@ import java.util.*;
 public class Field {
     private final Tile[][] tiles;
     private int currentScore;
+    private int lastCombo;
     private FieldState state;
     private final Queue<Point> brokenPoints;
 
@@ -83,11 +84,21 @@ public class Field {
         for(GemCombination gComb : gemsCombination) {
             if(gComb.isValid()) {
                 breakCombination(gComb);
+                processCombinationShape(gComb);
+                currentScore += gComb.getScoreCount();
+                GemCombination.IncreaseComboCounter();
             }
         }
     }
 
-    public void checkMovedPoints() {
+    private void processCombinationShape(GemCombination gComb) {
+        if(gComb.getBreakImpact() != BreakImpact.NONE) {
+            setTile(gComb.getMovedPoint(), new Gem(gComb.getBreakImpact()));
+        }
+    }
+
+
+    public void checkMovedPointsAfterCombo() {
         if(state != FieldState.BREAKING) return;
 
         List<GemCombination> gemCombinations = new ArrayList<>();
@@ -107,7 +118,13 @@ public class Field {
             else {
                 state = FieldState.NO_POSSIBLE_MOVE;
             }
+            lastCombo = GemCombination.getComboCounter();
+            GemCombination.resetComboCounter();
         }
+    }
+
+    public int getLastCombo() {
+        return lastCombo;
     }
 
     private Point[] getAllPoints() {
@@ -149,9 +166,9 @@ public class Field {
 
     private void processFallingGem(Point fromPoint) {
         Point bottomPoint = fromPoint;
-        do {
+        while (getTile(bottomPoint.toSouth()) instanceof EmptyTile) {
             bottomPoint = bottomPoint.toSouth();
-        } while(getTile(bottomPoint.toSouth()) instanceof EmptyTile);
+        }
 
         Gem fallingGem = (Gem) getTile(fromPoint);
 
@@ -171,14 +188,14 @@ public class Field {
     }
 
     private void breakAdjacentLockTiles(Point centerPoint) {
-        Point from = new Point(centerPoint.getRow()-1, centerPoint.getCol()-1);
-        Point to = new Point(centerPoint.getRow()+1, centerPoint.getCol()+1);
+        Point from = centerPoint.toWest().toNorth();
+        Point to = centerPoint.toEast().toSouth();
 
         for(Point point : Point.iterate(from, to)) {
             if(point.equals(centerPoint)) continue;
 
-            if(centerPoint.isValid(getColCount(), getRowCount()) && getTile(centerPoint) instanceof LockTile) {
-                breakTile(centerPoint);
+            if(getTile(point) instanceof LockTile) {
+                breakTile(point);
             }
         }
     }
@@ -186,7 +203,10 @@ public class Field {
     private void generateField() {
         for(Point point : Point.iterate(getColCount(), getRowCount())) {
             do {
-                setTile(point, new Gem());
+                if(point.getRow() != 6)
+                    setTile(point, new Gem());
+                else
+                    setTile(point, new LockTile(3));
             } while (findCombination(point).isValid());
         }
 
@@ -265,10 +285,13 @@ public class Field {
             point = point.toNorth();
             if(!point.isValid(getColCount(), getRowCount())) return;
         } while((tile = getTile(point)) instanceof EmptyTile);
+
         if(tile instanceof Gem) {
             ((Gem) tile).setFalling();
         }
-        setTopGemFalling(point);
+
+        if(!(getTile(point.toNorth()) instanceof LockTile))
+            setTopGemFalling(point);
     }
 
     public int getCurrentScore() {
