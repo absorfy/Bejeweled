@@ -7,10 +7,14 @@ public class Gem extends Tile {
     private BreakImpact impact;
     private GemState state;
 
-    public Gem(BreakImpact impact) {
-        this.color = Color.values()[new Random().nextInt(Color.values().length)];
+    public Gem(BreakImpact impact, Color color) {
+        this.color = color;
         this.impact = impact;
         this.state = GemState.IDLE;
+    }
+
+    public Gem(BreakImpact impact) {
+        this(impact, Color.values()[new Random().nextInt(Color.values().length)]);
     }
 
     public Gem() {

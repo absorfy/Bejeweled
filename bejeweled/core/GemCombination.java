@@ -1,8 +1,6 @@
 package bejeweled.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GemCombination {
@@ -10,17 +8,26 @@ public class GemCombination {
     private Point movedPoint;
     private static int comboCounter = 0;
     private CombinationShape combinationShape = CombinationShape.NONE;
+    private Color color;
 
     public GemCombination() {
         movedPoint = null;
         points = new ArrayList<>();
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     public BreakImpact getBreakImpact() {
         return combinationShape.getBreakImpact();
     }
 
-    public static void IncreaseComboCounter() {
+    public static void increaseComboCounter() {
         comboCounter++;
     }
 
@@ -41,25 +48,28 @@ public class GemCombination {
     }
 
 
-
-
     private void checkLineShape() {
         List<Point> horizontalPoints = points.stream().filter(p -> p.getRow() == movedPoint.getRow()).collect(Collectors.toList());
         List<Point> verticalPoints = points.stream().filter(p -> p.getCol() == movedPoint.getCol()).collect(Collectors.toList());
 
-        List<Point> validPoints = horizontalPoints.size() >= 3 ? horizontalPoints : (verticalPoints.size() >= 3 ? verticalPoints : null);
-        if(validPoints == null) return;
-
-        if(validPoints.size() >= 3) {
-            switch (validPoints.size()) {
-                case 3: combinationShape = CombinationShape.THREE; break;
-                case 4: combinationShape = CombinationShape.FOUR; break;
-                case 5: combinationShape = CombinationShape.FIVE; break;
-                default: break;
-            }
-            points = validPoints;
-        }
+        if(horizontalPoints.size() >= 3)
+            setShapeByLinePoints(horizontalPoints);
+        else if(verticalPoints.size() >= 3)
+            setShapeByLinePoints(verticalPoints);
     }
+
+    private void setShapeByLinePoints(List<Point> linePoints) {
+        if(linePoints.size() < 3) return;
+        boolean inRow = linePoints.stream().allMatch(p -> p.getCol() == movedPoint.getCol());
+        switch (linePoints.size()) {
+            case 3: combinationShape = inRow ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE; break;
+            case 4: combinationShape = inRow ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR; break;
+            case 5: combinationShape = inRow ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE; break;
+            default: break;
+        }
+        points = linePoints;
+    }
+
 
 
     private boolean checkLShape() {
@@ -151,5 +161,18 @@ public class GemCombination {
 
     public static int getComboCounter() {
         return comboCounter;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(points);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        GemCombination gComb = (GemCombination) obj;
+        return new HashSet<>(points).containsAll(gComb.getPoints());
     }
 }

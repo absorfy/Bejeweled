@@ -1,11 +1,11 @@
 package bejeweled.core;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 public class Field {
     private final Tile[][] tiles;
     private int currentScore;
-    private int lastCombo;
     private FieldState state;
     private final Queue<Point> brokenPoints;
 
@@ -29,6 +29,7 @@ public class Field {
         if(!point1.isAdjacent(point2)) return;
         if(!(getTile(point1) instanceof Gem) || !(getTile(point2) instanceof Gem)) return;
 
+        GemCombination.resetComboCounter();
         swapTiles(point1, point2);
         GemCombination gemsComb1 = findCombination(point1);
         GemCombination gemsComb2 = findCombination(point2);
@@ -85,15 +86,16 @@ public class Field {
             if(gComb.isValid()) {
                 breakCombination(gComb);
                 processCombinationShape(gComb);
-                currentScore += gComb.getScoreCount();
-                GemCombination.IncreaseComboCounter();
             }
         }
     }
 
     private void processCombinationShape(GemCombination gComb) {
+        currentScore += gComb.getScoreCount();
         if(gComb.getBreakImpact() != BreakImpact.NONE) {
-            setTile(gComb.getMovedPoint(), new Gem(gComb.getBreakImpact()));
+            Gem gem = new Gem(gComb.getBreakImpact(), gComb.getColor());
+            gem.setFalling();
+            setTile(gComb.getMovedPoint(), gem);
         }
     }
 
@@ -104,7 +106,7 @@ public class Field {
         List<GemCombination> gemCombinations = new ArrayList<>();
         while(!brokenPoints.isEmpty()) {
             GemCombination gemCombination = findCombination(brokenPoints.poll());
-            if(gemCombination.isValid())
+            if(gemCombination.isValid() && !gemCombinations.contains(gemCombination))
                 gemCombinations.add(gemCombination);
         }
 
@@ -118,14 +120,9 @@ public class Field {
             else {
                 state = FieldState.NO_POSSIBLE_MOVE;
             }
-            lastCombo = GemCombination.getComboCounter();
-            GemCombination.resetComboCounter();
         }
     }
 
-    public int getLastCombo() {
-        return lastCombo;
-    }
 
     private Point[] getAllPoints() {
         Point[] points = new Point[getColCount() * getRowCount()];
@@ -181,21 +178,20 @@ public class Field {
     }
 
     private void breakCombination(GemCombination gemsCombination) {
+        GemCombination.increaseComboCounter();
         for(Point p : gemsCombination.getPoints()) {
             breakTile(p);
-            breakAdjacentLockTiles(p);
         }
+        breakAdjacentLockTiles(gemsCombination.getPoints());
     }
 
-    private void breakAdjacentLockTiles(Point centerPoint) {
-        Point from = centerPoint.toWest().toNorth();
-        Point to = centerPoint.toEast().toSouth();
-
-        for(Point point : Point.iterate(from, to)) {
-            if(point.equals(centerPoint)) continue;
-
-            if(getTile(point) instanceof LockTile) {
-                breakTile(point);
+    private void breakAdjacentLockTiles(List<Point> points) {
+        for(Point point : points) {
+            for(Direction direction : Direction.values()) {
+                Point adjacentPoint = point.moveTo(direction);
+                if(!points.contains(adjacentPoint) && getTile(adjacentPoint) instanceof LockTile) {
+                    breakLockTile(adjacentPoint, (LockTile)getTile(adjacentPoint));
+                }
             }
         }
     }
@@ -230,6 +226,7 @@ public class Field {
         if(!(getTile(point) instanceof Gem)) return combination;
 
         combination.setMovedPoint(point);
+        combination.setColor(((Gem) getTile(point)).getColor());
         Color combColor = ((Gem)getTile(point)).getColor();
         stackAdjacent.push(point);
 

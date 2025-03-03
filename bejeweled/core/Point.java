@@ -34,7 +34,7 @@ public class Point {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false; // Якщо obj null або не Coordinate
+        if (obj == null || getClass() != obj.getClass()) return false;
         Point p = (Point) obj;
         return this.row == p.row && this.col == p.col;
     }

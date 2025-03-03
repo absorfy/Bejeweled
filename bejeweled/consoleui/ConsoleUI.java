@@ -65,7 +65,7 @@ public class ConsoleUI {
 
     private void printField() {
         System.out.println("Score: " + field.getCurrentScore());
-        System.out.println("Combo: " + field.getLastCombo() + "\n");
+        System.out.println("Combo: " + GemCombination.getComboCounter() + "\n");
 
         System.out.print("   ");
         for(int col = 0; col < field.getColCount(); col++) {
