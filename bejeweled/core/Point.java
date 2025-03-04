@@ -21,7 +21,6 @@ public class Point {
     }
 
 
-
     public boolean isValid(int colCount, int rowCount) {
         return row >= 0 && col >= 0 && row < rowCount && col < colCount;
     }
@@ -51,28 +50,33 @@ public class Point {
 
     public Point moveTo(Direction direction) {
         switch (direction) {
-            case NORTH: return toNorth();
-            case EAST: return toEast();
-            case SOUTH: return toSouth();
-            case WEST: return toWest();
-            default: return this;
+            case NORTH:
+                return toNorth();
+            case EAST:
+                return toEast();
+            case SOUTH:
+                return toSouth();
+            case WEST:
+                return toWest();
+            default:
+                return this;
         }
     }
 
     public Point toNorth() {
-        return new Point(row-1, col);
+        return new Point(row - 1, col);
     }
 
     public Point toEast() {
-        return new Point(row, col+1);
+        return new Point(row, col + 1);
     }
 
     public Point toSouth() {
-        return new Point(row+1, col);
+        return new Point(row + 1, col);
     }
 
     public Point toWest() {
-        return new Point(row, col-1);
+        return new Point(row, col - 1);
     }
 
 
@@ -98,7 +102,7 @@ public class Point {
                 }
 
                 Point p = new Point(row, col);
-                if(++col >= width) {
+                if (++col >= width) {
                     col = fromPoint.getCol();
                     row++;
                 }

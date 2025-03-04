@@ -36,14 +36,14 @@ public class GemCombination {
     }
 
     public void identifyCombination() {
-        if(movedPoint == null || points.size() < 3) {
+        if (movedPoint == null || points.size() < 3) {
             return;
         }
 
-        if(checkStar()) return;
-        if(checkLShape()) return;
-        if(checkSquare()) return;
-        if(checkTShape()) return;
+        if (checkStar()) return;
+        if (checkLShape()) return;
+        if (checkSquare()) return;
+        if (checkTShape()) return;
         checkLineShape();
     }
 
@@ -52,24 +52,30 @@ public class GemCombination {
         List<Point> horizontalPoints = points.stream().filter(p -> p.getRow() == movedPoint.getRow()).collect(Collectors.toList());
         List<Point> verticalPoints = points.stream().filter(p -> p.getCol() == movedPoint.getCol()).collect(Collectors.toList());
 
-        if(horizontalPoints.size() >= 3)
+        if (horizontalPoints.size() >= 3)
             setShapeByLinePoints(horizontalPoints);
-        else if(verticalPoints.size() >= 3)
+        else if (verticalPoints.size() >= 3)
             setShapeByLinePoints(verticalPoints);
     }
 
     private void setShapeByLinePoints(List<Point> linePoints) {
-        if(linePoints.size() < 3) return;
+        if (linePoints.size() < 3) return;
         boolean inRow = linePoints.stream().allMatch(p -> p.getCol() == movedPoint.getCol());
         switch (linePoints.size()) {
-            case 3: combinationShape = inRow ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE; break;
-            case 4: combinationShape = inRow ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR; break;
-            case 5: combinationShape = inRow ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE; break;
-            default: break;
+            case 3:
+                combinationShape = inRow ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE;
+                break;
+            case 4:
+                combinationShape = inRow ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR;
+                break;
+            case 5:
+                combinationShape = inRow ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE;
+                break;
+            default:
+                break;
         }
         points = linePoints;
     }
-
 
 
     private boolean checkLShape() {
@@ -124,7 +130,7 @@ public class GemCombination {
     }
 
     private boolean checkShape(Point[] checkPoints, CombinationShape checkShape) {
-        for(int rotateCount = 0; rotateCount < 4; rotateCount++) {
+        for (int rotateCount = 0; rotateCount < 4; rotateCount++) {
             if (Arrays.stream(checkPoints).allMatch(p -> points.contains(p))) {
                 combinationShape = checkShape;
                 points = Arrays.stream(checkPoints).collect(Collectors.toList());

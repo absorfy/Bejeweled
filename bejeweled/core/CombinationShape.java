@@ -13,7 +13,8 @@ public enum CombinationShape {
     SQUARE(50, BreakImpact.EXPLODE),
     LETTER_T(75, BreakImpact.STAR),
     STAR(100, BreakImpact.STAR),
-    NONE(0, BreakImpact.NONE),;
+    NONE(0, BreakImpact.NONE),
+    ;
 
     private final int scoreCount;
     private BreakImpact breakImpact;
