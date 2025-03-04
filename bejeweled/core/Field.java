@@ -21,6 +21,20 @@ public class Field {
         generateField();
     }
 
+    public Point[] findCombinationPoints() {
+        for (Point point : Point.iterate(getColCount(), getRowCount())) {
+            Tile tile = getTile(point);
+            if (!(tile instanceof Gem)) continue;
+
+            for (Direction direction : Direction.values()) {
+                Point adjacentPoint = point.moveTo(direction);
+                if (trySwapAt(point, adjacentPoint))
+                    return new Point[]{point, adjacentPoint};
+            }
+        }
+        return null;
+    }
+
     public void swapGems(Point point1, Point point2) {
         if (state != FieldState.WAITING) return;
 
@@ -33,30 +47,15 @@ public class Field {
         GemCombination gemsComb1 = findCombination(point1);
         GemCombination gemsComb2 = findCombination(point2);
 
-        if (!gemsComb1.isValid() && !gemsComb2.isValid()) {
-            swapTiles(point1, point2);
-        } else {
+        if (gemsComb1.isValid() || gemsComb2.isValid()) {
             processGemCombinations(gemsComb1, gemsComb2);
+        } else {
+            swapTiles(point1, point2);
         }
     }
 
     public boolean hasPossibleMoves() {
-        int[] dx = {0, 1};
-        int[] dy = {1, 0};
-
-        for (Point point : Point.iterate(getColCount(), getRowCount())) {
-            Tile tile = getTile(point);
-            if (!(tile instanceof Gem)) continue;
-
-            for (int d = 0; d < 2; d++) {
-                int newRow = point.getRow() + dx[d];
-                int newCol = point.getCol() + dy[d];
-
-                if (trySwapAt(point, new Point(newRow, newCol)))
-                    return true;
-            }
-        }
-        return false;
+        return findCombinationPoints() != null;
     }
 
     private boolean trySwapAt(Point point1, Point point2) {
@@ -196,10 +195,10 @@ public class Field {
     private void generateField() {
         for (Point point : Point.iterate(getColCount(), getRowCount())) {
             do {
-                if (point.getRow() != 6)
-                    setTile(point, new Gem());
-                else
+                if (getRowCount() > 5 && point.getRow() >= getRowCount() - getRowCount() / 3)
                     setTile(point, new LockTile(3));
+                else
+                    setTile(point, new Gem());
             } while (findCombination(point).isValid());
         }
 
@@ -254,15 +253,64 @@ public class Field {
 
     private void breakTile(Point point) {
         Tile tile = getTile(point);
-        if (tile instanceof Gem)
-            breakGem(point);
-        else if (tile instanceof LockTile)
+        if (tile instanceof Gem) {
+            breakGem(point, (Gem) tile);
+            processBreakImpact(point, (Gem) tile);
+        } else if (tile instanceof LockTile) {
             breakLockTile(point, (LockTile) tile);
+        }
     }
 
-    private void breakGem(Point point) {
+    private void processBreakImpact(Point point, Gem gem) {
+        currentScore += gem.getImpact().getScoreValue();
+        if (gem.getImpact() != BreakImpact.NONE)
+            GemCombination.increaseComboCounter();
+
+        switch (gem.getImpact()) {
+            case ROW:
+                breakRow(point.getRow());
+                break;
+            case COLUMN:
+                breakColumn(point.getCol());
+                break;
+            case STAR:
+                breakRow(point.getRow());
+                breakColumn(point.getCol());
+                break;
+            case EXPLODE:
+                breakSquare(point);
+            default:
+                break;
+        }
+    }
+
+    private void breakSquare(Point point) {
+        for (int row = point.getRow() - 1; row <= point.getRow() + 1; row++) {
+            for (int col = point.getCol() - 1; col <= point.getCol() + 1; col++) {
+                Point breakPoint = new Point(row, col);
+                if (breakPoint.equals(point)) continue;
+                breakTile(breakPoint);
+            }
+        }
+    }
+
+    private void breakRow(int row) {
+        if (row < 0 || row >= getRowCount()) return;
+        for (int col = 0; col < getColCount(); col++) {
+            breakTile(new Point(row, col));
+        }
+    }
+
+    private void breakGem(Point point, Gem gem) {
         setTile(point, new EmptyTile());
         setTopGemFalling(point);
+    }
+
+    private void breakColumn(int col) {
+        if (col < 0 || col >= getColCount()) return;
+        for (int row = 0; row < getRowCount(); row++) {
+            breakTile(new Point(row, col));
+        }
     }
 
     private void breakLockTile(Point lockPoint, LockTile lockTile) {

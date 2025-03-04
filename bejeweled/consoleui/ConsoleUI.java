@@ -22,6 +22,7 @@ public class ConsoleUI {
 
     public void play() {
         printField();
+        printHint();
         while (true) {
             processInput();
 
@@ -37,8 +38,14 @@ public class ConsoleUI {
         System.out.println("No possible moves!");
     }
 
+    private void printHint() {
+        Point[] combPoints = field.findCombinationPoints();
+        if(combPoints == null) return;
+        System.out.println("HINT: " + combPoints[0] + " <-> " + combPoints[1] + "\n");
+    }
+
     private void processInput() {
-        System.out.print("\nEnter command (X - exit, 25N - swap gem at 2 row and 5 col with north gem): ");
+        System.out.print("Enter command (X - exit, 25N - swap gem at 2 row and 5 col with north gem): ");
         var line = scanner.nextLine().toUpperCase();
         if (line.equals("X")) {
             System.exit(0);
@@ -89,7 +96,7 @@ public class ConsoleUI {
             }
             printTile(field.getTile(p));
         }
-        System.out.println(RESET_TEXT_COLOR + "\n\n");
+        System.out.println(RESET_TEXT_COLOR + "\n");
     }
 
     private void printTile(Tile tile) {

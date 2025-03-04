@@ -53,23 +53,22 @@ public class GemCombination {
         List<Point> verticalPoints = points.stream().filter(p -> p.getCol() == movedPoint.getCol()).collect(Collectors.toList());
 
         if (horizontalPoints.size() >= 3)
-            setShapeByLinePoints(horizontalPoints);
+            setShapeByLinePoints(horizontalPoints, true);
         else if (verticalPoints.size() >= 3)
-            setShapeByLinePoints(verticalPoints);
+            setShapeByLinePoints(verticalPoints, false);
     }
 
-    private void setShapeByLinePoints(List<Point> linePoints) {
+    private void setShapeByLinePoints(List<Point> linePoints, boolean horizontal) {
         if (linePoints.size() < 3) return;
-        boolean inRow = linePoints.stream().allMatch(p -> p.getCol() == movedPoint.getCol());
         switch (linePoints.size()) {
             case 3:
-                combinationShape = inRow ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE;
+                combinationShape = horizontal ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE;
                 break;
             case 4:
-                combinationShape = inRow ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR;
+                combinationShape = horizontal ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR;
                 break;
             case 5:
-                combinationShape = inRow ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE;
+                combinationShape = horizontal ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE;
                 break;
             default:
                 break;
