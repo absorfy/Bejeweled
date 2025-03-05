@@ -1,19 +1,23 @@
 package bejeweled.core;
 
 public enum CombinationShape {
-    COL_THREE(25, BreakImpact.NONE),
-    COL_FOUR(50, BreakImpact.COLUMN),
-    COL_FIVE(75, BreakImpact.COLUMN),
+    NONE(0, BreakImpact.NONE),
 
+    COL_THREE(25, BreakImpact.NONE),
     ROW_THREE(25, BreakImpact.NONE),
+
+    COL_FOUR(50, BreakImpact.COLUMN),
     ROW_FOUR(50, BreakImpact.ROW),
+
+    SQUARE(50, BreakImpact.EXPLODE),
+
+    COL_FIVE(75, BreakImpact.COLUMN),
     ROW_FIVE(75, BreakImpact.ROW),
 
     LETTER_L(75, BreakImpact.STAR),
-    SQUARE(50, BreakImpact.EXPLODE),
     LETTER_T(75, BreakImpact.STAR),
     STAR(100, BreakImpact.STAR),
-    NONE(0, BreakImpact.NONE),
+
     ;
 
     private final int scoreCount;

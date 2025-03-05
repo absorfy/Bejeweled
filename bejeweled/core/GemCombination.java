@@ -1,9 +1,11 @@
 package bejeweled.core;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class GemCombination {
+public class GemCombination implements Comparable<GemCombination> {
     private List<Point> points;
     private Point movedPoint;
     private static int comboCounter = 0;
@@ -25,6 +27,10 @@ public class GemCombination {
 
     public BreakImpact getBreakImpact() {
         return combinationShape.getBreakImpact();
+    }
+
+    public CombinationShape getShape() {
+        return combinationShape;
     }
 
     public static void increaseComboCounter() {
@@ -179,5 +185,10 @@ public class GemCombination {
         if (obj == null || getClass() != obj.getClass()) return false;
         GemCombination gComb = (GemCombination) obj;
         return new HashSet<>(points).containsAll(gComb.getPoints());
+    }
+
+    @Override
+    public int compareTo(GemCombination gemCombination) {
+        return this.getShape().compareTo(gemCombination.getShape());
     }
 }

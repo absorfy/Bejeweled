@@ -8,12 +8,12 @@ public class Field {
     private FieldState state;
     private final Queue<Point> brokenPoints;
 
-    public Field(int width, int height) {
-        if (width < 3 || height < 3) {
+    public Field(int rowCount, int colCount) {
+        if (colCount < 3 || rowCount < 3) {
             throw new IllegalArgumentException();
         }
 
-        this.tiles = new Tile[height][width];
+        this.tiles = new Tile[rowCount][colCount];
         brokenPoints = new ArrayDeque<>();
         this.currentScore = 0;
         this.state = FieldState.WAITING;
@@ -22,7 +22,9 @@ public class Field {
     }
 
     public Point[] findCombinationPoints() {
-        for (Point point : Point.iterate(getColCount(), getRowCount())) {
+        Point[] points = getAllPoints();
+        Collections.shuffle(Arrays.asList(points));
+        for (Point point : points) {
             Tile tile = getTile(point);
             if (!(tile instanceof Gem)) continue;
 
@@ -80,6 +82,7 @@ public class Field {
 
     private void processGemCombinations(GemCombination... gemsCombination) {
         state = FieldState.BREAKING;
+        gemsCombination = Arrays.stream(gemsCombination).sorted(Comparator.reverseOrder()).toArray(GemCombination[]::new);
         for (GemCombination gComb : gemsCombination) {
             if (gComb.isValid()) {
                 breakCombination(gComb);
