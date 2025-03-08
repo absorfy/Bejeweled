@@ -3,22 +3,22 @@ package bejeweled.core;
 import java.util.Random;
 
 public class Gem extends Tile {
-    private Color color;
-    private BreakImpact impact;
+    private final Color color;
+    private final BreakImpact impact;
     private GemState state;
 
-    public Gem(BreakImpact impact, Color color) {
-        this.color = color;
-        this.impact = impact;
-        this.state = GemState.IDLE;
+    public Gem() {
+        this(BreakImpact.NONE);
     }
 
     public Gem(BreakImpact impact) {
         this(impact, Color.values()[new Random().nextInt(Color.values().length)]);
     }
 
-    public Gem() {
-        this(BreakImpact.NONE);
+    public Gem(BreakImpact impact, Color color) {
+        this.color = color;
+        this.impact = impact;
+        this.state = GemState.IDLE;
     }
 
     public Color getColor() {
@@ -33,15 +33,7 @@ public class Gem extends Tile {
         return state;
     }
 
-    public void setFalling() {
-        this.state = GemState.FALLING;
-    }
-
-    public void setIdle() {
-        this.state = GemState.IDLE;
-    }
-
-    public void setInCombination() {
-        this.state = GemState.IN_COMBINATION;
+    void setState(GemState state) {
+        this.state = state;
     }
 }

@@ -1,20 +1,21 @@
 package bejeweled.core;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GemCombination implements Comparable<GemCombination> {
-    private List<Point> points;
-    private Point movedPoint;
+
     private static int comboCounter = 0;
+
+    private final Map<Point, Gem> gemPoints;
+    private Point anchorPoint;
     private CombinationShape combinationShape = CombinationShape.NONE;
     private Color color;
 
     public GemCombination() {
-        movedPoint = null;
-        points = new ArrayList<>();
+        anchorPoint = null;
+        gemPoints = new HashMap<Point, Gem>();
     }
 
     public void setColor(Color color) {
@@ -42,26 +43,36 @@ public class GemCombination implements Comparable<GemCombination> {
     }
 
     public void identifyCombination() {
-        if (movedPoint == null || points.size() < 3) {
+        if (anchorPoint == null || gemPoints.size() < 3) {
             return;
         }
+        if (checkStarShape() || checkLShape() || checkSquareShape() || checkTShape() || checkLineShape()) {
+            setGemsInCombo(true);
+        }
+    }
 
-        if (checkStar()) return;
-        if (checkLShape()) return;
-        if (checkSquare()) return;
-        if (checkTShape()) return;
-        checkLineShape();
+    void setGemsInCombo(boolean inCombination) {
+        gemPoints.values().forEach((gem) -> {
+            gem.setState(inCombination ? GemState.IN_COMBINATION : GemState.IDLE);
+        });
     }
 
 
-    private void checkLineShape() {
-        List<Point> horizontalPoints = points.stream().filter(p -> p.getRow() == movedPoint.getRow()).collect(Collectors.toList());
-        List<Point> verticalPoints = points.stream().filter(p -> p.getCol() == movedPoint.getCol()).collect(Collectors.toList());
+    private boolean checkLineShape() {
+        List<Point> horizontalPoints = gemPoints.keySet().stream()
+                .filter(p -> p.getRow() == anchorPoint.getRow()).collect(Collectors.toList());
+        List<Point> verticalPoints = gemPoints.keySet().stream()
+                .filter(p -> p.getCol() == anchorPoint.getCol()).collect(Collectors.toList());
 
-        if (horizontalPoints.size() >= 3)
+        if (horizontalPoints.size() >= 3) {
             setShapeByLinePoints(horizontalPoints, true);
-        else if (verticalPoints.size() >= 3)
+            return true;
+        }
+        else if (verticalPoints.size() >= 3) {
             setShapeByLinePoints(verticalPoints, false);
+            return true;
+        }
+        return false;
     }
 
     private void setShapeByLinePoints(List<Point> linePoints, boolean horizontal) {
@@ -79,66 +90,67 @@ public class GemCombination implements Comparable<GemCombination> {
             default:
                 break;
         }
-        points = linePoints;
+
+        gemPoints.keySet().retainAll(linePoints);
     }
 
 
     private boolean checkLShape() {
         return checkShape(new Point[]{
-                movedPoint,
-                movedPoint.moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.WEST).moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH)
+                anchorPoint,
+                anchorPoint.moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.WEST).moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH)
         }, CombinationShape.LETTER_L);
     }
 
 
-    private boolean checkSquare() {
+    private boolean checkSquareShape() {
         return checkShape(new Point[]{
-                movedPoint,
-                movedPoint.moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.WEST).moveTo(Direction.NORTH)
+                anchorPoint,
+                anchorPoint.moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.WEST).moveTo(Direction.NORTH)
         }, CombinationShape.SQUARE);
     }
 
     private boolean checkTShape() {
         return checkShape(new Point[]{
-                movedPoint,
-                movedPoint.moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.EAST),
+                anchorPoint,
+                anchorPoint.moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.EAST),
         }, CombinationShape.LETTER_T);
     }
 
-    private boolean checkStar() {
+    private boolean checkStarShape() {
         return checkShape(new Point[]{
-                movedPoint,
-                movedPoint.moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.WEST).moveTo(Direction.WEST),
-                movedPoint.moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH),
-                movedPoint.moveTo(Direction.EAST),
-                movedPoint.moveTo(Direction.EAST).moveTo(Direction.EAST),
+                anchorPoint,
+                anchorPoint.moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.WEST).moveTo(Direction.WEST),
+                anchorPoint.moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.NORTH).moveTo(Direction.NORTH),
+                anchorPoint.moveTo(Direction.EAST),
+                anchorPoint.moveTo(Direction.EAST).moveTo(Direction.EAST),
         }, CombinationShape.STAR);
     }
 
     private Point[] rotatePointsClockwise(Point[] points) {
         return Arrays.stream(points)
                 .map(p -> new Point(
-                        movedPoint.getRow() - (p.getCol() - movedPoint.getCol()),
-                        movedPoint.getCol() + (p.getRow() - movedPoint.getRow())
+                        anchorPoint.getRow() - (p.getCol() - anchorPoint.getCol()),
+                        anchorPoint.getCol() + (p.getRow() - anchorPoint.getRow())
                 ))
                 .toArray(Point[]::new);
     }
 
     private boolean checkShape(Point[] checkPoints, CombinationShape checkShape) {
         for (int rotateCount = 0; rotateCount < 4; rotateCount++) {
-            if (Arrays.stream(checkPoints).allMatch(p -> points.contains(p))) {
+            if (Arrays.stream(checkPoints).allMatch(p -> gemPoints.containsKey(p))) {
                 combinationShape = checkShape;
-                points = Arrays.stream(checkPoints).collect(Collectors.toList());
+                gemPoints.keySet().retainAll(Arrays.stream(checkPoints).collect(Collectors.toList()));
                 return true;
             }
             checkPoints = rotatePointsClockwise(checkPoints);
@@ -150,33 +162,33 @@ public class GemCombination implements Comparable<GemCombination> {
         return combinationShape != CombinationShape.NONE;
     }
 
-    public void addGemPoint(Point point) {
-        points.add(point);
+    public void addGemPoint(Point point, Gem gem) {
+        gemPoints.put(point, gem);
     }
 
-    public void setMovedPoint(Point point) {
-        movedPoint = point;
+    public void setAnchorPoint(Point point) {
+        anchorPoint = point;
     }
 
     public static void resetComboCounter() {
         comboCounter = 0;
     }
 
-    public List<Point> getPoints() {
-        return points;
+    public List<Point> getGemPoints() {
+        return new ArrayList<>(gemPoints.keySet());
     }
 
-    public Point getMovedPoint() {
-        return movedPoint;
+    public Point getAnchorPoint() {
+        return anchorPoint;
     }
 
-    public static int getComboCounter() {
+    static int getComboCounter() {
         return comboCounter;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(points);
+        return Objects.hash(gemPoints);
     }
 
     @Override
@@ -184,7 +196,7 @@ public class GemCombination implements Comparable<GemCombination> {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         GemCombination gComb = (GemCombination) obj;
-        return new HashSet<>(points).containsAll(gComb.getPoints());
+        return new HashSet<>(gemPoints.keySet()).containsAll(gComb.getGemPoints());
     }
 
     @Override

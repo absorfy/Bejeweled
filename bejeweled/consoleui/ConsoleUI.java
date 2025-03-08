@@ -7,51 +7,60 @@ import java.util.regex.Pattern;
 
 public class ConsoleUI {
 
-    private static Pattern INPUT_PATTERN;
+    private static Pattern PLAYING_PATTERN;
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
     private final Scanner scanner = new Scanner(System.in);
-    private final Field field;
 
-    public ConsoleUI(Field field) {
-        this.field = field;
+    private final int rowCount;
+    private final int colCount;
 
-        INPUT_PATTERN = Pattern.compile("^(X)|(([0-"
-                + (field.getRowCount() - 1) + "])([0-"
-                + (field.getColCount() - 1) + "])([WNSE]))$");
+    public ConsoleUI(int rowCount, int colCount) {
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+
+        PLAYING_PATTERN = Pattern.compile("^(X)|(([0-"
+                + (rowCount - 1) + "])([0-"
+                + (colCount - 1) + "])([WNSE]))$");
     }
 
     public void play() {
-        printField();
-        printHint();
-        while (true) {
-            processInput();
+        Field field = new Field(rowCount, colCount);
+
+        printField(field);
+        printHint(field);
+        while (field.getState() != FieldState.NO_POSSIBLE_MOVE) {
+            processInput(field);
 
             while (field.getState() == FieldState.BREAKING) {
-                printField();
+                printField(field);
                 field.fillEmpties();
-                printField();
+                printField(field);
                 field.checkMovedPointsAfterCombo();
             }
-
-            if (FieldState.NO_POSSIBLE_MOVE == field.getState()) break;
         }
-        System.out.println("No possible moves!");
+        System.out.println("No possible moves! Your score: " + field.getScore());
     }
 
-    private void printHint() {
+    public boolean askContinue() {
+        System.out.print("Play again? (Y/N): ");
+        var line = scanner.nextLine().toUpperCase();
+        return line.equals("Y") || line.equals("YES");
+    }
+
+    private void printHint(Field field) {
         Point[] combPoints = field.findCombinationPoints();
-        if(combPoints == null) return;
+        if (combPoints == null) return;
         System.out.println("HINT: " + combPoints[0] + " <-> " + combPoints[1] + "\n");
     }
 
-    private void processInput() {
+    private void processInput(Field field) {
         System.out.print("Enter command (X - exit, 25N - swap gem at 2 row and 5 col with north gem): ");
         var line = scanner.nextLine().toUpperCase();
         if (line.equals("X")) {
             System.exit(0);
         }
 
-        var mather = INPUT_PATTERN.matcher(line);
+        var mather = PLAYING_PATTERN.matcher(line);
         if (mather.matches()) {
 
             int row = Integer.parseInt(mather.group(3));
@@ -82,9 +91,9 @@ public class ConsoleUI {
         }
     }
 
-    private void printField() {
-        System.out.println("Score: " + field.getCurrentScore());
-        System.out.println("Combo: " + GemCombination.getComboCounter() + "\n");
+    private void printField(Field field) {
+        System.out.println("Score: " + field.getScore());
+        System.out.println("Combo: " + field.getComboCount() + "\n");
 
         System.out.print("   ");
         for (int col = 0; col < field.getColCount(); col++) {
@@ -101,7 +110,18 @@ public class ConsoleUI {
 
     private void printTile(Tile tile) {
         if (tile instanceof Gem) {
-            String gemCode = ((Gem) tile).getImpact() == BreakImpact.NONE ? ((Gem) tile).getState().getCode() : "%";
+            String gemCode;
+            if(((Gem) tile).getImpact() == BreakImpact.NONE) {
+                switch (((Gem) tile).getState()) {
+                    case IN_COMBINATION: gemCode = "$"; break;
+                    case IDLE: gemCode = "@"; break;
+                    case FALLING: gemCode = "!"; break;
+                    default: gemCode = "?"; break;
+                }
+            }
+            else {
+                gemCode = "%";
+            }
             System.out.print(((Gem) tile).getColor().getColorCode() + gemCode + "  ");
         } else if (tile instanceof LockTile) {
             System.out.print(((LockTile) tile).getGem().getColor().getColorCode() + ((LockTile) tile).getNeedBreakCount() + "  ");

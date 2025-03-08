@@ -4,9 +4,9 @@ import java.util.*;
 
 public class Field {
     private final Tile[][] tiles;
+    private final Queue<Point> brokenPoints;
     private int currentScore;
     private FieldState state;
-    private final Queue<Point> brokenPoints;
 
     public Field(int rowCount, int colCount) {
         if (colCount < 3 || rowCount < 3) {
@@ -19,6 +19,22 @@ public class Field {
         this.state = FieldState.WAITING;
 
         generateField();
+    }
+
+    private void generateField() {
+        for (Point point : Point.iterate(getColCount(), getRowCount())) {
+            do {
+                int blockedRowBorder = getRowCount() - getRowCount() / 2;
+                if (getRowCount() >= 6 && point.getRow() >= blockedRowBorder)
+                    setTile(point, new LockTile(3));
+                else
+                    setTile(point, new Gem());
+            } while (checkCombinationIn(point));
+        }
+
+        if (!hasPossibleMoves()) {
+            generateField();
+        }
     }
 
     public Point[] findCombinationPoints() {
@@ -40,14 +56,14 @@ public class Field {
     public void swapGems(Point point1, Point point2) {
         if (state != FieldState.WAITING) return;
 
-        if (!point1.isValid(getColCount(), getRowCount()) || !point2.isValid(getColCount(), getRowCount())) return;
+        if (point1.isValid(getRowCount(), getColCount()) || point2.isValid(getRowCount(), getColCount())) return;
         if (!point1.isAdjacent(point2)) return;
         if (!(getTile(point1) instanceof Gem) || !(getTile(point2) instanceof Gem)) return;
 
         GemCombination.resetComboCounter();
         swapTiles(point1, point2);
-        GemCombination gemsComb1 = findCombination(point1);
-        GemCombination gemsComb2 = findCombination(point2);
+        GemCombination gemsComb1 = getCombinationFrom(point1);
+        GemCombination gemsComb2 = getCombinationFrom(point2);
 
         if (gemsComb1.isValid() || gemsComb2.isValid()) {
             processGemCombinations(gemsComb1, gemsComb2);
@@ -61,12 +77,12 @@ public class Field {
     }
 
     private boolean trySwapAt(Point point1, Point point2) {
-        if (!point1.isValid(getColCount(), getRowCount()) || !point2.isValid(getColCount(), getRowCount()))
+        if (point1.isValid(getRowCount(), getColCount()) || point2.isValid(getRowCount(), getColCount()))
             return false;
         if (!(getTile(point1) instanceof Gem) || !(getTile(point2) instanceof Gem)) return false;
 
         swapTiles(point1, point2);
-        boolean anyComb = findCombination(point1).isValid() || findCombination(point2).isValid();
+        boolean anyComb = checkCombinationIn(point1) || checkCombinationIn(point2);
         swapTiles(point1, point2);
 
         return anyComb;
@@ -88,6 +104,9 @@ public class Field {
                 breakCombination(gComb);
                 processCombinationShape(gComb);
             }
+            else {
+                gComb.setGemsInCombo(false);
+            }
         }
     }
 
@@ -95,8 +114,8 @@ public class Field {
         currentScore += gComb.getScoreCount();
         if (gComb.getBreakImpact() != BreakImpact.NONE) {
             Gem gem = new Gem(gComb.getBreakImpact(), gComb.getColor());
-            gem.setFalling();
-            setTile(gComb.getMovedPoint(), gem);
+            gem.setState(GemState.FALLING);
+            setTile(gComb.getAnchorPoint(), gem);
         }
     }
 
@@ -106,9 +125,12 @@ public class Field {
 
         List<GemCombination> gemCombinations = new ArrayList<>();
         while (!brokenPoints.isEmpty()) {
-            GemCombination gemCombination = findCombination(brokenPoints.poll());
+            GemCombination gemCombination = getCombinationFrom(brokenPoints.poll());
             if (gemCombination.isValid() && !gemCombinations.contains(gemCombination))
                 gemCombinations.add(gemCombination);
+            else {
+                gemCombination.setGemsInCombo(false);
+            }
         }
 
         if (!gemCombinations.isEmpty()) {
@@ -173,15 +195,15 @@ public class Field {
             setTile(fromPoint, new EmptyTile());
         }
         brokenPoints.add(bottomPoint);
-        fallingGem.setIdle();
+        fallingGem.setState(GemState.IDLE);
     }
 
     private void breakCombination(GemCombination gemsCombination) {
         GemCombination.increaseComboCounter();
-        for (Point p : gemsCombination.getPoints()) {
+        for (Point p : gemsCombination.getGemPoints()) {
             breakTile(p);
         }
-        breakAdjacentLockTiles(gemsCombination.getPoints());
+        breakAdjacentLockTiles(gemsCombination.getGemPoints());
     }
 
     private void breakAdjacentLockTiles(List<Point> points) {
@@ -195,69 +217,67 @@ public class Field {
         }
     }
 
-    private void generateField() {
-        for (Point point : Point.iterate(getColCount(), getRowCount())) {
-            do {
-                if (getRowCount() > 5 && point.getRow() >= getRowCount() - getRowCount() / 3)
-                    setTile(point, new LockTile(3));
-                else
-                    setTile(point, new Gem());
-            } while (findCombination(point).isValid());
-        }
-
-        if (!hasPossibleMoves()) {
-            generateField();
-        }
+    public int getComboCount() {
+        return GemCombination.getComboCounter();
     }
 
     private void setTile(Point point, Tile tileObject) {
-        if (!point.isValid(getColCount(), getRowCount()))
+        if (point.isValid(getRowCount(), getColCount()))
             return;
 
         tiles[point.getRow()][point.getCol()] = tileObject;
     }
 
-    private GemCombination findCombination(Point point) {
+    private boolean checkCombinationIn(Point point) {
+        GemCombination gemCombination = getCombinationFrom(point);
+        if(gemCombination.isValid()) {
+            gemCombination.setGemsInCombo(false);
+            return true;
+        }
+        return false;
+    }
+
+    private GemCombination getCombinationFrom(Point point) {
         Set<Point> visited = new HashSet<>();
         Stack<Point> stackAdjacent = new Stack<>();
         GemCombination combination = new GemCombination();
 
         if (!(getTile(point) instanceof Gem)) return combination;
 
-        combination.setMovedPoint(point);
+        combination.setAnchorPoint(point);
         combination.setColor(((Gem) getTile(point)).getColor());
         Color combColor = ((Gem) getTile(point)).getColor();
         stackAdjacent.push(point);
 
         while (!stackAdjacent.isEmpty()) {
             Point current = stackAdjacent.pop();
-            if (!current.isValid(getColCount(), getRowCount()) || visited.contains(current)) continue;
+            if (current.isValid(getRowCount(), getColCount()) || visited.contains(current)) continue;
 
             Tile checkTile;
             if (!((checkTile = getTile(current)) instanceof Gem)
-                    //|| ((Gem) checkTile).getState() != GemState.IDLE
+                    || ((Gem) checkTile).getState() != GemState.IDLE
                     || ((Gem) checkTile).getColor() != combColor) {
                 continue;
             }
-
-
             visited.add(current);
-            //((Gem)checkTile).setInCombination();
-            combination.addGemPoint(current);
+
+            combination.addGemPoint(current, (Gem)checkTile);
 
             stackAdjacent.push(current.toEast());
             stackAdjacent.push(current.toWest());
             stackAdjacent.push(current.toNorth());
             stackAdjacent.push(current.toSouth());
         }
+
         combination.identifyCombination();
         return combination;
     }
 
+
     private void breakTile(Point point) {
         Tile tile = getTile(point);
         if (tile instanceof Gem) {
-            breakGem(point, (Gem) tile);
+            breakGem(point);
             processBreakImpact(point, (Gem) tile);
         } else if (tile instanceof LockTile) {
             breakLockTile(point, (LockTile) tile);
@@ -304,7 +324,7 @@ public class Field {
         }
     }
 
-    private void breakGem(Point point, Gem gem) {
+    private void breakGem(Point point) {
         setTile(point, new EmptyTile());
         setTopGemFalling(point);
     }
@@ -319,27 +339,27 @@ public class Field {
     private void breakLockTile(Point lockPoint, LockTile lockTile) {
         if (lockTile.Break()) {
             Gem gem = lockTile.getGem();
-            gem.setFalling();
+            gem.setState(GemState.FALLING);
             setTile(lockPoint, gem);
         }
     }
 
     private void setTopGemFalling(Point point) {
-        Tile tile = null;
+        Tile tile;
         do {
             point = point.toNorth();
-            if (!point.isValid(getColCount(), getRowCount())) return;
+            if (point.isValid(getRowCount(), getColCount())) return;
         } while ((tile = getTile(point)) instanceof EmptyTile);
 
         if (tile instanceof Gem) {
-            ((Gem) tile).setFalling();
+            ((Gem) tile).setState(GemState.FALLING);
         }
 
         if (!(getTile(point.toNorth()) instanceof LockTile))
             setTopGemFalling(point);
     }
 
-    public int getCurrentScore() {
+    public int getScore() {
         return currentScore;
     }
 
@@ -356,7 +376,7 @@ public class Field {
     }
 
     public Tile getTile(Point point) {
-        if (!point.isValid(getColCount(), getRowCount())) return null;
+        if (point.isValid(getRowCount(), getColCount())) return null;
         return tiles[point.getRow()][point.getCol()];
     }
 }
