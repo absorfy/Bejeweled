@@ -53,7 +53,10 @@ public class GemCombination implements Comparable<GemCombination> {
 
     void setGemsInCombo(boolean inCombination) {
         gemPoints.values().forEach((gem) -> {
-            gem.setState(inCombination ? GemState.IN_COMBINATION : GemState.IDLE);
+            if(inCombination)
+                gem.setState(GemState.IN_COMBINATION);
+            else if (gem.getState() != GemState.FALLING)
+                gem.setState(GemState.IDLE);
         });
     }
 

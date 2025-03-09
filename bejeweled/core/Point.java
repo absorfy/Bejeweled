@@ -21,7 +21,7 @@ public class Point {
     }
 
 
-    public boolean isValid(int rowCount, int colCount) {
+    public boolean isNotValid(int rowCount, int colCount) {
         return row < 0 || col < 0 || row >= rowCount || col >= colCount;
     }
 

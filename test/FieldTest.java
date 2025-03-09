@@ -46,9 +46,44 @@ public class FieldTest {
     }
 
     @Test
+    public void testFillingAfterValidCombination() {
+        Point[] points = field.findCombinationPoints();
+        field.swapGems(points[0], points[1]);
+        while(field.getState() == FieldState.BREAKING) {
+            field.processGemCombinations();
+            field.fillEmpties();
+            field.checkNewPossibleCombinations();
+        }
+
+        boolean isFilling = true;
+        for(int row = 0; row < field.getRowCount(); row++) {
+            for(int col = 0; col < field.getColCount(); col++) {
+                if(field.getTile(row, col) instanceof EmptyTile) {
+                    if(!isBlockTileOver(row, col)) {
+                        isFilling = false;
+                        break;
+                    }
+
+                }
+            }
+        }
+        assertTrue(isFilling, "The field must be completely filled in after successful combinations");
+    }
+
+    private boolean isBlockTileOver(int row, int col) {
+        for(; row >= 0; row--) {
+            if(field.getTile(row, col) instanceof LockTile) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
     public void testComboIncrement() {
         Point[] points = field.findCombinationPoints();
         field.swapGems(points[0], points[1]);
+        field.processGemCombinations();
         assertTrue(field.getComboCount() > 0,
                 "After a successful combination, the combo cannot be equal to 0");
     }
@@ -57,6 +92,7 @@ public class FieldTest {
     public void testScoreIncrement() {
         Point[] points = field.findCombinationPoints();
         field.swapGems(points[0], points[1]);
+        field.processGemCombinations();
         assertTrue(field.getScore() > 0,
                 "After a successful combination, the score cannot be equal to 0");
     }

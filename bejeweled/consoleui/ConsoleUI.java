@@ -9,33 +9,33 @@ public class ConsoleUI {
 
     private static Pattern PLAYING_PATTERN;
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
+    private final static String RESET_BACKGROUND_COLOR = "\u001B[0m";
     private final Scanner scanner = new Scanner(System.in);
 
-    private final int rowCount;
-    private final int colCount;
+    private final Field field;
 
-    public ConsoleUI(int rowCount, int colCount) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
+    public ConsoleUI(Field field) {
+        this.field = field;
 
-        PLAYING_PATTERN = Pattern.compile("^(X)|(([0-"
-                + (rowCount - 1) + "])([0-"
-                + (colCount - 1) + "])([WNSE]))$");
+        PLAYING_PATTERN = Pattern.compile("^(X)|(" +
+                "([A-" + (char)(field.getRowCount() + 'A') + "])" +
+                "([1-" + field.getColCount() + "])([WNSE]))$");
     }
 
     public void play() {
-        Field field = new Field(rowCount, colCount);
+        field.reset();
 
-        printField(field);
-        printHint(field);
+        printField();
         while (field.getState() != FieldState.NO_POSSIBLE_MOVE) {
-            processInput(field);
-
+            printHint();
+            processInput();
             while (field.getState() == FieldState.BREAKING) {
-                printField(field);
+                printField();
+                field.processGemCombinations();
+                printField();
                 field.fillEmpties();
-                printField(field);
-                field.checkMovedPointsAfterCombo();
+                printField();
+                field.checkNewPossibleCombinations();
             }
         }
         System.out.println("No possible moves! Your score: " + field.getScore());
@@ -47,14 +47,18 @@ public class ConsoleUI {
         return line.equals("Y") || line.equals("YES");
     }
 
-    private void printHint(Field field) {
+    private void printHint() {
         Point[] combPoints = field.findCombinationPoints();
         if (combPoints == null) return;
-        System.out.println("HINT: " + combPoints[0] + " <-> " + combPoints[1] + "\n");
+        System.out.println("HINT: " +
+                (char)(combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
+                " <-> " +
+                (char)(combPoints[1].getRow() + 'A') + (combPoints[1].getCol() + 1) +
+                "\n");
     }
 
-    private void processInput(Field field) {
-        System.out.print("Enter command (X - exit, 25N - swap gem at 2 row and 5 col with north gem): ");
+    private void processInput() {
+        System.out.print("Enter command (X - exit, A5N - swap gem at A-row and 5-column with north gem): ");
         var line = scanner.nextLine().toUpperCase();
         if (line.equals("X")) {
             System.exit(0);
@@ -62,71 +66,68 @@ public class ConsoleUI {
 
         var mather = PLAYING_PATTERN.matcher(line);
         if (mather.matches()) {
-
-            int row = Integer.parseInt(mather.group(3));
-            int col = Integer.parseInt(mather.group(4));
+            int row = mather.group(3).toUpperCase().charAt(0) - 'A';
+            int col = Integer.parseInt(mather.group(4)) - 1;
             Point point1 = new Point(row, col);
-            Point point2;
-            switch (mather.group(5).charAt(0)) {
-                case 'N':
-                    point2 = point1.toNorth();
-                    break;
-                case 'S':
-                    point2 = point1.toSouth();
-                    break;
-                case 'E':
-                    point2 = point1.toEast();
-                    break;
-                case 'W':
-                    point2 = point1.toWest();
-                    break;
-                default:
-                    point2 = point1;
-                    break;
-            }
-
+            Point point2 = getPointBySymbol(mather.group(5).charAt(0), point1);
             field.swapGems(point1, point2);
         } else {
             System.out.println("Wrong input!");
         }
     }
 
-    private void printField(Field field) {
+    private static Point getPointBySymbol(char symbol, Point point) {
+        switch (symbol) {
+            case 'N': return point.toNorth();
+            case 'S': return point.toSouth();
+            case 'E': return point.toEast();
+            case 'W': return point.toWest();
+            default: return point;
+        }
+    }
+
+    private void printField() {
         System.out.println("Score: " + field.getScore());
         System.out.println("Combo: " + field.getComboCount() + "\n");
 
         System.out.print("   ");
-        for (int col = 0; col < field.getColCount(); col++) {
+        for (int col = 1; col <= field.getColCount(); col++) {
             System.out.print(col + "  ");
         }
         for (Point p : Point.iterate(field.getColCount(), field.getRowCount())) {
-            if (p.getCol() == 0) {
-                System.out.print("\n" + RESET_TEXT_COLOR + p.getRow() + "  ");
-            }
+            if (p.getCol() == 0)
+                System.out.print("\n" + RESET_TEXT_COLOR + (char)(p.getRow() + 'A') + "  ");
             printTile(field.getTile(p));
         }
         System.out.println(RESET_TEXT_COLOR + "\n");
     }
 
     private void printTile(Tile tile) {
+        String colorCode;
+        String symbol;
         if (tile instanceof Gem) {
-            String gemCode;
-            if(((Gem) tile).getImpact() == BreakImpact.NONE) {
-                switch (((Gem) tile).getState()) {
-                    case IN_COMBINATION: gemCode = "$"; break;
-                    case IDLE: gemCode = "@"; break;
-                    case FALLING: gemCode = "!"; break;
-                    default: gemCode = "?"; break;
-                }
+            Gem gem = (Gem) tile;
+            colorCode = gem.getColor().getColorCode();
+            symbol = gem.getImpact().getSymbol();
+            String backgroundColor;
+            switch(gem.getState()) {
+                case FALLING: backgroundColor = "\u001B[48;5;52m"; break;
+                case IN_COMBINATION: backgroundColor = "\u001B[48;5;22m"; break;
+                default: backgroundColor = RESET_TEXT_COLOR; break;
             }
-            else {
-                gemCode = "%";
-            }
-            System.out.print(((Gem) tile).getColor().getColorCode() + gemCode + "  ");
+            System.out.print(backgroundColor + colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  ");
         } else if (tile instanceof LockTile) {
-            System.out.print(((LockTile) tile).getGem().getColor().getColorCode() + ((LockTile) tile).getNeedBreakCount() + "  ");
+            LockTile lockTile = (LockTile) tile;
+            colorCode = lockTile.getGem().getColor().getColorCode();
+            switch(lockTile.getNeedBreakCount()) {
+                case 3: symbol = "■"; break;
+                case 2: symbol = "◩"; break;
+                case 1: symbol = "□"; break;
+                default: symbol = "?"; break;
+            }
+            System.out.print(colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  " );
         } else if (tile instanceof EmptyTile) {
-            System.out.print(RESET_TEXT_COLOR + "-  ");
+            System.out.print("◌  ");
         }
     }
 }
