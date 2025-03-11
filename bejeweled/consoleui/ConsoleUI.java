@@ -18,7 +18,7 @@ public class ConsoleUI {
         this.field = field;
 
         PLAYING_PATTERN = Pattern.compile("^(X)|(" +
-                "([A-" + (char)(field.getRowCount() + 'A') + "])" +
+                "([A-" + (char) (field.getRowCount() + 'A') + "])" +
                 "([1-" + field.getColCount() + "])([WNSE]))$");
     }
 
@@ -51,9 +51,9 @@ public class ConsoleUI {
         Point[] combPoints = field.findCombinationPoints();
         if (combPoints == null) return;
         System.out.println("HINT: " +
-                (char)(combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
+                (char) (combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
                 " <-> " +
-                (char)(combPoints[1].getRow() + 'A') + (combPoints[1].getCol() + 1) +
+                (char) (combPoints[1].getRow() + 'A') + (combPoints[1].getCol() + 1) +
                 "\n");
     }
 
@@ -87,47 +87,70 @@ public class ConsoleUI {
     }
 
     private void printField() {
-        System.out.println("Score: " + field.getScore());
-        System.out.println("Combo: " + field.getComboCount() + "\n");
+        printGameStats();
+        printHeader();
+        printBody();
+    }
 
-        System.out.print("   ");
-        for (int col = 1; col <= field.getColCount(); col++) {
-            System.out.print(col + "  ");
-        }
+    private void printBody() {
         for (Point p : Point.iterate(field.getColCount(), field.getRowCount())) {
             if (p.getCol() == 0)
-                System.out.print("\n" + RESET_TEXT_COLOR + (char)(p.getRow() + 'A') + "  ");
+                System.out.print("\n" + RESET_TEXT_COLOR + (char) (p.getRow() + 'A') + "  ");
             printTile(field.getTile(p));
         }
         System.out.println(RESET_TEXT_COLOR + "\n");
     }
 
+    private void printHeader() {
+        System.out.print("\n   ");
+        for (int col = 1; col <= field.getColCount(); col++) {
+            System.out.print(col + "  ");
+        }
+    }
+
+    private void printGameStats() {
+        System.out.println("Score: " + field.getScore());
+        if(field.getComboCount() > 1) System.out.println("Combo: " + field.getComboCount());
+        if(field.getSpeedCombo() > 0) System.out.println("Speed combo: " + field.getSpeedCombo());
+    }
+
     private void printTile(Tile tile) {
-        String colorCode;
-        String symbol;
         if (tile instanceof Gem) {
-            Gem gem = (Gem) tile;
-            colorCode = gem.getColor().getColorCode();
-            symbol = gem.getImpact().getSymbol();
-            String backgroundColor;
-            switch(gem.getState()) {
-                case FALLING: backgroundColor = "\u001B[48;5;52m"; break;
-                case IN_COMBINATION: backgroundColor = "\u001B[48;5;22m"; break;
-                default: backgroundColor = RESET_TEXT_COLOR; break;
-            }
-            System.out.print(backgroundColor + colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  ");
+            printGem((Gem) tile);
         } else if (tile instanceof LockTile) {
-            LockTile lockTile = (LockTile) tile;
-            colorCode = lockTile.getGem().getColor().getColorCode();
-            switch(lockTile.getNeedBreakCount()) {
-                case 3: symbol = "■"; break;
-                case 2: symbol = "◩"; break;
-                case 1: symbol = "□"; break;
-                default: symbol = "?"; break;
-            }
-            System.out.print(colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  " );
+            printLockTile((LockTile) tile);
         } else if (tile instanceof EmptyTile) {
             System.out.print("◌  ");
+        } else if (tile instanceof AirTile) {
+            System.out.print("   ");
         }
+
+    }
+
+    private static void printLockTile(LockTile lockTile) {
+        String colorCode;
+        String symbol;
+        colorCode = lockTile.getGem().getColor().getColorCode();
+        switch (lockTile.getNeedBreakCount()) {
+            case 3: symbol = "■"; break;
+            case 2: symbol = "◩"; break;
+            case 1: symbol = "□"; break;
+            default: symbol = "?"; break;
+        }
+        System.out.print(colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  ");
+    }
+
+    private static void printGem(Gem gem) {
+        String colorCode;
+        String symbol;
+        colorCode = gem.getColor().getColorCode();
+        symbol = gem.getImpact().getSymbol();
+        String backgroundColor;
+        switch (gem.getState()) {
+            case FALLING: backgroundColor = "\u001B[48;5;52m"; break;
+            case IN_COMBINATION: backgroundColor = "\u001B[48;5;22m"; break;
+            default: backgroundColor = RESET_TEXT_COLOR; break;
+        }
+        System.out.print(backgroundColor + colorCode + symbol + RESET_TEXT_COLOR + RESET_TEXT_COLOR + "  ");
     }
 }

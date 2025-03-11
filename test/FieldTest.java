@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FieldTest {
 
@@ -80,7 +79,24 @@ public class FieldTest {
     }
 
     @Test
-    public void testComboIncrement() {
+    public void testSpeedComboIncrement() {
+        int swapCount;
+        for(swapCount = 0; swapCount < 3; swapCount++) {
+            if(field.getState() == FieldState.NO_POSSIBLE_MOVE) break;
+            Point[] points = field.findCombinationPoints();
+            field.swapGems(points[0], points[1]);
+            while(field.getState() == FieldState.BREAKING) {
+                field.processGemCombinations();
+                field.fillEmpties();
+                field.checkNewPossibleCombinations();
+            }
+        }
+
+        assertEquals(swapCount, field.getSpeedCombo(), "Due to fast successful moves, it should increase the combo speed");
+    }
+
+    @Test
+    public void testComboCountIncrement() {
         Point[] points = field.findCombinationPoints();
         field.swapGems(points[0], points[1]);
         field.processGemCombinations();

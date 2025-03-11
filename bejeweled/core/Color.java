@@ -10,7 +10,6 @@ public enum Color {
     ORANGE("\u001B[38;5;208m"),
     WHITE("\u001B[38;5;15m");
 
-
     private final String colorCode;
 
     Color(String colorCode) {
