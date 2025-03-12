@@ -1,7 +1,5 @@
 package bejeweled.core;
 
-import java.util.Random;
-
 public class Gem extends Tile {
     private final Color color;
     private final BreakImpact impact;
@@ -12,7 +10,7 @@ public class Gem extends Tile {
     }
 
     public Gem(BreakImpact impact) {
-        this(impact, Color.values()[new Random().nextInt(Color.values().length)]);
+        this(impact, Color.random());
     }
 
     public Gem(BreakImpact impact, Color color) {

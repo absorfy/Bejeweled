@@ -1,5 +1,7 @@
 package bejeweled.core;
 
+import java.util.Random;
+
 public enum Color {
 
     RED("\u001B[31m"),
@@ -18,6 +20,10 @@ public enum Color {
 
     public String getColorCode() {
         return colorCode;
+    }
+
+    public static Color random() {
+        return Color.values()[new Random().nextInt(Color.values().length)];
     }
 }
 

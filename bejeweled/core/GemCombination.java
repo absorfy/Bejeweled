@@ -6,16 +6,38 @@ import java.util.stream.Collectors;
 
 public class GemCombination implements Comparable<GemCombination> {
 
-    private static int comboCounter = 0;
+    private static final int SPEED_TIME_LIMIT = 7000;
+    private static int chainCombo = 0;
+    private static int speedCombo = 0;
+    private static long lastSwapTime;
 
     private final Map<Point, Gem> gemPoints;
     private Point anchorPoint;
     private CombinationShape combinationShape = CombinationShape.NONE;
     private Color color;
+    private boolean madeByPlayer;
+
 
     public GemCombination() {
         anchorPoint = null;
-        gemPoints = new HashMap<Point, Gem>();
+        madeByPlayer = false;
+        gemPoints = new HashMap<>();
+    }
+
+    public void setMadeMyself() {
+        madeByPlayer = true;
+    }
+
+    public static void saveCurrentSwapTime() {
+        lastSwapTime = System.currentTimeMillis();
+    }
+
+    public static void tryIncreaseSpeedCombo() {
+        long currentSwapTime = System.currentTimeMillis();
+        if (currentSwapTime - lastSwapTime <= SPEED_TIME_LIMIT)
+            speedCombo++;
+        else
+            speedCombo = 0;
     }
 
     public void setColor(Color color) {
@@ -34,12 +56,16 @@ public class GemCombination implements Comparable<GemCombination> {
         return combinationShape;
     }
 
-    public static void increaseComboCounter() {
-        comboCounter++;
+    public static void increaseComboChain() {
+        chainCombo++;
     }
 
+
     public int getScoreCount() {
-        return combinationShape.getScoreCount() * (comboCounter / 3 + 1);
+        int returnScore = combinationShape.getScoreCount();
+        if(madeByPlayer && speedCombo > 1) returnScore *= speedCombo;
+        returnScore *= (chainCombo / 3 + 1);
+        return returnScore;
     }
 
     public void identifyCombination() {
@@ -53,7 +79,7 @@ public class GemCombination implements Comparable<GemCombination> {
 
     void setGemsInCombo(boolean inCombination) {
         gemPoints.values().forEach((gem) -> {
-            if(inCombination)
+            if (inCombination)
                 gem.setState(GemState.IN_COMBINATION);
             else if (gem.getState() != GemState.FALLING)
                 gem.setState(GemState.IDLE);
@@ -70,8 +96,7 @@ public class GemCombination implements Comparable<GemCombination> {
         if (horizontalPoints.size() >= 3) {
             setShapeByLinePoints(horizontalPoints, true);
             return true;
-        }
-        else if (verticalPoints.size() >= 3) {
+        } else if (verticalPoints.size() >= 3) {
             setShapeByLinePoints(verticalPoints, false);
             return true;
         }
@@ -80,19 +105,13 @@ public class GemCombination implements Comparable<GemCombination> {
 
     private void setShapeByLinePoints(List<Point> linePoints, boolean horizontal) {
         if (linePoints.size() < 3) return;
-        switch (linePoints.size()) {
-            case 3:
-                combinationShape = horizontal ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE;
-                break;
-            case 4:
-                combinationShape = horizontal ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR;
-                break;
-            case 5:
-                combinationShape = horizontal ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE;
-                break;
-            default:
-                break;
-        }
+
+        if (linePoints.size() == 3)
+            combinationShape = horizontal ? CombinationShape.ROW_THREE : CombinationShape.COL_THREE;
+        else if (linePoints.size() == 4)
+            combinationShape = horizontal ? CombinationShape.ROW_FOUR : CombinationShape.COL_FOUR;
+        else if (linePoints.size() == 5)
+            combinationShape = horizontal ? CombinationShape.ROW_FIVE : CombinationShape.COL_FIVE;
 
         gemPoints.keySet().retainAll(linePoints);
     }
@@ -151,7 +170,7 @@ public class GemCombination implements Comparable<GemCombination> {
 
     private boolean checkShape(Point[] checkPoints, CombinationShape checkShape) {
         for (int rotateCount = 0; rotateCount < 4; rotateCount++) {
-            if (Arrays.stream(checkPoints).allMatch(p -> gemPoints.containsKey(p))) {
+            if (Arrays.stream(checkPoints).allMatch(gemPoints::containsKey)) {
                 combinationShape = checkShape;
                 gemPoints.keySet().retainAll(Arrays.stream(checkPoints).collect(Collectors.toList()));
                 return true;
@@ -173,8 +192,12 @@ public class GemCombination implements Comparable<GemCombination> {
         anchorPoint = point;
     }
 
-    public static void resetComboCounter() {
-        comboCounter = 0;
+    public static void resetChainCombo() {
+        chainCombo = 0;
+    }
+
+    public static void resetSpeedCombo() {
+        speedCombo = 0;
     }
 
     public List<Point> getGemPoints() {
@@ -185,8 +208,12 @@ public class GemCombination implements Comparable<GemCombination> {
         return anchorPoint;
     }
 
-    static int getComboCounter() {
-        return comboCounter;
+    static int getChainCombo() {
+        return chainCombo;
+    }
+
+    static int getSpeedCombo() {
+        return speedCombo;
     }
 
     @Override

@@ -3,35 +3,34 @@ package bejeweled.core;
 import java.util.*;
 
 public class Field {
-    private static final int SPEED_COMBO_LIMIT = 5000;
 
     private final Tile[][] tiles;
     private final Queue<Point> brokenPoints;
     private final List<GemCombination> savedGemCombinations;
 
     private int currentScore;
+    private int lastIncrementScore;
     private FieldState state;
-    private long lastSwapTime;
-    private int speedCombo;
+
 
     public Field(int rowCount, int colCount) {
-        this(rowCount, colCount, FieldShape.values()[new Random().nextInt(FieldShape.values().length)]);
+        this(rowCount, colCount, FieldShape.random());
     }
 
     public Field(int rowCount, int colCount, FieldShape shape) {
         if (colCount < 5 || rowCount < 5) {
             throw new IllegalArgumentException();
         }
-
         this.tiles = new Tile[rowCount][colCount];
         brokenPoints = new ArrayDeque<>();
         savedGemCombinations = new ArrayList<>();
         this.currentScore = 0;
-        this.speedCombo = 0;
         this.state = FieldState.WAITING;
-        lastSwapTime = System.currentTimeMillis();
 
         generateField(shape);
+        GemCombination.resetChainCombo();
+        GemCombination.resetSpeedCombo();
+        GemCombination.saveCurrentSwapTime();
     }
 
     private void setAirTileForShape(FieldShape shape) {
@@ -99,20 +98,19 @@ public class Field {
 
 
     public int getSpeedCombo() {
-        return speedCombo;
+        return GemCombination.getSpeedCombo();
     }
 
     public void reset() {
         currentScore = 0;
-        speedCombo = 0;
-        GemCombination.resetComboCounter();
+        GemCombination.resetSpeedCombo();
+        GemCombination.resetChainCombo();
         brokenPoints.clear();
         savedGemCombinations.clear();
-        state = FieldState.WAITING;
-        lastSwapTime = System.currentTimeMillis();
-
         clearTiles();
         generateField(FieldShape.values()[new Random().nextInt(FieldShape.values().length)]);
+        GemCombination.saveCurrentSwapTime();
+        state = FieldState.WAITING;
     }
 
     private void clearTiles() {
@@ -123,44 +121,45 @@ public class Field {
 
     private void generateField(FieldShape shape) {
         setAirTileForShape(shape);
-        generateAllGems();
         generateBlockedTiles();
+        generateStartGems();
     }
 
     private void generateBlockedTiles() {
         boolean bottomBlocked = new Random().nextInt(2) == 1;
+        if(bottomBlocked)
+            blockBottomTiles();
+        else
+            blockSideTiles();
+    }
 
-        if(bottomBlocked) {
-            int borderBlocked = getRowCount() - (int)Math.ceil(getRowCount() / 3.0);
-            for(Point point : Point.iterate(borderBlocked, 0, getRowCount() - 1, getColCount() - 1)) {
-                if(getTile(point) instanceof Gem) {
-                    setTile(point, new LockTile((Gem)getTile(point)));
-                }
-            }
+    private void blockSideTiles() {
+        int widthBlocked = (int)Math.ceil(getColCount() / 5.0);
+        for(Point point : Point.iterate(0, 0, getRowCount(), widthBlocked - 1)) {
+            if(getTile(point) == null)
+                setTile(point, new LockTile());
         }
-        else {
-            int widthBlocked = (int)Math.ceil(getColCount() / 5.0);
-            for(Point point : Point.iterate(0, 0, getRowCount(), widthBlocked - 1)) {
-                if(getTile(point) instanceof Gem) {
-                    setTile(point, new LockTile((Gem)getTile(point)));
-                }
-            }
+        for(Point point : Point.iterate(0, getColCount() - widthBlocked, getRowCount(), getColCount() - 1)) {
+            if(getTile(point) == null)
+                setTile(point, new LockTile());
+        }
+    }
 
-            for(Point point : Point.iterate(0, getColCount() - widthBlocked, getRowCount(), getColCount() - 1)) {
-                if(getTile(point) instanceof Gem) {
-                    setTile(point, new LockTile((Gem)getTile(point)));
-                }
+    private void blockBottomTiles() {
+        int borderBlocked = getRowCount() - (int)Math.ceil(getRowCount() / 3.0);
+        for(Point point : Point.iterate(borderBlocked, 0, getRowCount() - 1, getColCount() - 1)) {
+            if(getTile(point) == null) {
+                setTile(point, new LockTile());
             }
         }
     }
 
-    private void generateAllGems() {
+    private void generateStartGems() {
         do {
             for (Point point : Point.iterate(getColCount(), getRowCount())) {
                 do {
-                    if (!(getTile(point) instanceof AirTile)) {
+                    if (getTile(point) == null ||  getTile(point) instanceof Gem)
                         setTile(point, new Gem());
-                    }
                 } while (isCombinationAt(point));
             }
         } while (!hasPossibleMoves());
@@ -187,24 +186,20 @@ public class Field {
         if (!(getTile(point1) instanceof Gem) || !(getTile(point2) instanceof Gem)) return;
         if (!point1.isAdjacent(point2)) return;
 
-        GemCombination.resetComboCounter();
+        GemCombination.resetChainCombo();
         swapTiles(point1, point2);
-        if (!trySaveCombinationAt(point1) && !trySaveCombinationAt(point2)) {
+        trySaveCombinationAt(point1);
+        trySaveCombinationAt(point2);
+        if (savedGemCombinations.isEmpty()) {
             swapTiles(point1, point2);
         }
         else {
             state = FieldState.BREAKING;
-            checkSwapSpeed();
+            savedGemCombinations.forEach(GemCombination::setMadeMyself);
+            GemCombination.tryIncreaseSpeedCombo();
         }
     }
 
-    private void checkSwapSpeed() {
-        long currentSwapTime = System.currentTimeMillis();
-        if(currentSwapTime - lastSwapTime <= SPEED_COMBO_LIMIT)
-            speedCombo++;
-        else
-            speedCombo = 0;
-    }
 
     public boolean hasPossibleMoves() {
         return findCombinationPoints() != null;
@@ -234,6 +229,8 @@ public class Field {
             if (gComb.isValid()) {
                 breakCombination(gComb);
                 processCombinationShape(gComb);
+                lastIncrementScore = gComb.getScoreCount();
+                currentScore += lastIncrementScore;
             } else gComb.setGemsInCombo(false);
         }
     }
@@ -247,7 +244,6 @@ public class Field {
     }
 
     private void processCombinationShape(GemCombination gComb) {
-        currentScore += gComb.getScoreCount();
         if (gComb.getBreakImpact() != BreakImpact.NONE) {
             Gem gem = new Gem(gComb.getBreakImpact(), gComb.getColor());
             gem.setState(GemState.FALLING);
@@ -263,7 +259,7 @@ public class Field {
             trySaveCombinationAt(brokenPoints.poll());
 
         if (savedGemCombinations.isEmpty()) {
-            lastSwapTime = System.currentTimeMillis();
+            GemCombination.saveCurrentSwapTime();
             state = hasPossibleMoves() ? FieldState.WAITING : FieldState.NO_POSSIBLE_MOVE;
         }
     }
@@ -279,6 +275,7 @@ public class Field {
 
     public void fillEmpties() {
         if (state != FieldState.BREAKING) return;
+        lastIncrementScore = 0;
         processAllFallingGems();
         generateNewGems();
     }
@@ -373,7 +370,7 @@ public class Field {
     }
 
     private void breakCombination(GemCombination gemsCombination) {
-        GemCombination.increaseComboCounter();
+        GemCombination.increaseComboChain();
         for (Point p : gemsCombination.getGemPoints()) {
             breakTile(p);
         }
@@ -391,8 +388,8 @@ public class Field {
         }
     }
 
-    public int getComboCount() {
-        return GemCombination.getComboCounter();
+    public int getChainCombo() {
+        return GemCombination.getChainCombo();
     }
 
     private void setTile(Point point, Tile tileObject) {
@@ -402,15 +399,12 @@ public class Field {
         tiles[point.getRow()][point.getCol()] = tileObject;
     }
 
-    private boolean trySaveCombinationAt(Point point) {
+    private void trySaveCombinationAt(Point point) {
         GemCombination gemCombination = getCombinationAt(point);
-        if (gemCombination.isValid() && !savedGemCombinations.contains(gemCombination)) {
+        if (gemCombination.isValid() && !savedGemCombinations.contains(gemCombination))
             savedGemCombinations.add(gemCombination);
-            return true;
-        } else {
+        else
             gemCombination.setGemsInCombo(false);
-            return false;
-        }
     }
 
     private boolean isCombinationAt(Point point) {
@@ -432,7 +426,6 @@ public class Field {
         combination.setAnchorPoint(point);
         combination.setColor(((Gem) getTile(point)).getColor());
         stackAdjacent.push(point);
-
 
         while (!stackAdjacent.isEmpty()) {
             Point currentPoint = stackAdjacent.pop();
@@ -465,7 +458,7 @@ public class Field {
     private void processBreakImpact(Point point, Gem gem) {
         currentScore += gem.getImpact().getScoreValue();
         if (gem.getImpact() != BreakImpact.NONE)
-            GemCombination.increaseComboCounter();
+            GemCombination.increaseComboChain();
 
         switch (gem.getImpact()) {
             case ROW:
@@ -504,7 +497,7 @@ public class Field {
 
     private void breakGem(Point point) {
         setTile(point, new EmptyTile());
-        setTopGemFalling(point);
+        setNextTopGemFalling(point);
     }
 
     private void breakColumn(int col) {
@@ -522,7 +515,7 @@ public class Field {
         }
     }
 
-    private void setTopGemFalling(Point point) {
+    private void setNextTopGemFalling(Point point) {
         point = skipTilesFrom(point, Direction.NORTH, EmptyTile.class, AirTile.class);
         if (point.isNotValid(getRowCount(), getColCount())) return;
         Tile tile = getTile(point);
@@ -530,11 +523,15 @@ public class Field {
             ((Gem) tile).setState(GemState.FALLING);
         }
         if (!(tile instanceof LockTile))
-            setTopGemFalling(point.toNorth());
+            setNextTopGemFalling(point.toNorth());
     }
 
     public int getScore() {
         return currentScore;
+    }
+
+    public int getLastIncrementScore() {
+        return lastIncrementScore;
     }
 
     public FieldState getState() {

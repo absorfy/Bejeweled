@@ -15,24 +15,8 @@ public class FieldTest {
 
     @BeforeEach
     public void generateField() {
-        int size = randomGenerator.nextInt(8) + 3;
+        int size = randomGenerator.nextInt(6) + 5;
         field = new Field(size, size);
-    }
-
-    @Test
-    public void testStartPossibleCombination() {
-        for (Point point : Point.iterate(field.getRowCount(), field.getColCount())) {
-            for (Direction direction : Direction.values()) {
-                field.swapGems(point, point.moveTo((direction)));
-                if (field.getState() == FieldState.BREAKING)
-                    break;
-            }
-            if (field.getState() == FieldState.BREAKING)
-                break;
-        }
-
-        assertSame(FieldState.BREAKING, field.getState(),
-                "The field must have a move to combine at the beginning of the game");
     }
 
     @Test
@@ -43,6 +27,13 @@ public class FieldTest {
                 "The function of finding combination crystals should return " +
                         "crystals that can be used to make a guaranteed combination");
     }
+
+    @Test
+    public void testStartPossibleCombination() {
+        Point[] points = field.findCombinationPoints();
+        assertNotNull(points, "The field must have a move to combine at the beginning of the game");
+    }
+
 
     @Test
     public void testFillingAfterValidCombination() {
@@ -100,7 +91,7 @@ public class FieldTest {
         Point[] points = field.findCombinationPoints();
         field.swapGems(points[0], points[1]);
         field.processGemCombinations();
-        assertTrue(field.getComboCount() > 0,
+        assertTrue(field.getChainCombo() > 0,
                 "After a successful combination, the combo cannot be equal to 0");
     }
 
