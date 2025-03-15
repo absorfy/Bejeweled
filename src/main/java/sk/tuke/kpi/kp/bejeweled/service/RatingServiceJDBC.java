@@ -1,21 +1,18 @@
 package sk.tuke.kpi.kp.bejeweled.service;
 
-import sk.tuke.kpi.kp.bejeweled.entity.Comment;
 import sk.tuke.kpi.kp.bejeweled.entity.Rating;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RatingServiceJDBC implements RatingService {
-    public static final String URL = "jdbc:postgresql://localhost/postgres";
+    public static final String URL = "jdbc:postgresql://localhost:5432/gamestudio";
     public static final String USER = "postgres";
     public static final String PASSWORD = "postgres";
-    public static final String AVERAGE = "SELECT AVG(rating) FROM rating WHERE game = ?";
+    public static final String AVERAGE = "SELECT ROUND(AVG(rating)) FROM rating WHERE game = ?";
     public static final String FIND = "SELECT rating, ratedOn FROM rating WHERE game = ? AND player = ?";
-    public static final String UPDATE = "UPDATE score SET rating = ?, ratedOn = ? WHERE game = ? AND player = ?";
+    public static final String UPDATE = "UPDATE rating SET rating = ?, ratedOn = ? WHERE game = ? AND player = ?";
     public static final String DELETE = "DELETE FROM rating";
-    public static final String INSERT = "INSERT INTO score (game, player, rating, playedOn) VALUES (?, ?, ?, ?)";
+    public static final String INSERT = "INSERT INTO rating (game, player, rating, ratedOn) VALUES (?, ?, ?, ?)";
 
 
     @Override
@@ -23,7 +20,7 @@ public class RatingServiceJDBC implements RatingService {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement findStatement = connection.prepareStatement(FIND);
              PreparedStatement updateStatement = connection.prepareStatement(UPDATE);
-             PreparedStatement insertStatement = connection.prepareStatement(INSERT);
+             PreparedStatement insertStatement = connection.prepareStatement(INSERT)
         ) {
             findStatement.setString(1, rating.getGame());
             findStatement.setString(2, rating.getPlayer());
@@ -52,7 +49,7 @@ public class RatingServiceJDBC implements RatingService {
     @Override
     public int getAverageRating(String game) throws RatingException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(AVERAGE);
+             PreparedStatement statement = connection.prepareStatement(AVERAGE)
         ) {
             statement.setString(1, game);
             try (ResultSet rs = statement.executeQuery()) {
@@ -69,7 +66,7 @@ public class RatingServiceJDBC implements RatingService {
     @Override
     public int getRating(String game, String player) throws RatingException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(FIND);
+             PreparedStatement statement = connection.prepareStatement(FIND)
         ) {
             statement.setString(1, game);
             statement.setString(2, player);
@@ -87,7 +84,7 @@ public class RatingServiceJDBC implements RatingService {
     @Override
     public void reset() throws RatingException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             Statement statement = connection.createStatement();
+             Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(DELETE);
         } catch (SQLException e) {

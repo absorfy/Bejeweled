@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class ScoreServiceJDBC implements ScoreService {
-    public static final String URL = "jdbc:postgresql://localhost/postgres";
+    public static final String URL = "jdbc:postgresql://localhost:5432/gamestudio";
     public static final String USER = "postgres";
     public static final String PASSWORD = "postgres";
     public static final String SELECT = "SELECT game, player, points, playedOn FROM score WHERE game = ? ORDER BY points DESC LIMIT 10";
@@ -33,7 +33,7 @@ public class ScoreServiceJDBC implements ScoreService {
     @Override
     public List<Score> getTopScores(String game) {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(SELECT);
+             PreparedStatement statement = connection.prepareStatement(SELECT)
         ) {
             statement.setString(1, game);
             try (ResultSet rs = statement.executeQuery()) {
@@ -51,7 +51,7 @@ public class ScoreServiceJDBC implements ScoreService {
     @Override
     public void reset() {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             Statement statement = connection.createStatement();
+             Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(DELETE);
         } catch (SQLException e) {

@@ -1,14 +1,13 @@
 package sk.tuke.kpi.kp.bejeweled.service;
 
 import sk.tuke.kpi.kp.bejeweled.entity.Comment;
-import sk.tuke.kpi.kp.bejeweled.entity.Score;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentServiceJDBC implements CommentService {
-    public static final String URL = "jdbc:postgresql://localhost/postgres";
+    public static final String URL = "jdbc:postgresql://localhost:5432/gamestudio";
     public static final String USER = "postgres";
     public static final String PASSWORD = "postgres";
     public static final String SELECT = "SELECT game, player, comment, commentedOn FROM comment WHERE game = ?";
@@ -34,7 +33,7 @@ public class CommentServiceJDBC implements CommentService {
     @Override
     public List<Comment> getComments(String game) throws CommentException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(SELECT);
+             PreparedStatement statement = connection.prepareStatement(SELECT)
         ) {
             statement.setString(1, game);
             try (ResultSet rs = statement.executeQuery()) {
@@ -52,7 +51,7 @@ public class CommentServiceJDBC implements CommentService {
     @Override
     public void reset() throws CommentException {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             Statement statement = connection.createStatement();
+             Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(DELETE);
         } catch (SQLException e) {
