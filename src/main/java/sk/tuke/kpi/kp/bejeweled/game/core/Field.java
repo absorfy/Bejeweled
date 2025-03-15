@@ -11,10 +11,11 @@ public class Field {
     private int currentScore;
     private int lastIncrementScore;
     private FieldState state;
+    private final FieldShape shape;
 
 
     public Field(int rowCount, int colCount) {
-        this(rowCount, colCount, FieldShape.random());
+        this(rowCount, colCount, null);
     }
 
     public Field(int rowCount, int colCount, FieldShape shape) {
@@ -26,8 +27,9 @@ public class Field {
         savedGemCombinations = new ArrayList<>();
         this.currentScore = 0;
         this.state = FieldState.WAITING;
+        this.shape = shape;
 
-        generateField(shape);
+        generateField();
         GemCombination.resetChainCombo();
         GemCombination.resetSpeedCombo();
         GemCombination.saveCurrentSwapTime();
@@ -108,7 +110,7 @@ public class Field {
         brokenPoints.clear();
         savedGemCombinations.clear();
         clearTiles();
-        generateField(FieldShape.values()[new Random().nextInt(FieldShape.values().length)]);
+        generateField();
         GemCombination.saveCurrentSwapTime();
         state = FieldState.WAITING;
     }
@@ -119,8 +121,8 @@ public class Field {
         }
     }
 
-    private void generateField(FieldShape shape) {
-        setAirTileForShape(shape);
+    private void generateField() {
+        setAirTileForShape(shape != null ? shape : FieldShape.random());
         generateBlockedTiles();
         generateStartGems();
     }
