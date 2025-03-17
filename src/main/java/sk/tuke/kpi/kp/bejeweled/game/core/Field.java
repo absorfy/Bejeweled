@@ -35,69 +35,6 @@ public class Field {
         GemCombination.saveCurrentSwapTime();
     }
 
-    private void setAirTileForShape(FieldShape shape) {
-        switch(shape) {
-            case DONUT: setDonutFieldShape(); break;
-            case TRIANGLE: setTriangleFieldShape(); break;
-            case SLOPE: setSlopeFieldShape(); break;
-            case CIRCLE: setCircleFieldShape(); break;
-            default: break;
-        }
-    }
-
-    private void setCircleFieldShape() {
-        double centerX = (getColCount() - 1) / 2.0;
-        double centerY = (getRowCount() - 1) / 2.0;
-        double radiusX = getColCount() / 2.0;
-        double radiusY = getRowCount() / 2.0;
-
-        for(Point point : Point.iterate(getRowCount(), getColCount())) {
-            double equation = Math.pow(point.getCol() - centerX, 2) / Math.pow(radiusX, 2) +
-                    Math.pow(point.getRow() - centerY, 2) / Math.pow(radiusY, 2);
-
-            if (equation > 1)
-                setTile(point, new AirTile());
-        }
-    }
-
-    private void setSlopeFieldShape() {
-        for (int row = 0; row < getRowCount(); row++) {
-            int leftBorder = getColCount() / 2 - row;
-            int rightBorder = getColCount() / 2 + row;
-
-            for (int col = 0; col < getColCount(); col++) {
-                if (col < leftBorder) {
-                    setTile(new Point(getRowCount() - row - 1, col), new AirTile());
-                }
-                else if(col > rightBorder) {
-                    setTile(new Point(row, col), new AirTile());
-                }
-            }
-        }
-    }
-
-    private void setTriangleFieldShape() {
-        int isEvenWidth = (getColCount() % 2) == 0 ? 1 : 0;
-        for (int row = 0; row < getRowCount(); row++) {
-            int leftBorder = getColCount() / 2 - row / 2 - isEvenWidth;
-            int rightBorder = getColCount() / 2 + row / 2;
-
-            for (int col = 0; col < getColCount(); col++) {
-                if (col < leftBorder || col > rightBorder) {
-                    setTile(new Point(row, col), new AirTile());
-                }
-            }
-        }
-    }
-
-    private void setDonutFieldShape() {
-        int width = (int)Math.ceil(getRowCount() / 3.0);
-        int height = (int)Math.ceil(getColCount() / 3.0);
-        for (Point point : Point.iterate(width, height, getRowCount() - width - 1,  getColCount() - height - 1)) {
-            setTile(point, new AirTile());
-        }
-    }
-
 
     public int getSpeedCombo() {
         return GemCombination.getSpeedCombo();
@@ -125,6 +62,10 @@ public class Field {
         setAirTileForShape(shape != null ? shape : FieldShape.random());
         generateBlockedTiles();
         generateStartGems();
+    }
+
+    private void setAirTileForShape(FieldShape fieldShape) {
+        FieldShapeFactory.getShapeStrategy(fieldShape).applyShape(this);
     }
 
     private void generateBlockedTiles() {
@@ -394,7 +335,7 @@ public class Field {
         return GemCombination.getChainCombo();
     }
 
-    private void setTile(Point point, Tile tileObject) {
+    void setTile(Point point, Tile tileObject) {
         if (point.isNotValid(getRowCount(), getColCount()))
             return;
 
