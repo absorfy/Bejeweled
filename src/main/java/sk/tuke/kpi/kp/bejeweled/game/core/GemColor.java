@@ -2,7 +2,7 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import java.util.Random;
 
-public enum Color {
+public enum GemColor {
 
     RED("\u001B[31m"),
     BLUE("\u001B[34m"),
@@ -14,7 +14,7 @@ public enum Color {
 
     private final String colorCode;
 
-    Color(String colorCode) {
+    GemColor(String colorCode) {
         this.colorCode = colorCode;
     }
 
@@ -22,8 +22,8 @@ public enum Color {
         return colorCode;
     }
 
-    public static Color random() {
-        return Color.values()[new Random().nextInt(Color.values().length)];
+    public static GemColor random() {
+        return GemColor.values()[new Random().nextInt(GemColor.values().length)];
     }
 }
 

@@ -14,7 +14,7 @@ public class GemCombination implements Comparable<GemCombination> {
     private final Map<Point, Gem> gemPoints;
     private Point anchorPoint;
     private CombinationShape combinationShape = CombinationShape.NONE;
-    private Color color;
+    private GemColor gemColor;
     private boolean madeByPlayer;
 
 
@@ -40,12 +40,12 @@ public class GemCombination implements Comparable<GemCombination> {
             speedCombo = 0;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void setColor(GemColor gemColor) {
+        this.gemColor = gemColor;
     }
 
-    public Color getColor() {
-        return color;
+    public GemColor getColor() {
+        return gemColor;
     }
 
     public BreakImpact getBreakImpact() {

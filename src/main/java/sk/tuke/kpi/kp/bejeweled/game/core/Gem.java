@@ -1,7 +1,7 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
 public class Gem extends Tile {
-    private final Color color;
+    private final GemColor gemColor;
     private final BreakImpact impact;
     private GemState state;
 
@@ -10,17 +10,17 @@ public class Gem extends Tile {
     }
 
     public Gem(BreakImpact impact) {
-        this(impact, Color.random());
+        this(impact, GemColor.random());
     }
 
-    public Gem(BreakImpact impact, Color color) {
-        this.color = color;
+    public Gem(BreakImpact impact, GemColor gemColor) {
+        this.gemColor = gemColor;
         this.impact = impact;
         this.state = GemState.IDLE;
     }
 
-    public Color getColor() {
-        return color;
+    public GemColor getColor() {
+        return gemColor;
     }
 
     public BreakImpact getImpact() {

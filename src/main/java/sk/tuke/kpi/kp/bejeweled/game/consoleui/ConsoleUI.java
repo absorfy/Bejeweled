@@ -312,9 +312,9 @@ public class ConsoleUI {
         else {
             comments.forEach(comm ->
                 System.out.printf("%s[%s] %s%s%s: %s\n",
-                        Color.BLUE.getColorCode(),
+                        GemColor.BLUE.getColorCode(),
                         comm.getCommentedOn().toString(),
-                        Color.ORANGE.getColorCode(),
+                        GemColor.ORANGE.getColorCode(),
                         comm.getPlayer(),
                         RESET_TEXT_COLOR,
                         comm.getComment())
