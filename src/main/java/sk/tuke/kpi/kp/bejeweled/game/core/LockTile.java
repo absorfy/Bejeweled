@@ -4,8 +4,8 @@ public class LockTile extends Tile {
     private int needBreakCount;
     private final Gem gemContainer;
 
-    public LockTile() {
-        this(3, new Gem());
+    public LockTile(GemColor color) {
+        this(3, new Gem(color));
     }
 
     public LockTile(int needBreakCount) {

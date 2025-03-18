@@ -113,7 +113,7 @@ class GemCounterTest {
     }
 
     @Test
-    void modifyProbability() {
+    void modifyBonusProbability() {
         gemCounter.addGem(GemColor.GREEN);
         gemCounter.addGem(GemColor.GREEN);
         gemCounter.addGem(GemColor.GREEN);
@@ -121,8 +121,8 @@ class GemCounterTest {
         gemCounter.addGem(GemColor.PINK);
         gemCounter.addGem(GemColor.BLUE);
 
-        gemCounter.modifyProbability(GemColor.GREEN, -100);
-        gemCounter.modifyProbability(GemColor.ORANGE, 100);
+        gemCounter.modifyBonusProbability(GemColor.GREEN, -100);
+        gemCounter.modifyBonusProbability(GemColor.ORANGE, 100);
 
         Map<GemColor, Double> probabilities = gemCounter.getSpawnProbabilities();
         double orangeProb = probabilities.get(GemColor.ORANGE);

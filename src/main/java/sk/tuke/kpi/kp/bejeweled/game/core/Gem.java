@@ -9,6 +9,10 @@ public class Gem extends Tile {
         this(BreakImpact.NONE);
     }
 
+    public Gem(GemColor gemColor) {
+        this(BreakImpact.NONE, gemColor);
+    }
+
     public Gem(BreakImpact impact) {
         this(impact, GemColor.random());
     }

@@ -60,7 +60,7 @@ public class ConsoleUI {
     }
 
     private void printHint() {
-        Point[] combPoints = field.findCombinationPoints();
+        Point[] combPoints = field.findCombinationPoints(1).get(0);
         if (combPoints == null) return;
         System.out.println("HINT: " +
                 (char) (combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
@@ -160,6 +160,9 @@ public class ConsoleUI {
 
     private void printField() {
         System.out.println("------------------------------\n");
+
+        field.gemCounter.gemCounts.forEach((key, value) -> System.out.println(key + ": " + value));
+
         printGameStats();
         printHeader();
         printBody();

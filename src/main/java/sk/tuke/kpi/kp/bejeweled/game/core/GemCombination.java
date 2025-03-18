@@ -196,9 +196,7 @@ public class GemCombination implements Comparable<GemCombination> {
         chainCombo = 0;
     }
 
-    public static void resetSpeedCombo() {
-        speedCombo = 0;
-    }
+    public static void resetSpeedCombo() { speedCombo = 0; }
 
     public List<Point> getGemPoints() {
         return new ArrayList<>(gemPoints.keySet());

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class GemCounter {
     private final Random random = new Random();
-    private final Map<GemColor, Integer> gemCounts;
+    public final Map<GemColor, Integer> gemCounts;
     private final Map<GemColor, Double> bonusProbabilities;
 
     public GemCounter() {
@@ -28,14 +28,17 @@ public class GemCounter {
     }
 
     public void reset() {
-        bonusProbabilities.clear();
-        gemCounts.clear();
+        resetBonusProbabilities();
         for (GemColor color : GemColor.values()) {
             gemCounts.put(color, 0);
         }
     }
 
-    public void modifyProbability(GemColor color, double bonus) {
+    public void resetBonusProbabilities() {
+        bonusProbabilities.clear();
+    }
+
+    public void modifyBonusProbability(GemColor color, double bonus) {
         bonusProbabilities.put(color, bonusProbabilities.getOrDefault(color, 0.0) + bonus);
     }
 
@@ -65,13 +68,13 @@ public class GemCounter {
         for (Map.Entry<GemColor, Double> entry : probabilities.entrySet()) {
             cumulativeProbability += entry.getValue();
             if (randomValue <= cumulativeProbability) {
-                bonusProbabilities.clear();
                 return entry.getKey();
             }
         }
 
         List<GemColor> gemTypes = new ArrayList<>(probabilities.keySet());
-        bonusProbabilities.clear();
         return gemTypes.get(random.nextInt(gemTypes.size()));
     }
+
+
 }
