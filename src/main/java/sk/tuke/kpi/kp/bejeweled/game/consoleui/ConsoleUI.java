@@ -160,8 +160,10 @@ public class ConsoleUI {
 
     private void printField() {
         System.out.println("------------------------------\n");
-
+        System.out.println("Gems:");
         field.gemCounter.gemCounts.forEach((key, value) -> System.out.println(key + ": " + value));
+        System.out.println("Potentials:");
+        field.gemCounter.comboPotentials.forEach((key, value) -> System.out.println(key + ": " + value));
 
         printGameStats();
         printHeader();

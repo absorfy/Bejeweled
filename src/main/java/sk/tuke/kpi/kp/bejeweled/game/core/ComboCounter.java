@@ -41,4 +41,9 @@ public class ComboCounter {
     }
 
     public void resetSpeedCombo() { speedCombo = 0; }
+
+    public void reset() {
+        resetChainCombo();
+        resetSpeedCombo();
+    }
 }
