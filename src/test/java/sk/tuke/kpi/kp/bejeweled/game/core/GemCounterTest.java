@@ -126,9 +126,7 @@ class GemCounterTest {
 
         Map<GemColor, Double> probabilities = gemCounter.getSpawnProbabilities();
         double orangeProb = probabilities.get(GemColor.ORANGE);
-        double greenProb = probabilities.get(GemColor.GREEN);
 
-        assertEquals(0, greenProb);
         probabilities.forEach((color, probability) -> {
             if(color != GemColor.ORANGE)
                 assertTrue(probability < orangeProb);

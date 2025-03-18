@@ -5,12 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GemCombination implements Comparable<GemCombination> {
-
-    private static final int SPEED_TIME_LIMIT = 7000;
-    private static int chainCombo = 0;
-    private static int speedCombo = 0;
-    private static long lastSwapTime;
-
     private final Map<Point, Gem> gemPoints;
     private Point anchorPoint;
     private CombinationShape combinationShape = CombinationShape.NONE;
@@ -24,20 +18,15 @@ public class GemCombination implements Comparable<GemCombination> {
         gemPoints = new HashMap<>();
     }
 
+    public int getScoreCountBy(ComboCounter comboCounter) {
+        int returnScore = combinationShape.getScoreCount();
+        if(madeByPlayer && comboCounter.getSpeedCombo() > 1) returnScore *= comboCounter.getSpeedCombo();
+        returnScore *= (comboCounter.getChainCombo() / 3 + 1);
+        return returnScore;
+    }
+
     public void setMadeMyself() {
         madeByPlayer = true;
-    }
-
-    public static void saveCurrentSwapTime() {
-        lastSwapTime = System.currentTimeMillis();
-    }
-
-    public static void tryIncreaseSpeedCombo() {
-        long currentSwapTime = System.currentTimeMillis();
-        if (currentSwapTime - lastSwapTime <= SPEED_TIME_LIMIT)
-            speedCombo++;
-        else
-            speedCombo = 0;
     }
 
     public void setColor(GemColor gemColor) {
@@ -54,18 +43,6 @@ public class GemCombination implements Comparable<GemCombination> {
 
     public CombinationShape getShape() {
         return combinationShape;
-    }
-
-    public static void increaseComboChain() {
-        chainCombo++;
-    }
-
-
-    public int getScoreCount() {
-        int returnScore = combinationShape.getScoreCount();
-        if(madeByPlayer && speedCombo > 1) returnScore *= speedCombo;
-        returnScore *= (chainCombo / 3 + 1);
-        return returnScore;
     }
 
     public void identifyCombination() {
@@ -192,12 +169,6 @@ public class GemCombination implements Comparable<GemCombination> {
         anchorPoint = point;
     }
 
-    public static void resetChainCombo() {
-        chainCombo = 0;
-    }
-
-    public static void resetSpeedCombo() { speedCombo = 0; }
-
     public List<Point> getGemPoints() {
         return new ArrayList<>(gemPoints.keySet());
     }
@@ -206,13 +177,6 @@ public class GemCombination implements Comparable<GemCombination> {
         return anchorPoint;
     }
 
-    static int getChainCombo() {
-        return chainCombo;
-    }
-
-    static int getSpeedCombo() {
-        return speedCombo;
-    }
 
     @Override
     public int hashCode() {

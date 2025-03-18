@@ -54,11 +54,20 @@ public class GemCounter {
             totalInverse += modifiedProbability;
         }
 
+        int gemTypesCount = probabilities.size();
+
         for (Map.Entry<GemColor, Double> entry : probabilities.entrySet()) {
-            probabilities.put(entry.getKey(), (entry.getValue() / totalInverse) * 100);
+            double dynamicProbability = (entry.getValue() / totalInverse) * 100;
+            double uniformProbability = 100.0 / gemTypesCount;
+
+            double noiseFactor = 0.3;
+            double mixedProbability = dynamicProbability * (1 - noiseFactor) + uniformProbability * noiseFactor;
+            probabilities.put(entry.getKey(), mixedProbability);
         }
+
         return probabilities;
     }
+
 
     public GemColor getRandomGemColor() {
         Map<GemColor, Double> probabilities = getSpawnProbabilities();
