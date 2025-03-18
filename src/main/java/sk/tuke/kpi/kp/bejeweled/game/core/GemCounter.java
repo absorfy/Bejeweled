@@ -4,12 +4,10 @@ import java.util.*;
 
 public class GemCounter {
     private final Random random = new Random();
-    public final Map<GemColor, Integer> gemCounts;
-    public final Map<GemColor, Integer> comboPotentials;
-    private final Map<GemColor, Double> bonusProbabilities;
+    private final Map<GemColor, Integer> gemCounts;
+    private final Map<GemColor, Integer> comboPotentials;
 
     public GemCounter() {
-        bonusProbabilities = new HashMap<>();
         comboPotentials = new HashMap<>();
         gemCounts = new HashMap<>();
         initializeCountsWithGemColors(comboPotentials);
@@ -39,22 +37,15 @@ public class GemCounter {
     }
 
     public void reset() {
-        resetBonusProbabilities();
         initializeCountsWithGemColors(comboPotentials);
         initializeCountsWithGemColors(gemCounts);
     }
 
-    public void resetBonusProbabilities() {
-        bonusProbabilities.clear();
-    }
 
     public void resetComboPotentials() {
         initializeCountsWithGemColors(comboPotentials);
     }
 
-    public void modifyBonusProbability(GemColor color, double bonus) {
-        bonusProbabilities.put(color, bonusProbabilities.getOrDefault(color, 0.0) + bonus);
-    }
 
     Map<GemColor, Double> getSpawnProbabilities() {
         Map<GemColor, Double> probabilities = new HashMap<>();
@@ -62,7 +53,6 @@ public class GemCounter {
 
         for (Map.Entry<GemColor, Integer> entry : gemCounts.entrySet()) {
             double inverseCount = 1.0 / (entry.getValue() + 1);
-            //double modifiedProbability = inverseCount + bonusProbabilities.getOrDefault(entry.getKey(), 0.0);
             double modifiedProbability = inverseCount + comboPotentials.get(entry.getKey()) * 5;
             modifiedProbability = Math.max(modifiedProbability, 0);
             probabilities.put(entry.getKey(), modifiedProbability);

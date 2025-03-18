@@ -12,8 +12,8 @@ public class Field {
     private final Queue<Point> updatedPoints;
     private final List<GemCombination> savedGemCombinations;
 
-    public final GemCounter gemCounter;
-    public final ComboCounter comboCounter;
+    private final GemCounter gemCounter;
+    private final ComboCounter comboCounter;
 
     private int currentScore;
     private int lastIncrementScore;
@@ -112,6 +112,7 @@ public class Field {
     }
 
     private void generateStartGems() {
+        int startCountCombo = (int)Math.round(getColCount() * getRowCount() * 0.1);
         do {
             for (Point point : Point.iterate(getColCount(), getRowCount())) {
                 do {
@@ -120,7 +121,7 @@ public class Field {
                     }
                 } while (isCombinationAt(point));
             }
-        } while (!hasPossibleMoves(5));
+        } while (!hasPossibleMoves(startCountCombo));
     }
 
     public List<Point[]> findCombinationPoints(int count) {

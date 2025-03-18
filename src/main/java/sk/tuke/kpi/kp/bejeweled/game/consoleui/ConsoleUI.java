@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 
 public class ConsoleUI {
     private static Pattern PLAYING_PATTERN;
-    private final static Pattern SERVICES_PATTERN = Pattern.compile("(SCORES)|((COMMENT)\\s*'([^']*)')|(COMMENTS)|((RESET)\\s*(COMMENTS|SCORES|RATING))|(RATING)|((RATING)\\s*([1-5]))", Pattern.CASE_INSENSITIVE);
+    private final static Pattern SERVICES_PATTERN =
+            Pattern.compile("(SCORES)|((COMMENT)\\s*'([^']*)')|(COMMENTS)|((RESET)\\s*(COMMENTS|SCORES|RATING))|(RATING)|((RATING)\\s*([1-5]))", Pattern.CASE_INSENSITIVE);
     private final static String RESET_TEXT_COLOR = "\u001B[0m";
     private final static String RESET_BACKGROUND_COLOR = "\u001B[0m";
 
@@ -160,11 +161,6 @@ public class ConsoleUI {
 
     private void printField() {
         System.out.println("------------------------------\n");
-        System.out.println("Gems:");
-        field.gemCounter.gemCounts.forEach((key, value) -> System.out.println(key + ": " + value));
-        System.out.println("Potentials:");
-        field.gemCounter.comboPotentials.forEach((key, value) -> System.out.println(key + ": " + value));
-
         printGameStats();
         printHeader();
         printBody();

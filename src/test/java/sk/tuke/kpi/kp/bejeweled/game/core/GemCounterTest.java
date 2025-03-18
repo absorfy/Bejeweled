@@ -111,25 +111,4 @@ class GemCounterTest {
                 assertTrue(probability > greenProb);
         });
     }
-
-    @Test
-    void modifyBonusProbability() {
-        gemCounter.addGem(GemColor.GREEN);
-        gemCounter.addGem(GemColor.GREEN);
-        gemCounter.addGem(GemColor.GREEN);
-        gemCounter.addGem(GemColor.RED);
-        gemCounter.addGem(GemColor.PINK);
-        gemCounter.addGem(GemColor.BLUE);
-
-        gemCounter.modifyBonusProbability(GemColor.GREEN, -100);
-        gemCounter.modifyBonusProbability(GemColor.ORANGE, 100);
-
-        Map<GemColor, Double> probabilities = gemCounter.getSpawnProbabilities();
-        double orangeProb = probabilities.get(GemColor.ORANGE);
-
-        probabilities.forEach((color, probability) -> {
-            if(color != GemColor.ORANGE)
-                assertTrue(probability < orangeProb);
-        });
-    }
 }
