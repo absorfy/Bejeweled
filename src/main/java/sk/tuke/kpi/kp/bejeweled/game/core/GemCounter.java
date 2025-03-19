@@ -50,26 +50,19 @@ public class GemCounter {
     Map<GemColor, Double> getSpawnProbabilities() {
         Map<GemColor, Double> probabilities = new HashMap<>();
         double totalInverse = 0.0;
-
         for (Map.Entry<GemColor, Integer> entry : gemCounts.entrySet()) {
             double inverseCount = 1.0 / (entry.getValue() + 1);
-            double modifiedProbability = inverseCount + comboPotentials.get(entry.getKey()) * 5;
-            modifiedProbability = Math.max(modifiedProbability, 0);
-            probabilities.put(entry.getKey(), modifiedProbability);
-            totalInverse += modifiedProbability;
+            double probability = inverseCount + comboPotentials.get(entry.getKey());
+            probabilities.put(entry.getKey(), probability);
+            totalInverse += probability;
         }
-
-        int gemTypesCount = probabilities.size();
-
         for (Map.Entry<GemColor, Double> entry : probabilities.entrySet()) {
             double dynamicProbability = (entry.getValue() / totalInverse) * 100;
-            double uniformProbability = 100.0 / gemTypesCount;
-
+            double uniformProbability = 100.0 / probabilities.size();
             double noiseFactor = 0.3;
             double mixedProbability = dynamicProbability * (1 - noiseFactor) + uniformProbability * noiseFactor;
             probabilities.put(entry.getKey(), mixedProbability);
         }
-
         return probabilities;
     }
 
@@ -78,16 +71,13 @@ public class GemCounter {
         Map<GemColor, Double> probabilities = getSpawnProbabilities();
         double randomValue = random.nextDouble() * 100;
         double cumulativeProbability = 0.0;
-
         for (Map.Entry<GemColor, Double> entry : probabilities.entrySet()) {
             cumulativeProbability += entry.getValue();
             if (randomValue <= cumulativeProbability) {
                 return entry.getKey();
             }
         }
-
-        List<GemColor> gemTypes = new ArrayList<>(probabilities.keySet());
-        return gemTypes.get(random.nextInt(gemTypes.size()));
+        return GemColor.random();
     }
 
 

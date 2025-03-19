@@ -108,8 +108,8 @@ public class ConsoleUI {
         int myRating = ratingService.getRating("bejeweled", System.getProperty("user.name"));
         int averageRating = ratingService.getAverageRating("bejeweled");
         System.out.println("------------------------------\n" +
-                "MY RATING.....: " + myRating + "\n" +
-                "AVERAGE RATING: " + averageRating + "\n" +
+                "MY RATING.....: " + GemColor.GREEN.getColorCode() + myRating + RESET_TEXT_COLOR + "\n" +
+                "AVERAGE RATING: " + GemColor.RED.getColorCode() + averageRating + RESET_TEXT_COLOR + "\n" +
                 "------------------------------\n");
     }
 
@@ -298,7 +298,12 @@ public class ConsoleUI {
         }
         else {
             for (int i = 0; i < scores.size(); i++) {
-                System.out.printf("%d. %s %d\n", i + 1, scores.get(i).getPlayer(), scores.get(i).getPoints());
+                System.out.printf("%d. %s%s %s%d%s\n", i + 1,
+                        GemColor.ORANGE.getColorCode(),
+                        scores.get(i).getPlayer(),
+                        GemColor.GREEN.getColorCode(),
+                        scores.get(i).getPoints(),
+                        RESET_TEXT_COLOR);
             }
         }
         System.out.println("------------------------------\n");

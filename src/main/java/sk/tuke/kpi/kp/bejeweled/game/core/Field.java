@@ -116,9 +116,8 @@ public class Field {
         do {
             for (Point point : Point.iterate(getColCount(), getRowCount())) {
                 do {
-                    if (getTile(point) == null || getTile(point) instanceof Gem) {
+                    if (getTile(point) == null || getTile(point) instanceof Gem)
                         setTile(point, new Gem(gemCounter.getRandomGemColor()));
-                    }
                 } while (isCombinationAt(point));
             }
         } while (!hasPossibleMoves(startCountCombo));
@@ -217,7 +216,6 @@ public class Field {
 
     public void checkNewPossibleCombinations() {
         if (state != FieldState.BREAKING) return;
-        gemCounter.resetComboPotentials();
         while (!updatedPoints.isEmpty())
             trySaveCombinationAt(updatedPoints.poll());
 
@@ -240,7 +238,6 @@ public class Field {
         if (state != FieldState.BREAKING) return;
         lastIncrementScore = 0;
         processAllFallingGems();
-        countCombinationPotentials();
         generateNewGems();
     }
 
@@ -263,12 +260,14 @@ public class Field {
     }
 
     private void generateNewGems() {
+        countCombinationPotentials();
         do {
             for (Point point : getTopEmptyPointsInField()) {
                 setTile(point, new Gem(gemCounter.getRandomGemColor()));
                 processFallingGemFrom(point);
             }
         } while (isAnyTopPointEmpty());
+        gemCounter.resetComboPotentials();
     }
 
     private boolean isAnyTopPointEmpty() {
