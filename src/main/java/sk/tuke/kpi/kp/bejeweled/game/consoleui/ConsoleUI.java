@@ -23,20 +23,19 @@ public class ConsoleUI {
     private final CommentService commentService = new CommentServiceJDBC();
     private final RatingService ratingService = new RatingServiceJDBC();
 
-    private final Field field;
+    private final GameField field;
 
-    public ConsoleUI(Field field) {
+    public ConsoleUI(GameField field) {
         this.field = field;
 
         PLAYING_PATTERN = Pattern.compile("^(X)|" +
-                "(([A-" + (char) (field.getRowCount() + 'A') + "])([1-" + field.getColCount() + "])([WNSE]))|(FIELD)$", Pattern.CASE_INSENSITIVE);
+                "(([A-" + (char) (field.getRowCount() + 'A') + "])([1-" + field.getColCount() + "])([WNSE]))|(FIELD)|(HINT)$", Pattern.CASE_INSENSITIVE);
     }
 
     public void play() {
         field.reset();
         printScores();
         printField();
-        printHint();
         while (field.getState() != FieldState.NO_POSSIBLE_MOVE) {
             processInput();
             while (field.getState() == FieldState.BREAKING) {
@@ -46,8 +45,6 @@ public class ConsoleUI {
                 field.fillEmpties();
                 printField();
                 field.checkNewPossibleCombinations();
-                if(field.getState() == FieldState.WAITING)
-                    printHint();
             }
         }
         System.out.println("No possible moves! Your score: " + field.getScore() + "\n");
@@ -61,13 +58,19 @@ public class ConsoleUI {
     }
 
     private void printHint() {
-        Point[] combPoints = field.findCombinationPoints(1).get(0);
-        if (combPoints == null) return;
-        System.out.println("HINT: " +
-                (char) (combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
-                " <-> " +
-                (char) (combPoints[1].getRow() + 'A') + (combPoints[1].getCol() + 1) +
-                "\n");
+        Point[] combPoints = field.getHint();
+        System.out.println("------------------------------\n");
+        if (combPoints == null) {
+            System.out.print("You have used all possible hints!");
+        } else {
+            printField();
+            System.out.println("HINT: " +
+                    (char) (combPoints[0].getRow() + 'A') + (combPoints[0].getCol() + 1) +
+                    " <-> " +
+                    (char) (combPoints[1].getRow() + 'A') + (combPoints[1].getCol() + 1) +
+                    "\n");
+        }
+        System.out.println("------------------------------\n");
     }
 
     private void processInput() {
@@ -135,6 +138,9 @@ public class ConsoleUI {
         if (playingMather.matches()) {
             if("FIELD".equalsIgnoreCase(playingMather.group(6))) {
                 printField();
+                return true;
+            }
+            else if("HINT".equalsIgnoreCase(playingMather.group(7))) {
                 printHint();
                 return true;
             }
@@ -168,7 +174,7 @@ public class ConsoleUI {
     }
 
     private void printBody() {
-        for (Point p : Point.iterate(field.getColCount(), field.getRowCount())) {
+        for (Point p : Point.iterate(field.getRowCount(), field.getColCount())) {
             if (p.getCol() == 0)
                 System.out.print("\n" + RESET_TEXT_COLOR + (char) (p.getRow() + 'A') + "  ");
             printTile(field.getTile(p));
@@ -185,6 +191,7 @@ public class ConsoleUI {
     }
 
     private void printGameStats() {
+        System.out.println("Hints: " + field.getHintCount());
         System.out.print("Score: " + (field.getLastIncrementScore() > 0 ? field.getScore() - field.getLastIncrementScore() : field.getScore()));
         if(field.getLastIncrementScore() > 0) System.out.print(" + " + field.getLastIncrementScore());
         System.out.println();

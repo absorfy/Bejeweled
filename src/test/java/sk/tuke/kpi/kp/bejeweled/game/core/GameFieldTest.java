@@ -7,15 +7,15 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FieldTest {
+class GameFieldTest {
 
     private final Random randomGenerator = new Random();
-    private Field field;
+    private GameField field;
 
     @BeforeEach
     public void generateField() {
-        int size = randomGenerator.nextInt(10) + Math.max(Field.minColCount, Field.minRowCount);
-        field = new Field(size, size);
+        int size = randomGenerator.nextInt(10) + Math.max(GameField.minColCount, GameField.minRowCount);
+        field = new GameField(size, size);
     }
 
     @Test
@@ -101,5 +101,24 @@ class FieldTest {
         field.processGemCombinations();
         assertTrue(field.getScore() > 0,
                 "After a successful combination, the score cannot be equal to 0");
+    }
+
+    @Test
+    public void testGetFirstHint() {
+        Point[] points = field.getHint();
+        assertEquals(GameField.totalHintCount - 1, field.getHintCount());
+        assertNotNull(points);
+        field.swapGems(points[0], points[1]);
+        assertEquals(FieldState.BREAKING, field.getState());
+    }
+
+    @Test
+    public void testUsedAllHints() {
+        for(int i = 0; i < GameField.totalHintCount; i++) {
+            field.getHint();
+        }
+        Point[] points = field.getHint();
+        assertEquals(0, field.getHintCount());
+        assertNull(points);
     }
 }

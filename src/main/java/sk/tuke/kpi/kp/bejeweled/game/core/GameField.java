@@ -3,7 +3,8 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Field {
+public class GameField {
+    public static final int totalHintCount = 3;
     public static final int minRowCount = 8;
     public static final int minColCount = 8;
 
@@ -16,20 +17,23 @@ public class Field {
     private final ComboCounter comboCounter;
 
     private int currentScore;
+    private int bonusScore;
     private int lastIncrementScore;
 
     private FieldState state;
     private final FieldShape shape;
 
-    public Field() {
+    private int hintCount;
+
+    public GameField() {
         this(minRowCount, minColCount);
     }
 
-    public Field(int rowCount, int colCount) {
+    public GameField(int rowCount, int colCount) {
         this(rowCount, colCount, null);
     }
 
-    public Field(int rowCount, int colCount, FieldShape shape) {
+    public GameField(int rowCount, int colCount, FieldShape shape) {
         if (colCount < minColCount || rowCount < minRowCount) {
             throw new IllegalArgumentException();
         }
@@ -38,14 +42,14 @@ public class Field {
         savedGemCombinations = new ArrayList<>();
         gemCounter = new GemCounter();
         comboCounter = new ComboCounter();
-        this.currentScore = 0;
-        this.state = FieldState.WAITING;
-        this.shape = shape;
 
-        generateField();
-        comboCounter.saveCurrentSwapTime();
+        this.shape = shape;
+        reset();
     }
 
+    public int getHintCount() {
+        return hintCount;
+    }
 
     public int getSpeedCombo() {
         return comboCounter.getSpeedCombo();
@@ -53,6 +57,7 @@ public class Field {
 
     public void reset() {
         currentScore = 0;
+        hintCount = totalHintCount;
         comboCounter.reset();
         gemCounter.reset();
 
@@ -66,7 +71,7 @@ public class Field {
     }
 
     private void clearTiles() {
-        for (Point point : Point.iterate(getRowCount(), getColCount())) {
+        for (Point point : Point.iterate(getColCount(), getRowCount())) {
             setTile(point, null);
         }
     }
@@ -114,7 +119,7 @@ public class Field {
     private void generateStartGems() {
         int startCountCombo = (int)Math.round(getColCount() * getRowCount() * 0.1);
         do {
-            for (Point point : Point.iterate(getColCount(), getRowCount())) {
+            for (Point point : Point.iterate(getRowCount(), getColCount())) {
                 do {
                     if (getTile(point) == null || getTile(point) instanceof Gem)
                         setTile(point, new Gem(gemCounter.getRandomGemColor()));
@@ -123,7 +128,13 @@ public class Field {
         } while (!hasPossibleMoves(startCountCombo));
     }
 
-    public List<Point[]> findCombinationPoints(int count) {
+    public Point[] getHint() {
+        if(hintCount <= 0) return null;
+        hintCount--;
+        return findCombinationPoints(1).get(0);
+    }
+
+    List<Point[]> findCombinationPoints(int count) {
         if (count <= 0) return null;
         Point[] points = getAllPoints();
         List<Point[]> combPoints = new ArrayList<>();
@@ -190,7 +201,7 @@ public class Field {
             if (gComb.isValid()) {
                 breakCombination(gComb);
                 processCombinationShape(gComb);
-                lastIncrementScore = gComb.getScoreCountBy(comboCounter);
+                lastIncrementScore += gComb.getScoreCountBy(comboCounter);
                 currentScore += lastIncrementScore;
             } else gComb.setGemsInCombo(false);
         }
@@ -222,13 +233,24 @@ public class Field {
         if (savedGemCombinations.isEmpty()) {
             comboCounter.saveCurrentSwapTime();
             state = hasPossibleMoves(1) ? FieldState.WAITING : FieldState.NO_POSSIBLE_MOVE;
+            if(state == FieldState.NO_POSSIBLE_MOVE)
+                calculateBonusPoints();
+        }
+    }
+
+    public void calculateBonusPoints() {
+        for(Point point : Point.iterate(getRowCount(), getColCount())) {
+            Tile tile = getTile(point);
+            if(tile instanceof Gem) {
+                bonusScore += ((Gem) tile).getImpact().getScoreValue();
+            }
         }
     }
 
 
     private Point[] getAllPoints() {
         Point[] points = new Point[getColCount() * getRowCount()];
-        for (Point point : Point.iterate(getColCount(), getRowCount())) {
+        for (Point point : Point.iterate(getRowCount(), getColCount())) {
             points[point.getRow() * getColCount() + point.getCol()] = point;
         }
         return points;
@@ -451,7 +473,7 @@ public class Field {
     }
 
     private void processBreakImpact(Point point, Gem gem) {
-        currentScore += gem.getImpact().getScoreValue();
+        lastIncrementScore += gem.getImpact().getScoreValue();
         if (gem.getImpact() != BreakImpact.NONE)
             comboCounter.increaseComboChain();
 
@@ -508,6 +530,10 @@ public class Field {
             Gem gem = lockTile.getGem();
             gem.setState(GemState.FALLING);
             setTile(lockPoint, gem);
+
+            Tile upperTile = getTile(lockPoint.toEast());
+            if(upperTile instanceof Gem)
+                ((Gem) upperTile).setState(GemState.FALLING);
         }
     }
 
@@ -523,6 +549,8 @@ public class Field {
     }
 
     public int getScore() {
+        if(state == FieldState.NO_POSSIBLE_MOVE)
+            return currentScore + bonusScore;
         return currentScore;
     }
 

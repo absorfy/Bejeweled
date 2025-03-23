@@ -2,7 +2,7 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 
 public class SlopeFieldShape implements FieldShapeStrategy {
     @Override
-    public void applyShape(Field field) {
+    public void applyShape(GameField field) {
         for (int row = 0; row < field.getRowCount(); row++) {
             int leftBorder = field.getColCount() / 2 - row;
             int rightBorder = field.getColCount() / 2 + row;

@@ -2,13 +2,13 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 
 public class CircleFieldShape implements FieldShapeStrategy {
     @Override
-    public void applyShape(Field field) {
+    public void applyShape(GameField field) {
         double centerX = (field.getColCount() - 1) / 2.0;
         double centerY = (field.getRowCount() - 1) / 2.0;
         double radiusX = field.getColCount() / 2.0;
         double radiusY = field.getRowCount() / 2.0;
 
-        for(Point point : Point.iterate(field.getRowCount(), field.getColCount())) {
+        for(Point point : Point.iterate(field.getColCount(), field.getRowCount())) {
             double equation = Math.pow(point.getCol() - centerX, 2) / Math.pow(radiusX, 2) +
                     Math.pow(point.getRow() - centerY, 2) / Math.pow(radiusY, 2);
 

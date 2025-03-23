@@ -44,8 +44,8 @@ public class Point {
                 Math.abs(this.getRow() - point.getRow()) == 1 && this.getCol() == point.getCol();
     }
 
-    public static Iterable<Point> iterate(int width, int height) {
-        return iterate(new Point(0, 0), new Point(height - 1, width - 1));
+    public static Iterable<Point> iterate(int rowCount, int colCount) {
+        return iterate(new Point(0, 0), new Point(rowCount - 1, colCount - 1));
     }
 
     public Point moveTo(Direction direction) {
@@ -88,8 +88,8 @@ public class Point {
         return () -> new Iterator<>() {
             private int row = fromPoint.getRow();
             private int col = fromPoint.getCol();
-            private int height = toPoint.getRow() + 1;
-            private int width = toPoint.getCol() + 1;
+            private final int height = toPoint.getRow() + 1;
+            private final int width = toPoint.getCol() + 1;
 
             public boolean hasNext() {
                 return row < height && col < width;

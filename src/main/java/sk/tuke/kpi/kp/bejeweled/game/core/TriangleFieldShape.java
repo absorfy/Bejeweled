@@ -3,7 +3,7 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 public class TriangleFieldShape implements FieldShapeStrategy {
 
     @Override
-    public void applyShape(Field field) {
+    public void applyShape(GameField field) {
         int isEvenWidth = (field.getColCount() % 2) == 0 ? 1 : 0;
         for (int row = 0; row < field.getRowCount(); row++) {
             int leftBorder = field.getColCount() / 2 - row / 2 - isEvenWidth;

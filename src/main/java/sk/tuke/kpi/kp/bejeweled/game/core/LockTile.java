@@ -5,7 +5,7 @@ public class LockTile extends Tile {
     private final Gem gemContainer;
 
     public LockTile(GemColor color) {
-        this(3, new Gem(color));
+        this(1, new Gem(color));
     }
 
     public LockTile(int needBreakCount) {
@@ -13,7 +13,8 @@ public class LockTile extends Tile {
     }
 
     public LockTile(int needBreakCount, Gem gem) {
-        if (needBreakCount < 1 || needBreakCount > 3) throw new IllegalArgumentException();
+        if (needBreakCount < 1)
+            throw new IllegalArgumentException();
 
         this.needBreakCount = needBreakCount;
         this.gemContainer = gem;

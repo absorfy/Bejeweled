@@ -52,7 +52,7 @@ public class GemCounter {
         double totalInverse = 0.0;
         for (Map.Entry<GemColor, Integer> entry : gemCounts.entrySet()) {
             double inverseCount = 1.0 / (entry.getValue() + 1);
-            double probability = inverseCount + comboPotentials.get(entry.getKey());
+            double probability = inverseCount + comboPotentials.get(entry.getKey()) * 3;
             probabilities.put(entry.getKey(), probability);
             totalInverse += probability;
         }
