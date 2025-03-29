@@ -1,14 +1,19 @@
 package sk.tuke.kpi.kp.bejeweled.service;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import sk.tuke.kpi.kp.bejeweled.entity.Score;
 
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class ScoreServiceTest {
-    private final ScoreService scoreService = new ScoreServiceJDBC();
+
+    @Autowired
+    private ScoreService scoreService;
 
     @Test
     void reset() {

@@ -8,9 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
         ConsoleUI consoleUI = new ConsoleUI(new GameField());
-        consoleUI.printGameDescription();
-        do {
-            consoleUI.play();
-        } while (consoleUI.askContinue());
+        consoleUI.play();
     }
 }

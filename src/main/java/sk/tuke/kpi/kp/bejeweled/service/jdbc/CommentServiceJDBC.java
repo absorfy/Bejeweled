@@ -1,6 +1,8 @@
-package sk.tuke.kpi.kp.bejeweled.service;
+package sk.tuke.kpi.kp.bejeweled.service.jdbc;
 
 import sk.tuke.kpi.kp.bejeweled.entity.Comment;
+import sk.tuke.kpi.kp.bejeweled.service.CommentException;
+import sk.tuke.kpi.kp.bejeweled.service.CommentService;
 
 import java.sql.*;
 import java.util.ArrayList;

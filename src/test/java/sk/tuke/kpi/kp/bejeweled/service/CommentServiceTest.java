@@ -1,14 +1,19 @@
 package sk.tuke.kpi.kp.bejeweled.service;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import sk.tuke.kpi.kp.bejeweled.entity.Comment;
 
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class CommentServiceTest {
-    private final CommentService commentService = new CommentServiceJDBC();
+    @Autowired
+    private CommentService commentService;
 
     @Test
     void reset() {

@@ -1,6 +1,8 @@
-package sk.tuke.kpi.kp.bejeweled.service;
+package sk.tuke.kpi.kp.bejeweled.service.jdbc;
 
 import sk.tuke.kpi.kp.bejeweled.entity.Rating;
+import sk.tuke.kpi.kp.bejeweled.service.RatingException;
+import sk.tuke.kpi.kp.bejeweled.service.RatingService;
 
 import java.sql.*;
 

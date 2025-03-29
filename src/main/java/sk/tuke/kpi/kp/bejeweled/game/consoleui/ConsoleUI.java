@@ -1,5 +1,6 @@
 package sk.tuke.kpi.kp.bejeweled.game.consoleui;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import sk.tuke.kpi.kp.bejeweled.entity.Comment;
 import sk.tuke.kpi.kp.bejeweled.entity.Rating;
 import sk.tuke.kpi.kp.bejeweled.entity.Score;
@@ -19,9 +20,13 @@ public class ConsoleUI {
     private final static String RESET_BACKGROUND_COLOR = "\u001B[0m";
 
     private final Scanner scanner = new Scanner(System.in);
-    private final ScoreService scoreService = new ScoreServiceJDBC();
-    private final CommentService commentService = new CommentServiceJDBC();
-    private final RatingService ratingService = new RatingServiceJDBC();
+
+    @Autowired
+    private ScoreService scoreService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private RatingService ratingService;
 
     private final GameField field;
 
@@ -33,25 +38,29 @@ public class ConsoleUI {
     }
 
     public void play() {
-        field.reset();
-        printScores();
-        printField();
-        while (field.getState() != FieldState.NO_POSSIBLE_MOVE) {
-            processInput();
-            while (field.getState() == FieldState.BREAKING) {
-                printField();
-                field.processGemCombinations();
-                printField();
-                field.fillEmpties();
-                printField();
-                field.checkNewPossibleCombinations();
+        printGameDescription();
+        do {
+            field.reset();
+            printScores();
+            printField();
+            while (field.getState() != FieldState.NO_POSSIBLE_MOVE) {
+                processInput();
+                while (field.getState() == FieldState.BREAKING) {
+                    printField();
+                    field.processGemCombinations();
+                    printField();
+                    field.fillEmpties();
+                    printField();
+                    field.checkNewPossibleCombinations();
+                }
             }
-        }
-        System.out.println("No possible moves! Your score: " + field.getScore() + "\n");
-        saveScore();
+            System.out.println("No possible moves! Your score: " + field.getScore() + "\n");
+            saveScore();
+        } while (askContinue());
+
     }
 
-    public boolean askContinue() {
+    private boolean askContinue() {
         System.out.print("Play again? (Y/N): ");
         var line = scanner.nextLine().toUpperCase();
         return line.equals("Y") || line.equals("YES");
