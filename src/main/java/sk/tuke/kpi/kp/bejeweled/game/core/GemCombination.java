@@ -1,5 +1,9 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemColor;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemState;
+
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;

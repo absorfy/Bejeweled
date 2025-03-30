@@ -1,7 +1,7 @@
 package sk.tuke.kpi.kp.bejeweled.game.core.fieldshape;
 
-import sk.tuke.kpi.kp.bejeweled.game.core.AirTile;
-import sk.tuke.kpi.kp.bejeweled.game.core.Tile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.AirTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
 
 
 public class DonutFieldShape implements FieldShapeStrategy {

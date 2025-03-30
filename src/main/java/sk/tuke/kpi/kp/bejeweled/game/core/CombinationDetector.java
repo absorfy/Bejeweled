@@ -1,5 +1,9 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemState;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
+
 import java.util.*;
 
 public class CombinationDetector {

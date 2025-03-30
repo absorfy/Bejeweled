@@ -1,4 +1,7 @@
-package sk.tuke.kpi.kp.bejeweled.game.core;
+package sk.tuke.kpi.kp.bejeweled.game.core.tile;
+
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemColor;
 
 public class LockTile extends Tile {
     private int needBreakCount;

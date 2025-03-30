@@ -2,6 +2,8 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.EmptyTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.LockTile;
 
 import java.util.Random;
 

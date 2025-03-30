@@ -1,5 +1,8 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
+
 public class ScoreCounter {
     private int currentScore;
     private int bonusScore;

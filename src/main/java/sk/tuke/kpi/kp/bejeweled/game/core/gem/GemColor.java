@@ -1,4 +1,4 @@
-package sk.tuke.kpi.kp.bejeweled.game.core;
+package sk.tuke.kpi.kp.bejeweled.game.core.gem;
 
 import java.util.Random;
 

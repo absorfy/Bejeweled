@@ -5,6 +5,12 @@ import sk.tuke.kpi.kp.bejeweled.entity.Comment;
 import sk.tuke.kpi.kp.bejeweled.entity.Rating;
 import sk.tuke.kpi.kp.bejeweled.entity.Score;
 import sk.tuke.kpi.kp.bejeweled.game.core.*;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemColor;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.AirTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.EmptyTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.LockTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
 import sk.tuke.kpi.kp.bejeweled.service.*;
 
 import java.util.Date;

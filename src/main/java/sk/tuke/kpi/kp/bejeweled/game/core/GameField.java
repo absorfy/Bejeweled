@@ -1,7 +1,13 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemState;
 import sk.tuke.kpi.kp.bejeweled.game.core.fieldshape.FieldShape;
 import sk.tuke.kpi.kp.bejeweled.game.core.fieldshape.FieldShapeFactory;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.AirTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.EmptyTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.LockTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
 
 import java.util.*;
 import java.util.stream.Collectors;

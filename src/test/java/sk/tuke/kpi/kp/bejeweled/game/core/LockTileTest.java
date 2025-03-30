@@ -1,6 +1,7 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import org.junit.jupiter.api.Test;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.LockTile;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

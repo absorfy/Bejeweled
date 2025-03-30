@@ -2,6 +2,7 @@ package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sk.tuke.kpi.kp.bejeweled.game.core.gem.GemColor;
 
 import java.util.ArrayList;
 import java.util.List;
