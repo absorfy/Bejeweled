@@ -20,7 +20,7 @@ class GameFieldTest {
 
     @Test
     public void testValidHint() {
-        Point[] points = field.findCombinationPoints(1).get(0);
+        Point[] points = field.getCombinationDetector().findCombinationPoints(1).get(0);
         field.swapGems(points[0], points[1]);
         assertSame(FieldState.BREAKING, field.getState(),
                 "The function of finding combination crystals should return " +
@@ -29,14 +29,14 @@ class GameFieldTest {
 
     @Test
     public void testStartPossibleCombination() {
-        assertNotNull(field.findCombinationPoints(2),
+        assertNotNull(field.getCombinationDetector().findCombinationPoints(2),
                 "The field must have a move to combine at the beginning of the game");
     }
 
 
     @Test
     public void testFillingAfterValidCombination() {
-        Point[] points = field.findCombinationPoints(1).get(0);
+        Point[] points = field.getCombinationDetector().findCombinationPoints(1).get(0);
         field.swapGems(points[0], points[1]);
         while(field.getState() == FieldState.BREAKING) {
             field.processGemCombinations();
@@ -73,7 +73,7 @@ class GameFieldTest {
         int swapCount;
         for(swapCount = 0; swapCount < 3; swapCount++) {
             if(field.getState() == FieldState.NO_POSSIBLE_MOVE) break;
-            Point[] points = field.findCombinationPoints(1).get(0);
+            Point[] points = field.getCombinationDetector().findCombinationPoints(1).get(0);
             field.swapGems(points[0], points[1]);
             while(field.getState() == FieldState.BREAKING) {
                 field.processGemCombinations();
@@ -87,7 +87,7 @@ class GameFieldTest {
 
     @Test
     public void testComboCountIncrement() {
-        Point[] points = field.findCombinationPoints(1).get(0);
+        Point[] points = field.getCombinationDetector().findCombinationPoints(1).get(0);
         field.swapGems(points[0], points[1]);
         field.processGemCombinations();
         assertTrue(field.getChainCombo() > 0,
@@ -96,7 +96,7 @@ class GameFieldTest {
 
     @Test
     public void testScoreIncrement() {
-        Point[] points = field.findCombinationPoints(1).get(0);
+        Point[] points = field.getCombinationDetector().findCombinationPoints(1).get(0);
         field.swapGems(points[0], points[1]);
         field.processGemCombinations();
         assertTrue(field.getScore() > 0,

@@ -15,6 +15,8 @@ public class GameField {
 
     private final GemCounter gemCounter;
     private final ComboCounter comboCounter;
+    private final CombinationDetector combinationDetector;
+
 
     private int currentScore;
     private int bonusScore;
@@ -42,6 +44,8 @@ public class GameField {
         savedGemCombinations = new ArrayList<>();
         gemCounter = new GemCounter();
         comboCounter = new ComboCounter();
+
+        combinationDetector = new CombinationDetector(this);
 
         this.shape = shape;
         reset();
@@ -95,6 +99,10 @@ public class GameField {
             blockSideTiles();
     }
 
+    public CombinationDetector getCombinationDetector() {
+        return this.combinationDetector;
+    }
+
     private void blockSideTiles() {
         int widthBlocked = (int) Math.ceil(getColCount() / 5.0);
         for (Point point : Point.iterate(0, 0, getRowCount(), widthBlocked - 1)) {
@@ -123,7 +131,7 @@ public class GameField {
                 do {
                     if (getTile(point) == null || getTile(point) instanceof Gem)
                         setTile(point, new Gem(gemCounter.getRandomGemColor()));
-                } while (isCombinationAt(point));
+                } while (combinationDetector.isCombinationAt(point));
             }
         } while (!hasPossibleMoves(startCountCombo));
     }
@@ -131,28 +139,7 @@ public class GameField {
     public Point[] getHint() {
         if(hintCount <= 0) return null;
         hintCount--;
-        return findCombinationPoints(1).get(0);
-    }
-
-    List<Point[]> findCombinationPoints(int count) {
-        if (count <= 0) return null;
-        Point[] points = getAllPoints();
-        List<Point[]> combPoints = new ArrayList<>();
-        Collections.shuffle(Arrays.asList(points));
-        for (Point point : points) {
-            Tile tile = getTile(point);
-            if (!(tile instanceof Gem)) continue;
-            for (Direction direction : Direction.values()) {
-                Point adjacentPoint = point.moveTo(direction);
-                if (trySwapAt(point, adjacentPoint)) {
-                    if (combPoints.stream().noneMatch(x -> x[0].equals(adjacentPoint) && x[1].equals(point))) {
-                        combPoints.add(new Point[]{point, adjacentPoint});
-                        if (combPoints.size() == count) return combPoints;
-                    }
-                }
-            }
-        }
-        return null;
+        return combinationDetector.findCombinationPoints(1).get(0);
     }
 
     public void swapGems(Point point1, Point point2) {
@@ -173,21 +160,11 @@ public class GameField {
         }
     }
 
-
     public boolean hasPossibleMoves(int count) {
-        return findCombinationPoints(count) != null;
+        return combinationDetector.findCombinationPoints(count) != null;
     }
 
-    private boolean trySwapAt(Point point1, Point point2) {
-        if (!(getTile(point1) instanceof Gem) || !(getTile(point2) instanceof Gem)) return false;
-        swapTiles(point1, point2);
-        boolean anyComb = isCombinationAt(point1) || isCombinationAt(point2);
-        swapTiles(point1, point2);
-        return anyComb;
-    }
-
-
-    private void swapTiles(Point point1, Point point2) {
+    void swapTiles(Point point1, Point point2) {
         Tile tile1 = getTile(point1);
         setTile(point1, getTile(point2));
         setTile(point2, tile1);
@@ -247,8 +224,7 @@ public class GameField {
         }
     }
 
-
-    private Point[] getAllPoints() {
+    Point[] getAllPoints() {
         Point[] points = new Point[getColCount() * getRowCount()];
         for (Point point : Point.iterate(getRowCount(), getColCount())) {
             points[point.getRow() * getColCount() + point.getCol()] = point;
@@ -417,48 +393,11 @@ public class GameField {
     }
 
     private void trySaveCombinationAt(Point point) {
-        GemCombination gemCombination = getCombinationAt(point);
+        GemCombination gemCombination = combinationDetector.getCombinationAt(point);
         if (gemCombination.isValid() && !savedGemCombinations.contains(gemCombination))
             savedGemCombinations.add(gemCombination);
         else
             gemCombination.setGemsInCombo(false);
-    }
-
-    private boolean isCombinationAt(Point point) {
-        GemCombination gemCombination = getCombinationAt(point);
-        if (gemCombination.isValid()) {
-            gemCombination.setGemsInCombo(false);
-            return true;
-        }
-        return false;
-    }
-
-
-    private GemCombination getCombinationAt(Point point) {
-        GemCombination combination = new GemCombination();
-        if (!(getTile(point) instanceof Gem)) return combination;
-
-        Set<Point> visited = new HashSet<>();
-        Stack<Point> stackAdjacent = new Stack<>();
-        combination.setAnchorPoint(point);
-        combination.setColor(((Gem) getTile(point)).getColor());
-        stackAdjacent.push(point);
-
-        while (!stackAdjacent.isEmpty()) {
-            Point currentPoint = stackAdjacent.pop();
-            if (visited.contains(currentPoint) || !(getTile(currentPoint) instanceof Gem)) continue;
-            Gem gem = (Gem) getTile(currentPoint);
-            if (gem.getState() != GemState.IDLE || gem.getColor() != combination.getColor()) continue;
-
-            visited.add(currentPoint);
-            combination.addGemPoint(currentPoint, gem);
-            stackAdjacent.push(currentPoint.toEast());
-            stackAdjacent.push(currentPoint.toWest());
-            stackAdjacent.push(currentPoint.toNorth());
-            stackAdjacent.push(currentPoint.toSouth());
-        }
-        combination.identifyCombination();
-        return combination;
     }
 
 
