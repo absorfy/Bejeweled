@@ -1,5 +1,8 @@
 package sk.tuke.kpi.kp.bejeweled.game.core;
 
+import sk.tuke.kpi.kp.bejeweled.game.core.fieldshape.FieldShape;
+import sk.tuke.kpi.kp.bejeweled.game.core.fieldshape.FieldShapeFactory;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +87,7 @@ public class GameField {
 
     private void setAirTileByShape() {
         FieldShape fieldShape = shape != null ? shape : FieldShape.random();
-        FieldShapeFactory.getShapeStrategy(fieldShape).applyShape(this);
+        FieldShapeFactory.getShapeStrategy(fieldShape).applyShape(tiles, getRowCount(), getColCount());
     }
 
     private void generateBlockedTiles() {
