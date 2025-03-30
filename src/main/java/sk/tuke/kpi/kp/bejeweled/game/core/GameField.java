@@ -16,11 +16,7 @@ public class GameField {
     private final GemCounter gemCounter;
     private final ComboCounter comboCounter;
     private final CombinationDetector combinationDetector;
-
-
-    private int currentScore;
-    private int bonusScore;
-    private int lastIncrementScore;
+    private final ScoreCounter scoreCounter;
 
     private FieldState state;
     private final FieldShape shape;
@@ -44,7 +40,7 @@ public class GameField {
         savedGemCombinations = new ArrayList<>();
         gemCounter = new GemCounter();
         comboCounter = new ComboCounter();
-
+        scoreCounter = new ScoreCounter();
         combinationDetector = new CombinationDetector(this);
 
         this.shape = shape;
@@ -60,10 +56,10 @@ public class GameField {
     }
 
     public void reset() {
-        currentScore = 0;
         hintCount = totalHintCount;
         comboCounter.reset();
         gemCounter.reset();
+        scoreCounter.reset();
 
         updatedPoints.clear();
         savedGemCombinations.clear();
@@ -178,8 +174,8 @@ public class GameField {
             if (gComb.isValid()) {
                 breakCombination(gComb);
                 processCombinationShape(gComb);
-                lastIncrementScore += gComb.getScoreCountBy(comboCounter);
-                currentScore += lastIncrementScore;
+                scoreCounter.addScore(gComb.getScoreBy(comboCounter));
+                scoreCounter.saveScore();
             } else gComb.setGemsInCombo(false);
         }
     }
@@ -211,16 +207,7 @@ public class GameField {
             comboCounter.saveCurrentSwapTime();
             state = hasPossibleMoves(1) ? FieldState.WAITING : FieldState.NO_POSSIBLE_MOVE;
             if(state == FieldState.NO_POSSIBLE_MOVE)
-                calculateBonusPoints();
-        }
-    }
-
-    public void calculateBonusPoints() {
-        for(Point point : Point.iterate(getRowCount(), getColCount())) {
-            Tile tile = getTile(point);
-            if(tile instanceof Gem) {
-                bonusScore += ((Gem) tile).getImpact().getScoreValue();
-            }
+                scoreCounter.calculateBonusPoints(this);
         }
     }
 
@@ -234,7 +221,7 @@ public class GameField {
 
     public void fillEmpties() {
         if (state != FieldState.BREAKING) return;
-        lastIncrementScore = 0;
+        scoreCounter.resetLastIncrementScore();
         processAllFallingGems();
         generateNewGems();
     }
@@ -245,20 +232,9 @@ public class GameField {
                 .collect(Collectors.toList());
     }
 
-    public void countCombinationPotentials() {
-        List<Point> emptyPoints = getPointsWithEmptyTiles();
-        for(Point point : emptyPoints) {
-            for(Direction direction : Direction.values()) {
-                Point adjecentPoint = point.moveTo(direction);
-                if(!emptyPoints.contains(adjecentPoint) && getTile(adjecentPoint) instanceof Gem) {
-                    gemCounter.addComboPotential(((Gem)getTile(adjecentPoint)).getColor());
-                }
-            }
-        }
-    }
 
     private void generateNewGems() {
-        countCombinationPotentials();
+        gemCounter.countCombinationPotentials(this);
         do {
             for (Point point : getTopEmptyPointsInField()) {
                 setTile(point, new Gem(gemCounter.getRandomGemColor()));
@@ -412,7 +388,7 @@ public class GameField {
     }
 
     private void processBreakImpact(Point point, Gem gem) {
-        lastIncrementScore += gem.getImpact().getScoreValue();
+        scoreCounter.addScore(gem.getImpact().getScoreValue());
         if (gem.getImpact() != BreakImpact.NONE)
             comboCounter.increaseComboChain();
 
@@ -488,13 +464,11 @@ public class GameField {
     }
 
     public int getScore() {
-        if(state == FieldState.NO_POSSIBLE_MOVE)
-            return currentScore + bonusScore;
-        return currentScore;
+        return scoreCounter.getCurrentScore() + scoreCounter.getBonusScore();
     }
 
     public int getLastIncrementScore() {
-        return lastIncrementScore;
+        return scoreCounter.getLastIncrementScore();
     }
 
     public FieldState getState() {

@@ -18,7 +18,7 @@ public class GemCombination implements Comparable<GemCombination> {
         gemPoints = new HashMap<>();
     }
 
-    public int getScoreCountBy(ComboCounter comboCounter) {
+    public int getScoreBy(ComboCounter comboCounter) {
         int returnScore = combinationShape.getScoreCount();
         if(madeByPlayer && comboCounter.getSpeedCombo() > 1) returnScore *= comboCounter.getSpeedCombo();
         returnScore *= (comboCounter.getChainCombo() / 3 + 1);

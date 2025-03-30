@@ -80,5 +80,16 @@ public class GemCounter {
         return GemColor.random();
     }
 
+    public void countCombinationPotentials(GameField field) {
+        List<Point> emptyPoints = field.getPointsWithEmptyTiles();
+        for(Point point : emptyPoints) {
+            for(Direction direction : Direction.values()) {
+                Point adjecentPoint = point.moveTo(direction);
+                if(!emptyPoints.contains(adjecentPoint) && field.getTile(adjecentPoint) instanceof Gem) {
+                    addComboPotential(((Gem)field.getTile(adjecentPoint)).getColor());
+                }
+            }
+        }
+    }
 
 }
