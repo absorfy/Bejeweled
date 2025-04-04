@@ -1,0 +1,45 @@
+
+POST http://localhost:8080/api/score
+Content-Type: application/json
+
+{
+  "game": "bejeweled",
+  "player": "absorfy",
+  "points": 100,
+  "playedOn": "2025-04-02T11:22:31"
+}
+###
+
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+
+{
+  "game": "bejeweled",
+  "player": "absorfy",
+  "comment": "Hello, it's my comment",
+  "commentedOn": "2025-04-02T11:22:31"
+}
+###
+
+POST http://localhost:8080/api/rating
+Content-Type: application/json
+
+{
+  "game": "bejeweled",
+  "player": "absorfy",
+  "rating": 5,
+  "ratedOn": "2025-04-02T11:22:31"
+}
+###
+
+GET http://localhost:8080/api/score/bejeweled
+###
+
+GET http://localhost:8080/api/rating/bejeweled
+###
+
+GET http://localhost:8080/api/rating/bejeweled/absorfy
+###
+
+GET http://localhost:8080/api/comment/bejeweled
+###

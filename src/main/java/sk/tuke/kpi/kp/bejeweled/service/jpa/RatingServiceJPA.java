@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Transactional
 public class RatingServiceJPA implements RatingService {
@@ -50,9 +51,12 @@ public class RatingServiceJPA implements RatingService {
     @Override
     public int getRating(String game, String player) throws RatingException {
         try {
-            return (int)entityManager.createNamedQuery("Rating.getRating")
+            List<Integer> results = entityManager.createNamedQuery("Rating.getRating", Integer.class)
                     .setParameter("game", game)
-                    .setParameter("player", player).getSingleResult();
+                    .setParameter("player", player)
+                    .getResultList();
+
+            return results.isEmpty() ? 0 : results.get(0);
         } catch (PersistenceException e) {
             throw new RatingException("Problem getting rating", e);
         }

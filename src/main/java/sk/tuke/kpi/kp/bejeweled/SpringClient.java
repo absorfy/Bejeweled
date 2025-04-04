@@ -5,7 +5,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
 import sk.tuke.kpi.kp.bejeweled.game.consoleui.ConsoleUI;
 import sk.tuke.kpi.kp.bejeweled.game.core.GameField;
@@ -18,6 +20,8 @@ import sk.tuke.kpi.kp.bejeweled.service.restclient.ScoreServiceRestClient;
 
 @SpringBootApplication
 @Configuration
+@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
+        pattern = "sk.tuke.kpi.kp.bejeweled.server.*"))
 public class SpringClient {
 
     public static void main(String[] args) {
