@@ -133,17 +133,19 @@ public class ConsoleUI {
 
     private void resetService(String line) {
         System.out.println("------------------------------");
-        if("COMMENTS".equalsIgnoreCase(line)) {
-            commentService.reset();
-            System.out.println("Comments are reset");
-        }
-        else if("SCORES".equalsIgnoreCase(line)) {
-            scoreService.reset();
-            System.out.println("Scores are reset");
-        }
-        else if("RATING".equalsIgnoreCase(line)) {
-            ratingService.reset();
-            System.out.println("Ratings are reset");
+        try {
+            if ("COMMENTS".equalsIgnoreCase(line)) {
+                commentService.reset();
+                System.out.println("Comments are reset");
+            } else if ("SCORES".equalsIgnoreCase(line)) {
+                scoreService.reset();
+                System.out.println("Scores are reset");
+            } else if ("RATING".equalsIgnoreCase(line)) {
+                ratingService.reset();
+                System.out.println("Ratings are reset");
+            }
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
         }
         System.out.println("------------------------------\n");
     }
