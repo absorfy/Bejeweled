@@ -1,4 +1,4 @@
-package sk.tuke.kpi.kp.bejeweled.game.core.fieldshape;
+package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import java.util.Random;
 

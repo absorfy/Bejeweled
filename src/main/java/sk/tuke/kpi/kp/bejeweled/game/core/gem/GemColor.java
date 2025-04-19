@@ -8,7 +8,7 @@ public enum GemColor {
     BLUE("\u001B[34m"),
     GREEN("\u001B[32m"),
     YELLOW("\u001B[38;5;226m"),
-    PINK("\u001B[38;5;206m"),
+    PURPLE("\u001B[38;5;206m"),
     ORANGE("\u001B[38;5;208m"),
     WHITE("\u001B[38;5;15m");
 

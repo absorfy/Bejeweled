@@ -1,0 +1,45 @@
+img {
+  width: 40px;
+  height: 40px;
+}
+
+table {
+  border-spacing: 0;
+}
+
+body {
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.tile1, .tile2, .tile0 {
+  padding: 5px;
+  width: 50px;
+  height: 50px;
+}
+
+.tile1, .tile2 {
+  text-align: center;
+}
+
+.tile1 {
+  background: gray;
+}
+
+.tile2 {
+  background: darkgray;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected {
+  outline: firebrick dashed 4px;
+  outline-offset: -2px;
+}

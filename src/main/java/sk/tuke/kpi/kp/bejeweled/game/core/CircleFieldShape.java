@@ -1,12 +1,13 @@
-package sk.tuke.kpi.kp.bejeweled.game.core.fieldshape;
+package sk.tuke.kpi.kp.bejeweled.game.core;
 
 import sk.tuke.kpi.kp.bejeweled.game.core.tile.AirTile;
-import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
 
 public class CircleFieldShape implements FieldShapeStrategy {
     @Override
-    public void applyShape(Tile[][] tiles, int rowCount, int colCount) {
-        if(rowCount * colCount != tiles.length) return;
+    public void applyShape(GameField field) {
+        int rowCount = field.getRowCount();
+        int colCount = field.getColCount();
+
         double centerX = (colCount - 1) / 2.0;
         double centerY = (rowCount - 1) / 2.0;
         double radiusX = colCount / 2.0;
@@ -18,7 +19,7 @@ public class CircleFieldShape implements FieldShapeStrategy {
                         Math.pow(row - centerY, 2) / Math.pow(radiusY, 2);
 
                 if (equation > 1)
-                    tiles[row][col] = new AirTile();
+                    field.setTile(new Point(row, col), new AirTile());
             }
         }
     }

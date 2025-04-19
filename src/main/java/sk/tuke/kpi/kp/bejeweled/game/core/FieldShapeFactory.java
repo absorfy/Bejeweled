@@ -1,4 +1,4 @@
-package sk.tuke.kpi.kp.bejeweled.game.core.fieldshape;
+package sk.tuke.kpi.kp.bejeweled.game.core;
 
 public class FieldShapeFactory {
     public static FieldShapeStrategy getShapeStrategy(FieldShape shape) {

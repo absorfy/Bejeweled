@@ -31,7 +31,7 @@ class GemCounterTest {
         assertEquals(greenCount, gemCounter.getCount(GemColor.GREEN));
         assertEquals(redCount, gemCounter.getCount(GemColor.RED));
         assertEquals(orangeCount, gemCounter.getCount(GemColor.ORANGE));
-        assertEquals(0, gemCounter.getCount(GemColor.PINK));
+        assertEquals(0, gemCounter.getCount(GemColor.PURPLE));
         assertEquals(0, gemCounter.getCount(GemColor.WHITE));
         assertEquals(0, gemCounter.getCount(GemColor.YELLOW));
         assertEquals(0, gemCounter.getCount(GemColor.BLUE));
@@ -57,7 +57,7 @@ class GemCounterTest {
         assertEquals(startCount - greenCount, gemCounter.getCount(GemColor.GREEN));
         assertEquals(startCount - redCount, gemCounter.getCount(GemColor.RED));
         assertEquals(startCount - orangeCount, gemCounter.getCount(GemColor.ORANGE));
-        assertEquals(startCount, gemCounter.getCount(GemColor.PINK));
+        assertEquals(startCount, gemCounter.getCount(GemColor.PURPLE));
         assertEquals(startCount, gemCounter.getCount(GemColor.WHITE));
         assertEquals(startCount, gemCounter.getCount(GemColor.YELLOW));
         assertEquals(startCount, gemCounter.getCount(GemColor.BLUE));
@@ -74,7 +74,7 @@ class GemCounterTest {
         assertEquals(0, gemCounter.getCount(GemColor.GREEN));
         assertEquals(0, gemCounter.getCount(GemColor.RED));
         assertEquals(0, gemCounter.getCount(GemColor.ORANGE));
-        assertEquals(0, gemCounter.getCount(GemColor.PINK));
+        assertEquals(0, gemCounter.getCount(GemColor.PURPLE));
         assertEquals(0, gemCounter.getCount(GemColor.WHITE));
         assertEquals(0, gemCounter.getCount(GemColor.YELLOW));
         assertEquals(0, gemCounter.getCount(GemColor.BLUE));
@@ -85,7 +85,7 @@ class GemCounterTest {
         gemCounter.addGem(GemColor.GREEN);
         gemCounter.addGem(GemColor.RED);
         gemCounter.addGem(GemColor.ORANGE);
-        gemCounter.addGem(GemColor.PINK);
+        gemCounter.addGem(GemColor.PURPLE);
         gemCounter.addGem(GemColor.WHITE);
         gemCounter.addGem(GemColor.YELLOW);
         gemCounter.addGem(GemColor.BLUE);
@@ -101,7 +101,7 @@ class GemCounterTest {
         gemCounter.addGem(GemColor.GREEN);
         gemCounter.addGem(GemColor.RED);
         gemCounter.addGem(GemColor.ORANGE);
-        gemCounter.addGem(GemColor.PINK);
+        gemCounter.addGem(GemColor.PURPLE);
         gemCounter.addGem(GemColor.BLUE);
 
         Map<GemColor, Double> probabilities = gemCounter.getSpawnProbabilities();
