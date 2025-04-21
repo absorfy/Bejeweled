@@ -1,5 +1,6 @@
 package sk.tuke.kpi.kp.bejeweled.server.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,30 +13,55 @@ import sk.tuke.kpi.kp.bejeweled.game.core.Point;
 import sk.tuke.kpi.kp.bejeweled.game.core.gem.Gem;
 import sk.tuke.kpi.kp.bejeweled.game.core.tile.AirTile;
 import sk.tuke.kpi.kp.bejeweled.game.core.tile.LockTile;
+import sk.tuke.kpi.kp.bejeweled.game.core.tile.Tile;
+import sk.tuke.kpi.kp.bejeweled.service.ScoreService;
+
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/bejeweled")
 @Scope(WebApplicationContext.SCOPE_SESSION)
 public class BejeweledController {
+    @Autowired
+    private ScoreService scoreService;
     private GameField field = new GameField();
 
     private Point firstSelect = null;
-
+    private Point[] hintSelects = null;
 
     @RequestMapping
     public String bejeweled(@RequestParam(value = "row", required = false) String row,
-                            @RequestParam(value = "column", required = false) String column)
+                            @RequestParam(value = "column", required = false) String column,
+                            Model model)
     {
         if(row != null && column != null) {
             selectTile(Integer.parseInt(row), Integer.parseInt(column));
         }
+
+        model.addAttribute("scores", scoreService.getTopScores("bejeweled"));
         return "bejeweled";
+    }
+
+    public int getHintCount() {
+        return field.getHintCount();
+    }
+
+    public String getState() {
+        if (Objects.requireNonNull(field.getState()) == FieldState.NO_POSSIBLE_MOVE)
+            return "no possible move";
+        return "playing";
     }
 
     @RequestMapping("/new")
     public String newGame() {
         field = new GameField();
         firstSelect = null;
+        return "redirect:/bejeweled";
+    }
+
+    @RequestMapping("/hint")
+    public String getHint() {
+        hintSelects = field.getHint();
         return "redirect:/bejeweled";
     }
 
@@ -60,9 +86,7 @@ public class BejeweledController {
             sb.append("<tr>\n");
             for (var col = 0; col < field.getColCount(); col++) {
                 var tile = field.getTile(row, col);
-                sb.append(String.format("<td class='tile%s%s'>\n",
-                        (!(tile instanceof AirTile) ? ((field.getColCount() * row + col - (row % 2)) % 2 + 1) : 0),
-                        (firstSelect != null && row == firstSelect.getRow() && col == firstSelect.getCol()) ? " selected" : ""));
+                sb.append(String.format("<td class='%s'>\n", getTdClass(tile.getClass(), new Point(row, col))));
 
                 if (tile instanceof Gem)
                     sb.append(String.format("<a href='/bejeweled?row=%d&column=%d'>\n<img src='images/bejeweled/%s_gem.png'>\n</a>\n", row, col, ((Gem) tile).getColor().toString().toLowerCase()));
@@ -73,6 +97,27 @@ public class BejeweledController {
             sb.append("</tr>\n");
         }
         sb.append("</table>\n");
+
+        hintSelects = null;
+        return sb.toString();
+    }
+
+    public String getTdClass(Class<? extends Tile> tileClass, Point point) {
+        StringBuilder sb = new StringBuilder("tile");
+        if(!tileClass.equals(AirTile.class))
+            sb.append((field.getColCount() * point.getRow() + point.getCol() - (point.getRow() % 2)) % 2 + 1);
+        else {
+            sb.append("0");
+        }
+
+        if(firstSelect != null && firstSelect.equals(point)) {
+            sb.append(" selected");
+        }
+
+        if(hintSelects != null && (hintSelects[0].equals(point) || hintSelects[1].equals(point))) {
+            sb.append(" hint");
+        }
+
         return sb.toString();
     }
 

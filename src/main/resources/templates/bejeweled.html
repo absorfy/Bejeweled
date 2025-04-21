@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Bejeweled</title>
-    <link rel="stylesheet" href="/css/stylesheet.css"/>
-</head>
-<body>
-<h1>Bejeweled</h1>
-<a href="/bejeweled/new">New game</a>
-<span th:utext="${@bejeweledController.htmlField}"></span>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Bejeweled</title>
+        <link rel="stylesheet" href="/css/stylesheet.css">
+    </head>
+    <body>
+
+        <h1>Bejeweled</h1>
+        <span th:if="${@userController.logged}">
+            <a href="/logout" th:text="${'Logged user: ' + @userController.loggedUser.login}"/>
+        </span>
+
+        <span th:if="${not @userController.logged}">
+            <a href="/">Quit</a>
+        </span>
+        <a href="/bejeweled/new">New game</a>
+        <a href="/bejeweled/hint" th:text="${'Hint: ' + @bejeweledController.hintCount}"></a>
+        <span th:utext="${'Game state: ' + @bejeweledController.state}"></span>
+        <span th:utext="${@bejeweledController.htmlField}"></span>
+
+
+        <h2>Scores</h2>
+        <ol>
+            <li th:each="score: ${scores}">
+                <span th:utext="${score.player}"></span>
+                <span th:utext="${score.points}"></span>
+            </li>
+        </ol>
+    </body>
 </html>
