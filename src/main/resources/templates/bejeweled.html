@@ -21,12 +21,27 @@
         <span th:utext="${@bejeweledController.htmlField}"></span>
 
 
-        <h2>Scores</h2>
-        <ol>
-            <li th:each="score: ${scores}">
-                <span th:utext="${score.player}"></span>
-                <span th:utext="${score.points}"></span>
-            </li>
-        </ol>
+        <!-- Table with best scores -->
+        <h2>Top scores</h2>
+        <table class="scores">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Played at</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="scores" type="java.util.List<sk.tuke.gamestudio.entity.Score>"*/-->
+            <tr th:each="score, it : ${scores}">
+                <td th:text="${it.index + 1}"/>
+                <td th:text="${score.player}"/>
+                <td th:text="${score.points}"/>
+                <td th:text="${#dates.format(score.playedOn, 'dd.MM.yyyy HH:mm')}"/>
+            </tr>
+            </tbody>
+        </table>
+
     </body>
 </html>
