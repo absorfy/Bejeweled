@@ -38,4 +38,9 @@ public class Gem extends Tile {
     public void setState(GemState state) {
         this.state = state;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

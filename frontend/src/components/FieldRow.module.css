@@ -1,0 +1,30 @@
+.tile {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.selected {
+    box-shadow: coral 0 0 20px inset;
+}
+
+.tileType1 {
+    background-color: dimgray;
+}
+
+.tileType2 {
+    background-color: darkgray;
+}
+
+.fieldRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -35,4 +35,9 @@ public class LockTile extends Tile {
     public int getNeedBreakCount() {
         return needBreakCount;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

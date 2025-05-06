@@ -1,5 +1,7 @@
 package sk.tuke.kpi.kp.gamestudio.game.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,22 +12,30 @@ public class GameField {
 
     private final Tile[][] tiles;
 
+    @JsonIgnore
     private final Queue<Point> updatedPoints;
+    @JsonIgnore
     private final List<GemCombination> savedGemCombinations;
 
+    @JsonIgnore
     private final GemCounter gemCounter;
+    @JsonIgnore
     private final ComboCounter comboCounter;
+    @JsonIgnore
     private final CombinationDetector combinationDetector;
+    @JsonIgnore
     private final ScoreCounter scoreCounter;
 
     private FieldState state;
-    private final FieldShape shape;
+    @JsonIgnore
+    private FieldShape shape;
 
     private int hintCount;
 
     public GameField() {
         this(minRowCount, minColCount);
     }
+
 
     public GameField(int rowCount, int colCount) {
         this(rowCount, colCount, null);
@@ -45,6 +55,29 @@ public class GameField {
 
         this.shape = shape;
         reset();
+    }
+
+    public GameField setDefaultViewField() {
+        hintCount = 0;
+        comboCounter.reset();
+        gemCounter.reset();
+        scoreCounter.reset();
+
+        updatedPoints.clear();
+        savedGemCombinations.clear();
+        clearTiles();
+        state = FieldState.NO_POSSIBLE_MOVE;
+        shape = FieldShape.CIRCLE;
+
+        setTile(new Point(0,0), new Gem(BreakImpact.STAR));
+        setTile(new Point(0,1), new Gem(BreakImpact.ROW));
+        setTile(new Point(0,2), new Gem(BreakImpact.COLUMN));
+        setTile(new Point(0,3), new Gem(BreakImpact.EXPLODE));
+        setTile(new Point(0,4), new Gem(BreakImpact.NONE));
+        setTile(new Point(1,0), new LockTile(3));
+        setTile(new Point(1,1), new LockTile(2));
+        setTile(new Point(1,2), new LockTile(1));
+        return this;
     }
 
     public int getHintCount() {
@@ -72,7 +105,7 @@ public class GameField {
 
     private void clearTiles() {
         for (Point point : Point.iterate(getColCount(), getRowCount())) {
-            setTile(point, null);
+            setTile(point, new EmptyTile());
         }
     }
 
@@ -125,13 +158,14 @@ public class GameField {
         do {
             for (Point point : Point.iterate(getRowCount(), getColCount())) {
                 do {
-                    if (getTile(point) == null || getTile(point) instanceof Gem)
+                    if (getTile(point) == null || getTile(point) instanceof EmptyTile || getTile(point) instanceof Gem)
                         setTile(point, new Gem(gemCounter.getRandomGemColor()));
                 } while (combinationDetector.isCombinationAt(point));
             }
         } while (!hasPossibleMoves(startCountCombo));
     }
 
+    @JsonIgnore
     public Point[] getHint() {
         if(hintCount <= 0) return null;
         hintCount--;
@@ -226,6 +260,7 @@ public class GameField {
         generateNewGems();
     }
 
+    @JsonIgnore
     public List<Point> getPointsWithEmptyTiles() {
         return Arrays.stream(getAllPoints())
                 .filter(p -> getTile(p) instanceof EmptyTile)
@@ -490,5 +525,16 @@ public class GameField {
     public Tile getTile(Point point) {
         if (point.isNotValid(getRowCount(), getColCount())) return null;
         return tiles[point.getRow()][point.getCol()];
+    }
+
+    public Tile[][] getTiles() {
+        int rows = getRowCount();
+        int cols = getColCount();
+        Tile[][] copy = new Tile[rows][cols];
+
+        for (int r = 0; r < rows; r++) {
+            System.arraycopy(tiles[r], 0, copy[r], 0, cols);
+        }
+        return copy;
     }
 }

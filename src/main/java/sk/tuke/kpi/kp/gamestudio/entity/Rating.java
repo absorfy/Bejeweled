@@ -66,6 +66,10 @@ public class Rating {
         this.rating = rating;
     }
 
+    public int getIdent() {
+        return ident;
+    }
+
     public Date getRatedOn() {
         return ratedOn;
     }

@@ -63,6 +63,10 @@ public class Score {
         this.playedOn = playedOn;
     }
 
+    public int getIdent() {
+        return ident;
+    }
+
     @Override
     public String toString() {
         return "Score{" +

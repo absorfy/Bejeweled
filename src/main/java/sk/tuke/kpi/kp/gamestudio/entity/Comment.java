@@ -59,6 +59,10 @@ public class Comment {
         return commentedOn;
     }
 
+    public int getIdent() {
+        return ident;
+    }
+
     public void setCommentedOn(Date commentedOn) {
         this.commentedOn = commentedOn;
     }
