@@ -5,4 +5,9 @@ public class AirTile extends Tile {
     public String toString() {
         return this.getClass().getSimpleName();
     }
+
+    @Override
+    public AirTile clone() {
+        return new AirTile();
+    }
 }

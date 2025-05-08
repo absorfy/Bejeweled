@@ -43,4 +43,9 @@ public class Gem extends Tile {
     public String toString() {
         return this.getClass().getSimpleName();
     }
+
+    @Override
+    public Gem clone() {
+        return new Gem(impact, gemColor);
+    }
 }

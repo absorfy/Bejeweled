@@ -2,10 +2,11 @@ package sk.tuke.kpi.kp.gamestudio.game.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GameField {
+public class GameField implements Cloneable {
     public static final int totalHintCount = 3;
     public static final int minRowCount = 8;
     public static final int minColCount = 8;
@@ -536,5 +537,19 @@ public class GameField {
             System.arraycopy(tiles[r], 0, copy[r], 0, cols);
         }
         return copy;
+    }
+
+    @Override
+    public GameField clone() throws CloneNotSupportedException {
+        super.clone();
+
+        GameField clonedField = new GameField(getRowCount(), getColCount());
+        clonedField.hintCount = this.hintCount;
+        clonedField.state = this.state;
+
+        for (Point point : Point.iterate(getRowCount(), getColCount())) {
+            clonedField.setTile(point, getTile(point).clone());
+        }
+        return clonedField;
     }
 }

@@ -5,4 +5,9 @@ public class EmptyTile extends Tile {
     public String toString() {
         return this.getClass().getSimpleName();
     }
+
+    @Override
+    public EmptyTile clone() {
+        return new EmptyTile();
+    }
 }

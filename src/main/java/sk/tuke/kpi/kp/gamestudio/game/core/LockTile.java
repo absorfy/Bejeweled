@@ -1,5 +1,7 @@
 package sk.tuke.kpi.kp.gamestudio.game.core;
 
+import java.util.concurrent.locks.Lock;
+
 public class LockTile extends Tile {
     private int needBreakCount;
     private final Gem gemContainer;
@@ -39,5 +41,10 @@ public class LockTile extends Tile {
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public LockTile clone() {
+        return new LockTile(needBreakCount, gemContainer);
     }
 }
