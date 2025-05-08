@@ -1,9 +1,18 @@
 package sk.tuke.kpi.kp.gamestudio.game.core;
 
+import java.util.UUID;
+
 public class Gem extends Tile {
     private final GemColor gemColor;
     private final BreakImpact impact;
     private GemState state;
+
+    private Gem(UUID id, GemColor gemColor, BreakImpact impact, GemState state) {
+        super(id);
+        this.gemColor = gemColor;
+        this.impact = impact;
+        this.state = state;
+    }
 
     public Gem() {
         this(BreakImpact.NONE);
@@ -18,10 +27,12 @@ public class Gem extends Tile {
     }
 
     public Gem(BreakImpact impact, GemColor gemColor) {
+        super();
         this.gemColor = gemColor;
         this.impact = impact;
         this.state = GemState.IDLE;
     }
+
 
     public GemColor getColor() {
         return gemColor;
@@ -46,6 +57,6 @@ public class Gem extends Tile {
 
     @Override
     public Gem clone() {
-        return new Gem(impact, gemColor);
+        return new Gem(super.getId(), gemColor, impact, state);
     }
 }

@@ -1,10 +1,19 @@
 package sk.tuke.kpi.kp.gamestudio.game.core;
 
-import java.util.concurrent.locks.Lock;
+import java.util.UUID;
 
 public class LockTile extends Tile {
     private int needBreakCount;
     private final Gem gemContainer;
+
+    private LockTile(int needBreakCount, Gem gem, UUID id) {
+        super(id);
+        if (needBreakCount < 1)
+            throw new IllegalArgumentException();
+
+        this.needBreakCount = needBreakCount;
+        this.gemContainer = gem;
+    }
 
     public LockTile(GemColor color) {
         this(3, new Gem(color));
@@ -15,6 +24,8 @@ public class LockTile extends Tile {
     }
 
     public LockTile(int needBreakCount, Gem gem) {
+        super();
+
         if (needBreakCount < 1)
             throw new IllegalArgumentException();
 
@@ -45,6 +56,6 @@ public class LockTile extends Tile {
 
     @Override
     public LockTile clone() {
-        return new LockTile(needBreakCount, gemContainer);
+        return new LockTile(needBreakCount, gemContainer, super.getId());
     }
 }

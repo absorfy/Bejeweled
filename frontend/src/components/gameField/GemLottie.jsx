@@ -1,0 +1,45 @@
+import Lottie from "lottie-react";
+
+import styles from "./Gem.module.css";
+import star from "../lottie/star.json";
+import explode from "../lottie/explode.json";
+import column from "../lottie/vertical.json";
+import row from "../lottie/horizontal.json";
+
+const effectMap = {
+  explode,
+  star,
+  column,
+  row
+};
+
+export default function GemWithEffect({ gem }) {
+  const effect = gem.impact !== 'NONE' ? effectMap[gem.impact.toLowerCase()] : null;
+  return (
+    <div className={styles.gemContainer}>
+      {effect && (
+        <Lottie
+          animationData={effect}
+          loop
+          autoplay
+          style={{
+            position: "absolute",
+            top: -42,
+            left: -42,
+            width: 160,
+            height: 160,
+            pointerEvents: "none",
+            zIndex: 1
+          }}
+        />
+      )}
+
+      <img
+        src={`/gemImages/${gem.color.toLowerCase()}_gem.png`}
+        alt="gem"
+        className={styles.gemImage}
+        draggable={false}
+      />
+    </div>
+  );
+}

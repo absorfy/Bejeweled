@@ -2,7 +2,6 @@ package sk.tuke.kpi.kp.gamestudio.game.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 

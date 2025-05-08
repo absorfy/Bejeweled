@@ -1,13 +1,14 @@
 import Gem from './Gem.jsx';
 import LockTile from "./LockTile";
+import AirTile from "./AirTile";
 
-export default function Tile({tile, onTileClick}) {
+export default function Tile({tile, index, handleDragEnd, setDirection}) {
   switch (tile.tileName) {
     case 'Gem':
-      return <Gem gem={tile} onGemClick={onTileClick} />;
+      return <Gem gem={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index} />;
     case 'LockTile':
       return <LockTile lockTile={tile} />;
     default:
-      return <></>;
+      return <AirTile/>;
   }
 }

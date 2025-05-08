@@ -1,9 +1,40 @@
 .board {
     display: flex;
-    flex-direction: column;
-    outline: darkgray dashed 10px;
-    border-radius: 5px;
-    outline-offset: 20px;
-    width: fit-content;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    width: 560px;
+    height: 560px;
+
+    outline: dimgray 2px dashed;
+    outline-offset: 10px;
+
     margin: 50px;
+    padding: 0;
+    position: relative;
+    list-style: none;
+}
+
+
+.tile {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 30px;
+    font-weight: bold;
+
+    position: absolute;
+}
+
+
+.tileType1 {
+    background-color: gray;
+}
+
+.tileType2 {
+    background-color: darkgray;
 }
