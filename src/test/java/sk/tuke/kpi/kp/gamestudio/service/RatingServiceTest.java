@@ -3,6 +3,10 @@ package sk.tuke.kpi.kp.gamestudio.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import sk.tuke.kpi.kp.gamestudio.TestConfig;
+import sk.tuke.kpi.kp.gamestudio.entity.Player;
 import sk.tuke.kpi.kp.gamestudio.entity.Rating;
 
 import java.util.Date;
@@ -10,10 +14,15 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 class RatingServiceTest {
 
     @Autowired
     private RatingService ratingService;
+
+    @Autowired
+    private PlayerService playerService;
 
     @Test
     void reset() {
@@ -23,24 +32,39 @@ class RatingServiceTest {
 
     @Test
     void setAndGetRating() {
+        playerService.reset();
         ratingService.reset();
-        ratingService.setRating(new Rating("bejeweled", "jaro", 4, new Date()));
+
+        Player player = new Player("jaro");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("bejeweled", player, 4, new Date()));
         var rating =  ratingService.getRating("bejeweled", "jaro");
         assertEquals(4, rating);
-        ratingService.setRating(new Rating("bejeweled", "jaro", 2, new Date()));
+        ratingService.setRating(new Rating("bejeweled", player, 2, new Date()));
         rating =  ratingService.getRating("bejeweled", "jaro");
         assertEquals(2, rating);
-        assertThrows(RatingException.class, () -> ratingService.setRating(new Rating("bejeweled", "jaro", 6, new Date())));
+        assertThrows(RatingException.class, () -> ratingService.setRating(new Rating("bejeweled", player, 6, new Date())));
     }
 
     @Test
     void getAverageRating() {
+        playerService.reset();
         ratingService.reset();
-        ratingService.setRating(new Rating("bejeweled", "jaro", 4, new Date()));
-        ratingService.setRating(new Rating("mines", "fero", 5, new Date()));
-        ratingService.setRating(new Rating("bejeweled", "mara", 4, new Date()));
-        ratingService.setRating(new Rating("bejeweled", "jano", 1, new Date()));
-        ratingService.setRating(new Rating("bejeweled", "zuza", 2, new Date()));
+        Player player = new Player("jaro");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("bejeweled", player, 4, new Date()));
+        player = new Player("fero");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("mines", player, 5, new Date()));
+        player = new Player("mara");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("bejeweled", player, 4, new Date()));
+        player = new Player("jano");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("bejeweled", player, 1, new Date()));
+        player = new Player("zuza");
+        playerService.addPlayer(player);
+        ratingService.setRating(new Rating("bejeweled", player, 2, new Date()));
         var averageRating = ratingService.getAverageRating("bejeweled");
         assertEquals(3, averageRating);
     }

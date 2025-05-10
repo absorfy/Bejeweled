@@ -5,10 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import sk.tuke.kpi.kp.gamestudio.service.CommentService;
+import sk.tuke.kpi.kp.gamestudio.service.PlayerService;
 import sk.tuke.kpi.kp.gamestudio.service.RatingService;
 import sk.tuke.kpi.kp.gamestudio.service.ScoreService;
 import sk.tuke.kpi.kp.gamestudio.service.jpa.CommentServiceJPA;
+import sk.tuke.kpi.kp.gamestudio.service.jpa.PlayerServiceJPA;
 import sk.tuke.kpi.kp.gamestudio.service.jpa.RatingServiceJPA;
 import sk.tuke.kpi.kp.gamestudio.service.jpa.ScoreServiceJPA;
 
@@ -34,4 +38,10 @@ public class GameStudioServer {
     public RatingService ratingService() {
         return new RatingServiceJPA();
     }
+
+    @Bean
+    public PlayerService playerService() { return new PlayerServiceJPA(); }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 }

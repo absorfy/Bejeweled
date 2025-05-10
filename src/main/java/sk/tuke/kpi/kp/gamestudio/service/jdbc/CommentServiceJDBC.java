@@ -1,6 +1,7 @@
 package sk.tuke.kpi.kp.gamestudio.service.jdbc;
 
 import sk.tuke.kpi.kp.gamestudio.entity.Comment;
+import sk.tuke.kpi.kp.gamestudio.entity.Player;
 import sk.tuke.kpi.kp.gamestudio.service.CommentException;
 import sk.tuke.kpi.kp.gamestudio.service.CommentService;
 
@@ -23,7 +24,7 @@ public class CommentServiceJDBC implements CommentService {
              PreparedStatement statement = connection.prepareStatement(INSERT)
         ) {
             statement.setString(1, comment.getGame());
-            statement.setString(2, comment.getPlayer());
+            statement.setString(2, comment.getPlayer().getLogin());
             statement.setString(3, comment.getComment());
             statement.setTimestamp(4, new Timestamp(comment.getCommentedOn().getTime()));
             statement.executeUpdate();
@@ -41,7 +42,7 @@ public class CommentServiceJDBC implements CommentService {
             try (ResultSet rs = statement.executeQuery()) {
                 List<Comment> comments = new ArrayList<>();
                 while (rs.next()) {
-                    comments.add(new Comment(rs.getString(1), rs.getString(2), rs.getString(3), rs.getTimestamp(4)));
+                    comments.add(new Comment(rs.getString(1), new Player(rs.getString(2), rs.getString(2)), rs.getString(3), rs.getTimestamp(4)));
                 }
                 return comments;
             }

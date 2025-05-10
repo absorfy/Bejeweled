@@ -3,10 +3,7 @@ package sk.tuke.kpi.kp.gamestudio.entity;
 
 import org.hibernate.annotations.Check;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 import java.util.Date;
 
 
@@ -20,7 +17,7 @@ import java.util.Date;
 @NamedQuery( name = "Rating.resetRatings",
         query = "DELETE FROM Rating")
 @NamedQuery( name = "Rating.getRating",
-        query = "SELECT r.rating FROM Rating r WHERE r.game=:game AND r.player=:player")
+        query = "SELECT r.rating FROM Rating r WHERE r.game=:game AND r.player.login=:login")
 @Check(constraints = "rating >= 1 AND rating <= 5")
 public class Rating {
     @Id
@@ -28,14 +25,15 @@ public class Rating {
     private int ident;
 
     private String game;
-    private String player;
+    @ManyToOne
+    private Player player;
 
     private int rating;
     private Date ratedOn;
 
     public Rating() {}
 
-    public Rating(String game, String player, int rating, Date ratedOn) {
+    public Rating(String game, Player player, int rating, Date ratedOn) {
         this.game = game;
         this.player = player;
         this.rating = rating;
@@ -50,11 +48,11 @@ public class Rating {
         this.game = game;
     }
 
-    public String getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 

@@ -25,19 +25,19 @@ public class RatingServiceJDBC implements RatingService {
              PreparedStatement insertStatement = connection.prepareStatement(INSERT)
         ) {
             findStatement.setString(1, rating.getGame());
-            findStatement.setString(2, rating.getPlayer());
+            findStatement.setString(2, rating.getPlayer().getLogin());
 
             try (ResultSet rs = findStatement.executeQuery()) {
                 if(rs.next()) {
                     updateStatement.setInt(1, rating.getRating());
                     updateStatement.setTimestamp(2, new Timestamp(rating.getRatedOn().getTime()));
                     updateStatement.setString(3, rating.getGame());
-                    updateStatement.setString(4, rating.getPlayer());
+                    updateStatement.setString(4, rating.getPlayer().getLogin());
                     updateStatement.executeUpdate();
                 }
                 else {
                     insertStatement.setString(1, rating.getGame());
-                    insertStatement.setString(2, rating.getPlayer());
+                    insertStatement.setString(2, rating.getPlayer().getLogin());
                     insertStatement.setInt(3, rating.getRating());
                     insertStatement.setTimestamp(4, new Timestamp(rating.getRatedOn().getTime()));
                     insertStatement.executeUpdate();

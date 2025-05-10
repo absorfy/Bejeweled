@@ -8,11 +8,13 @@ export default function Gem({gem, handleDragEnd, setDirection, index}) {
   const fallDelay = 0.1
   const fallDuration = fallDelay * 8
 
+  gem.isNew = gem.impact !== 'NONE' ? false : gem.isNew
+
   return (
     <motion.li
       layout
 
-      initial={{ y: gem.isNew ? (-row - 2) * 70 : 0, opacity: gem.isNew ? 0 : 1 }}
+      initial={{ y: gem.isNew ? (-row - 4) * 70 : 0, opacity: gem.isNew ? 0 : 1 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{
         layout: { type: "spring", stiffness: 400, damping: 25, delay: (Math.random() / 2) * fallDelay },

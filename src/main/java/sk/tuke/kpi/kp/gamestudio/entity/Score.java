@@ -1,9 +1,6 @@
 package sk.tuke.kpi.kp.gamestudio.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 import java.util.Date;
 
 
@@ -18,13 +15,14 @@ public class Score {
     private int ident;
 
     private String game;
-    private String player;
+    @ManyToOne
+    private Player player;
     private int points;
     private Date playedOn;
 
     public Score() {}
 
-    public Score(String game, String player, int points, Date playedOn) {
+    public Score(String game, Player player, int points, Date playedOn) {
         this.game = game;
         this.player = player;
         this.points = points;
@@ -39,11 +37,11 @@ public class Score {
         this.game = game;
     }
 
-    public String getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 

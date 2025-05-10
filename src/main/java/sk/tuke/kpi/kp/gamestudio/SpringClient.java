@@ -4,16 +4,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 import sk.tuke.kpi.kp.gamestudio.game.consoleui.ConsoleUI;
 import sk.tuke.kpi.kp.gamestudio.game.core.GameField;
-import sk.tuke.kpi.kp.gamestudio.service.CommentService;
-import sk.tuke.kpi.kp.gamestudio.service.RatingService;
-import sk.tuke.kpi.kp.gamestudio.service.ScoreService;
+import sk.tuke.kpi.kp.gamestudio.service.*;
 import sk.tuke.kpi.kp.gamestudio.service.restclient.CommentServiceRestClient;
 import sk.tuke.kpi.kp.gamestudio.service.restclient.RatingServiceRestClient;
 import sk.tuke.kpi.kp.gamestudio.service.restclient.ScoreServiceRestClient;
@@ -30,6 +27,7 @@ public class SpringClient {
     }
 
     @Bean
+    @Profile("!test")
     public CommandLineRunner runner(ConsoleUI ui) {
         return args -> ui.play();
     }
@@ -45,22 +43,29 @@ public class SpringClient {
     }
 
     @Bean
+    @Profile("!test")
     public ScoreService scoreService() {
         //return new ScoreServiceJPA();
         return new ScoreServiceRestClient();
     }
 
     @Bean
+    @Profile("!test")
     public CommentService commentService() {
         //return new CommentServiceJPA();
         return new CommentServiceRestClient();
     }
 
     @Bean
+    @Profile("!test")
     public RatingService ratingService() {
         //return new RatingServiceJPA();
         return new RatingServiceRestClient();
     }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
     public RestTemplate restTemplate() {

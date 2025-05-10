@@ -1,10 +1,8 @@
 package sk.tuke.kpi.kp.gamestudio.entity;
 
+import sk.tuke.kpi.kp.gamestudio.server.dto.CommentDTO;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -18,13 +16,14 @@ public class Comment {
     private int ident;
 
     private String game;
-    private String player;
+    @ManyToOne
+    private Player player;
     private String comment;
     private Date commentedOn;
 
     public Comment() {}
 
-    public Comment(String game, String player, String comment, Date commentedOn) {
+    public Comment(String game, Player player, String comment, Date commentedOn) {
         this.game = game;
         this.player = player;
         this.comment = comment;
@@ -39,11 +38,11 @@ public class Comment {
         this.game = game;
     }
 
-    public String getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 
@@ -75,5 +74,14 @@ public class Comment {
                 ", comment='" + comment + '\'' +
                 ", commentedOn=" + commentedOn +
                 '}';
+    }
+
+    public CommentDTO toDTO() {
+        CommentDTO dto = new CommentDTO();
+        dto.setGame(game);
+        dto.setComment(comment);
+        dto.setCommentedOn(commentedOn);
+        dto.setPlayerLogin(player.getLogin());
+        return dto;
     }
 }

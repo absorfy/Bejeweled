@@ -1,0 +1,32 @@
+.overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    backdrop-filter: blur(3px);
+}
+
+.modalContainer {
+    position: fixed;
+    inset: 0;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.modal {
+    background-color: #223843;
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    min-width: 350px;
+    max-width: 90%;
+    pointer-events: auto;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}

@@ -49,11 +49,11 @@ public class RatingServiceJPA implements RatingService {
     }
 
     @Override
-    public int getRating(String game, String player) throws RatingException {
+    public int getRating(String game, String playerLogin) throws RatingException {
         try {
             List<Integer> results = entityManager.createNamedQuery("Rating.getRating", Integer.class)
                     .setParameter("game", game)
-                    .setParameter("player", player)
+                    .setParameter("login", playerLogin)
                     .getResultList();
 
             return results.isEmpty() ? 0 : results.get(0);

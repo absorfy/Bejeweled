@@ -4,12 +4,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
-import sk.tuke.kpi.kp.gamestudio.entity.User;
+import sk.tuke.kpi.kp.gamestudio.entity.Player;
 
 @Controller
 @Scope(WebApplicationContext.SCOPE_SESSION)
 public class UserController {
-    private User loggedUser;
+    private Player loggedPlayer;
 
     @RequestMapping("/")
     public String index() {
@@ -19,7 +19,7 @@ public class UserController {
     @RequestMapping("/login")
     public String login(String login, String password) {
         if("heslo".equals(password)) {
-            loggedUser = new User(login);
+            loggedPlayer = new Player(login, "heslo");
         }
 
         return "redirect:/";
@@ -27,15 +27,15 @@ public class UserController {
 
     @RequestMapping("/logout")
     public String logout() {
-        loggedUser = null;
+        loggedPlayer = null;
         return "redirect:/";
     }
 
-    public User getLoggedUser() {
-        return loggedUser;
+    public Player getLoggedUser() {
+        return loggedPlayer;
     }
 
     public boolean isLogged() {
-        return loggedUser != null;
+        return loggedPlayer != null;
     }
 }

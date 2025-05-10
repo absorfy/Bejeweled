@@ -42,7 +42,7 @@ public class BejeweledController {
         if(row != null && column != null && field.getState() == FieldState.WAITING) {
             selectTile(Integer.parseInt(row), Integer.parseInt(column));
             if(field.getState() == FieldState.NO_POSSIBLE_MOVE && userController.isLogged())
-                scoreService.addScore(new Score("bejeweled", userController.getLoggedUser().getLogin(), field.getScore(), new Date()));
+                scoreService.addScore(new Score("bejeweled", userController.getLoggedUser(), field.getScore(), new Date()));
         }
 
         model.addAttribute("scores", scoreService.getTopScores("bejeweled"));

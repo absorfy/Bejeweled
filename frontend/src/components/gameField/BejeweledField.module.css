@@ -7,9 +7,6 @@
     width: 560px;
     height: 560px;
 
-    outline: dimgray 2px dashed;
-    outline-offset: 10px;
-
     margin: 50px;
     padding: 0;
     position: relative;

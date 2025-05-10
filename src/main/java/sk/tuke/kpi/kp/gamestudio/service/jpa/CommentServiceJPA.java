@@ -32,7 +32,7 @@ public class CommentServiceJPA implements CommentService {
             return entityManager.createNamedQuery("Comment.getComments")
                     .setParameter("game", game).getResultList();
         } catch (PersistenceException e) {
-            throw new CommentException("Problem getting comment", e);
+            throw new CommentException("Problem getting comments", e);
         }
     }
 

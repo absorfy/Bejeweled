@@ -2,6 +2,7 @@ package sk.tuke.kpi.kp.gamestudio.game.consoleui;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import sk.tuke.kpi.kp.gamestudio.entity.Comment;
+import sk.tuke.kpi.kp.gamestudio.entity.Player;
 import sk.tuke.kpi.kp.gamestudio.entity.Rating;
 import sk.tuke.kpi.kp.gamestudio.entity.Score;
 import sk.tuke.kpi.kp.gamestudio.game.core.FieldState;
@@ -359,13 +360,13 @@ public class ConsoleUI {
 
     private void saveScore() {
         scoreService.addScore(
-                new Score("bejeweled", System.getProperty("user.name"), field.getScore(), new Date())
+                new Score("bejeweled", new Player("admin", "admin"), field.getScore(), new Date())
         );
     }
 
     private void saveComment(String text) {
         commentService.addComment(
-                new Comment("bejeweled", System.getProperty("user.name"), text, new Date())
+                new Comment("bejeweled", new Player("admin", "admin"), text, new Date())
         );
         System.out.println("------------------------------\n" +
                 "Saved comment: " + text + "\n" +
@@ -374,7 +375,7 @@ public class ConsoleUI {
     }
 
     private void saveRating(int rating) {
-        ratingService.setRating(new Rating("bejeweled", System.getProperty("user.name"), rating, new Date()));
+        ratingService.setRating(new Rating("bejeweled", new Player("admin"), rating, new Date()));
         System.out.println("------------------------------\n" +
                 "Saved rating: " + rating + "\n" +
                 "------------------------------\n"

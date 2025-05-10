@@ -2,7 +2,7 @@
 import styles from './BejeweledField.module.css';
 import {motion} from "framer-motion";
 
-export default function SwitchTile({tile, rowIndex, colIndex}) {
+export default function TileBackground({tile, rowIndex, colIndex}) {
 
   const tileType = (tile.tileName === 'AirTile') ? styles.airTile :
     ((rowIndex + colIndex) % 2 === 0 ? styles.tileType1 : styles.tileType2)
@@ -17,7 +17,7 @@ export default function SwitchTile({tile, rowIndex, colIndex}) {
       //   scale: { type: "spring", bounce: 0.1, duration: 3.2 - rowIndex * 0.3 },
       // }}
 
-      key={"Tile" + colIndex}
+      key={"TileContent" + colIndex}
       className={`${styles.tile} ${tileType}`}
       style={{
         top: `${rowIndex * 70}px`,

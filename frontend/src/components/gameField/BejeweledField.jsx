@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import gsAxios from "../../api";
 import bejeweledStyles from './BejeweledField.module.css';
-import SwitchTile from "./SwitchTile";
-import Tile from "./Tile";
+import TileBackground from "./TileBackground";
+import TileContent from "./TileContent";
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 export default function BejeweledField() {
@@ -19,7 +19,7 @@ export default function BejeweledField() {
         setCurrentField(res.data);
         setFieldTiles(res.data.tiles.flat().map(tile => ({
           ...tile,
-          isNew: (!fieldTiles?.find(t => t.id === tile.id)?.isNew ?? true) ?? true
+          isNew: fieldTiles?.find(t => t.id === tile.id)?.isNew !== true
         })));
       })
       .catch(error => {
@@ -46,7 +46,7 @@ export default function BejeweledField() {
       setCurrentField(frame);
       setFieldTiles(frame.tiles.flat().map(tile => ({
         ...tile,
-        isNew: (!fieldTiles?.find(t => t.id === tile.id)?.isNew ?? true) ?? true
+        isNew: fieldTiles?.find(t => t.id === tile.id)?.isNew !== true
       })));
     }
     setAnimating(false)
@@ -107,11 +107,11 @@ export default function BejeweledField() {
   return (
     <ul className={bejeweledStyles.board}>
       {fieldTiles.map((tile, index) => (
-        <SwitchTile key={tile.id} tile={tile} rowIndex={Math.floor(index / 8)} colIndex={index % 8}/>
+        <TileBackground key={tile.id} tile={tile} rowIndex={Math.floor(index / 8)} colIndex={index % 8}/>
       ))}
 
       {fieldTiles.map((tile, index) => (
-        <Tile key={tile.id} tile={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index}/>
+        <TileContent key={tile.id} tile={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index}/>
       ))}
     </ul>
   );
