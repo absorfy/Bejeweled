@@ -3,8 +3,8 @@ import gsAxios from "../../api";
 import bejeweledStyles from './BejeweledField.module.css';
 import TileBackground from "./TileBackground";
 import TileContent from "./TileContent";
+import {animateBreaking} from "./bejeweledLogic";
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 export default function BejeweledField() {
   const [currentField, setCurrentField] = useState(null);
   const [fieldTiles, setFieldTiles] = useState(null);
@@ -37,21 +37,6 @@ export default function BejeweledField() {
   if (!currentField || !currentField.tiles) {
     return <div>ERROR: loading field</div>;
   }
-
-
-  const animateBreaking = async (frames) => {
-    setAnimating(true)
-    for(const frame of frames) {
-      await sleep(700);
-      setCurrentField(frame);
-      setFieldTiles(frame.tiles.flat().map(tile => ({
-        ...tile,
-        isNew: fieldTiles?.find(t => t.id === tile.id)?.isNew !== true
-      })));
-    }
-    setAnimating(false)
-  }
-
 
   function handleDragEnd(event, info, index) {
     if(animating) return;
@@ -96,23 +81,29 @@ export default function BejeweledField() {
         row2: row2,
         col2: col2
       }).then(res => {
-        animateBreaking(res.data)
+        animateBreaking(res.data, setCurrentField, setFieldTiles, setAnimating, fieldTiles)
       }).catch(err => {
         console.error(err)
       })
     }
   }
 
-
   return (
-    <ul className={bejeweledStyles.board}>
-      {fieldTiles.map((tile, index) => (
-        <TileBackground key={tile.id} tile={tile} rowIndex={Math.floor(index / 8)} colIndex={index % 8}/>
-      ))}
+    <div className={bejeweledStyles.bejeweledContent}>
+      <div className={bejeweledStyles.gameInfoPanel}>
+        <span>+{currentField.lastIncrementScore}</span>
+        <br/>
+        <span>{currentField.score}</span>
+      </div>
+      <ul className={bejeweledStyles.board}>
+        {fieldTiles.map((tile, index) => (
+          <TileBackground key={tile.id} tile={tile} rowIndex={Math.floor(index / 8)} colIndex={index % 8}/>
+        ))}
 
-      {fieldTiles.map((tile, index) => (
-        <TileContent key={tile.id} tile={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index}/>
-      ))}
-    </ul>
+        {fieldTiles.map((tile, index) => (
+          <TileContent key={tile.id} tile={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index}/>
+        ))}
+      </ul>
+    </div>
   );
 }

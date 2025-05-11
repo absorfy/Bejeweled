@@ -20,8 +20,8 @@ export default function TileBackground({tile, rowIndex, colIndex}) {
       key={"TileContent" + colIndex}
       className={`${styles.tile} ${tileType}`}
       style={{
-        top: `${rowIndex * 70}px`,
-        left: `${colIndex * 70}px`,
+        top: `${rowIndex * 60}px`,
+        left: `${colIndex * 60}px`,
       }}
     />
   );

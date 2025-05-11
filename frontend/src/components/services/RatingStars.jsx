@@ -1,5 +1,5 @@
 import StarRatings from 'react-star-ratings';
-import { usePlayer } from "../index/PlayerContext";
+import { usePlayer } from "../PlayerContext";
 import {fetchAverageRating, fetchRating, setRating} from "../../api/rating.service";
 import {useEffect, useState} from "react";
 import useSocket from "../../api/webSocket";

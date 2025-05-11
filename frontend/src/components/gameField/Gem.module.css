@@ -1,6 +1,6 @@
 .gemContainer {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9,8 +9,8 @@
 }
 
 .gemImage {
-    width: 45px;
-    height: 45px;
+    width: 35px;
+    height: 35px;
     position: relative;
     z-index: 1;
 }

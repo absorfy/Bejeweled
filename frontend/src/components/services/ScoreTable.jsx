@@ -1,4 +1,4 @@
-import {usePlayer} from "../index/PlayerContext";
+import {usePlayer} from "../PlayerContext";
 import {useEffect, useState} from "react";
 import {fetchScores} from "../../api/score.service";
 import useSocket from "../../api/webSocket";

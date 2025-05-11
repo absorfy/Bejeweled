@@ -24,8 +24,8 @@ export default function GemWithEffect({ gem }) {
           autoplay
           style={{
             position: "absolute",
-            top: -42,
-            left: -42,
+            top: -46.5,
+            left: -46.5,
             width: 160,
             height: 160,
             pointerEvents: "none",

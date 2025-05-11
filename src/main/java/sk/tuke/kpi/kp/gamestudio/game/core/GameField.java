@@ -1,11 +1,12 @@
 package sk.tuke.kpi.kp.gamestudio.game.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import sk.tuke.kpi.kp.gamestudio.server.dto.GameFieldDTO;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GameField implements Cloneable {
+public class GameField {
     public static final int totalHintCount = 3;
     public static final int minRowCount = 8;
     public static final int minColCount = 8;
@@ -147,7 +148,8 @@ public class GameField implements Cloneable {
     private void blockBottomTiles() {
         int borderBlocked = getRowCount() - (int) Math.ceil(getRowCount() / 3.0);
         for (Point point : Point.iterate(borderBlocked, 0, getRowCount() - 1, getColCount() - 1)) {
-            if (getTile(point) == null) {
+            Tile tile = getTile(point);
+            if (tile == null || tile instanceof EmptyTile) {
                 setTile(point, new LockTile(gemCounter.getRandomGemColor()));
             }
         }
@@ -538,17 +540,17 @@ public class GameField implements Cloneable {
         return copy;
     }
 
-    @Override
-    public GameField clone() throws CloneNotSupportedException {
-        super.clone();
-
-        GameField clonedField = new GameField(getRowCount(), getColCount());
-        clonedField.hintCount = this.hintCount;
-        clonedField.state = this.state;
-
-        for (Point point : Point.iterate(getRowCount(), getColCount())) {
-            clonedField.setTile(point, getTile(point).clone());
-        }
-        return clonedField;
+    public GameFieldDTO toDTO() {
+        GameFieldDTO dto = new GameFieldDTO();
+        dto.setScore(getScore());
+        dto.setLastIncrementScore(getLastIncrementScore());
+        dto.setFieldState(getState());
+        dto.setColCount(getColCount());
+        dto.setRowCount(getRowCount());
+        dto.setTiles(getTiles());
+        dto.setHintCount(getHintCount());
+        dto.setSpeedCombo(getSpeedCombo());
+        dto.setChainCombo(getChainCombo());
+        return dto;
     }
 }

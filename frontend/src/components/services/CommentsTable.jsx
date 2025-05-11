@@ -1,5 +1,5 @@
 import {fetchComments} from "../../api/comment.servise";
-import {usePlayer} from "../index/PlayerContext";
+import {usePlayer} from "../PlayerContext";
 import {useEffect, useState} from "react";
 import {handleCommentSubmit} from "./CommentsTableOperations";
 import useSocket from "../../api/webSocket";

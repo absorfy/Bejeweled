@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import { Link, useLocation } from "react-router-dom";
 import LoginModal from "./LoginModal";
-import {usePlayer} from "./PlayerContext";
-import gsAxios from "../../api";
+import {usePlayer} from "../../PlayerContext";
+import gsAxios from "../../../api";
 
 function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);

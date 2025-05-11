@@ -9,18 +9,9 @@ public class AirTile extends Tile {
     }
 
 
-
-    private AirTile(UUID id) {
-        super(id);
-    }
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
     }
 
-    @Override
-    public AirTile clone() {
-        return new AirTile(super.getId());
-    }
 }

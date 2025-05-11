@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import gsAxios from "../../api";
+import gsAxios from "../api";
 
 
 export const PlayerContext = createContext(null);

@@ -6,14 +6,6 @@ public class LockTile extends Tile {
     private int needBreakCount;
     private final Gem gemContainer;
 
-    private LockTile(int needBreakCount, Gem gem, UUID id) {
-        super(id);
-        if (needBreakCount < 1)
-            throw new IllegalArgumentException();
-
-        this.needBreakCount = needBreakCount;
-        this.gemContainer = gem;
-    }
 
     public LockTile(GemColor color) {
         this(3, new Gem(color));
@@ -54,8 +46,4 @@ public class LockTile extends Tile {
         return this.getClass().getSimpleName();
     }
 
-    @Override
-    public LockTile clone() {
-        return new LockTile(needBreakCount, gemContainer, super.getId());
-    }
 }

@@ -1,4 +1,4 @@
-import gsAxios from "../../api";
+import gsAxios from "../../../api";
 
 
 export default async function handleRegister(login, password, setPlayerLogin) {

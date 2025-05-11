@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styles from "./LoginModal.module.css";
 import {useState} from "react";
 import handleRegister from "./LoginModalOperations";
-import {usePlayer} from "./PlayerContext";
+import {usePlayer} from "../../PlayerContext";
 
 export default function LoginModal({ isOpen, onClose }) {
   const [login, setLogin] = useState("");

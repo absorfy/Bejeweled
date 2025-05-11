@@ -1,8 +1,6 @@
 import {motion} from "framer-motion";
 import GemWithEffect from "./GemLottie";
 
-
-
 export default function Gem({gem, handleDragEnd, setDirection, index}) {
   const row = Math.floor(index / 8);
   const fallDelay = 0.1
@@ -14,7 +12,7 @@ export default function Gem({gem, handleDragEnd, setDirection, index}) {
     <motion.li
       layout
 
-      initial={{ y: gem.isNew ? (-row - 4) * 70 : 0, opacity: gem.isNew ? 0 : 1 }}
+      initial={{ y: gem.isNew ? (-row - 4) * 60 : 0, opacity: gem.isNew ? 0 : 1 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{
         layout: { type: "spring", stiffness: 400, damping: 25, delay: (Math.random() / 2) * fallDelay },

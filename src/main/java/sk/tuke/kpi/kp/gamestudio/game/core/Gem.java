@@ -7,13 +7,6 @@ public class Gem extends Tile {
     private final BreakImpact impact;
     private GemState state;
 
-    private Gem(UUID id, GemColor gemColor, BreakImpact impact, GemState state) {
-        super(id);
-        this.gemColor = gemColor;
-        this.impact = impact;
-        this.state = state;
-    }
-
     public Gem() {
         this(BreakImpact.NONE);
     }
@@ -53,10 +46,5 @@ public class Gem extends Tile {
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
-    }
-
-    @Override
-    public Gem clone() {
-        return new Gem(super.getId(), gemColor, impact, state);
     }
 }
