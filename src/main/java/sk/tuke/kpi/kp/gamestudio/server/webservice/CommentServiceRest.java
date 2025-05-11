@@ -48,7 +48,7 @@ public class CommentServiceRest {
         );
 
         commentService.addComment(comment);
-        messagingTemplate.convertAndSend("/topic/comments", commentDTO);
+        messagingTemplate.convertAndSend("/topic/comments/" + commentDTO.getGame(), commentDTO);
         return ResponseEntity.ok("Comment added");
     }
 }

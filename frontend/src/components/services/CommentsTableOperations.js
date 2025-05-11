@@ -1,4 +1,4 @@
-import {addComment} from "../api/comment.servise";
+import {addComment} from "../../api/comment.servise";
 
 
 export async function handleCommentSubmit(gameName, playerLogin, comment) {

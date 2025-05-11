@@ -5,9 +5,9 @@ import BejeweledField from "./components/gameField/BejeweledField";
 import OtherGame from "./components/index/OtherGame";
 import Footer from "./components/index/Footer";
 import Header from "./components/index/Header";
-import CommentsTable from "./components/CommentsTable";
+import CommentsTable from "./components/services/CommentsTable";
 import Index from "./components/index";
-import ScoreTable from "./components/ScoreTable";
+import ScoreTable from "./components/services/ScoreTable";
 
 function App() {
     return (

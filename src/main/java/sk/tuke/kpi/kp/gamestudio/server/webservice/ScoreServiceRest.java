@@ -3,6 +3,7 @@ package sk.tuke.kpi.kp.gamestudio.server.webservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import sk.tuke.kpi.kp.gamestudio.entity.Player;
 import sk.tuke.kpi.kp.gamestudio.entity.Score;
@@ -20,6 +21,8 @@ public class ScoreServiceRest {
     private ScoreService scoreService;
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/{game}")
     public List<Score> getTopScores(@PathVariable String game) {
@@ -44,6 +47,7 @@ public class ScoreServiceRest {
         );
 
         scoreService.addScore(score);
+        messagingTemplate.convertAndSend("/topic/scores/" + scoreDTO.getGame(), scoreDTO);
         return ResponseEntity.ok("Score added");
     }
 }

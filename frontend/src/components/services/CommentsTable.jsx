@@ -1,8 +1,8 @@
-import {fetchComments} from "../api/comment.servise";
-import {usePlayer} from "./index/PlayerContext";
+import {fetchComments} from "../../api/comment.servise";
+import {usePlayer} from "../index/PlayerContext";
 import {useEffect, useState} from "react";
 import {handleCommentSubmit} from "./CommentsTableOperations";
-import useCommentSocket from "../webSockets/CommentSocket";
+import useSocket from "../../api/webSocket";
 
 
 export default function CommentsTable({gameName}) {
@@ -17,7 +17,7 @@ export default function CommentsTable({gameName}) {
     });
   }, [gameName]);
 
-  useCommentSocket((newComment) => {
+  useSocket('comments', gameName, (newComment) => {
     setComments(prev => [...prev, newComment])
   })
 

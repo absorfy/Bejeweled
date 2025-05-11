@@ -3,6 +3,7 @@ package sk.tuke.kpi.kp.gamestudio.server.webservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import sk.tuke.kpi.kp.gamestudio.entity.Player;
 import sk.tuke.kpi.kp.gamestudio.entity.Rating;
@@ -18,6 +19,8 @@ public class RatingServiceRest {
     private RatingService ratingService;
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/{game}")
     public int getAverageRating(@PathVariable String game) {
@@ -47,6 +50,7 @@ public class RatingServiceRest {
         );
 
         ratingService.setRating(rating);
+        messagingTemplate.convertAndSend("/topic/ratings/" + ratingDTO.getGame(), ratingDTO);
         return ResponseEntity.ok("Rating added");
     }
 }
