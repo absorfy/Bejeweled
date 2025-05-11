@@ -1,4 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
+import gsAxios from "../../api";
 
 
 export const PlayerContext = createContext(null);
@@ -16,6 +17,20 @@ export const PlayerProvider = ({children}) => {
       localStorage.removeItem("playerLogin");
     }
   }, [playerLogin]);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await gsAxios.get("/player/status")
+        console.log(response.data)
+        setPlayerLogin(response.data)
+      } catch (error) {
+        setPlayerLogin(null)
+      }
+    }
+
+    fetchStatus();
+  }, [])
 
   return (
     <PlayerContext.Provider value={{playerLogin, setPlayerLogin}}>

@@ -11,7 +11,7 @@ export default async function handleRegister(login, password, setPlayerLogin) {
     setPlayerLogin(login)
     console.log("Login success:", response.data);
   } catch (error) {
-    console.error("Login failed:", error.response.data);
-    alert(error.response.data);
+    console.error("Login failed:", error.response?.data);
+    alert(error.response?.data);
   }
 }

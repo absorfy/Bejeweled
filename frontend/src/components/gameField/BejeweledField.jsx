@@ -14,7 +14,7 @@ export default function BejeweledField() {
 
 
   useEffect(() => {
-    gsAxios.get('/bejeweled/field')
+    gsAxios.get('/bejeweled/start')
       .then(res => {
         setCurrentField(res.data);
         setFieldTiles(res.data.tiles.flat().map(tile => ({

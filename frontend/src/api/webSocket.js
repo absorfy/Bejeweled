@@ -22,7 +22,8 @@ export default function useSocket(topic, gameName, onMessage) {
       },
     });
 
+
     client.activate();
-    return () => client.deactivate();
+    return () => {client.deactivate();}
   }, [topic, gameName, onMessage]);
 }

@@ -1,0 +1,7 @@
+.commentCell {
+    max-width: 100px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    background-color: red;
+}

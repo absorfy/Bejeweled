@@ -5,9 +5,8 @@ import BejeweledField from "./components/gameField/BejeweledField";
 import OtherGame from "./components/index/OtherGame";
 import Footer from "./components/index/Footer";
 import Header from "./components/index/Header";
-import CommentsTable from "./components/services/CommentsTable";
 import Index from "./components/index";
-import ScoreTable from "./components/services/ScoreTable";
+import GameContent from "./components/GameContent";
 
 function App() {
     return (
@@ -16,10 +15,8 @@ function App() {
         <main className="flex-grow-1">
           <Routes>
             <Route path={"/"} element={<Index/>} />
-            <Route path={"/bejeweled"} element={<BejeweledField/>} />
+            <Route path={"/bejeweled"} element={<GameContent gameName="bejeweled" gameComponent={<BejeweledField/>} />} />
             <Route path={"/otherGame"} element={<OtherGame/>} />
-            <Route path={"/comments"} element={<CommentsTable gameName="bejeweled"/>} />
-            <Route path={"/scores"} element={<ScoreTable gameName="bejeweled"/>} />
           </Routes>
         </main>
         <Footer/>

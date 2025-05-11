@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 import { Link, useLocation } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import {usePlayer} from "./PlayerContext";
+import gsAxios from "../../api";
 
 function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const {playerLogin, setPlayerLogin} = usePlayer()
 
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await gsAxios.post("/player/logout");
     setPlayerLogin(null);
   };
 

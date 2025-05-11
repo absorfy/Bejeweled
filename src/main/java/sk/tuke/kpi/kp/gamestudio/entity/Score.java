@@ -1,5 +1,7 @@
 package sk.tuke.kpi.kp.gamestudio.entity;
 
+import sk.tuke.kpi.kp.gamestudio.server.dto.ScoreDTO;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -73,6 +75,15 @@ public class Score {
                 ", points=" + points +
                 ", playedOn=" + playedOn +
                 '}';
+    }
+
+    public ScoreDTO toDTO() {
+        ScoreDTO dto = new ScoreDTO();
+        dto.setGame(game);
+        dto.setPoints(points);
+        dto.setPlayedOn(playedOn);
+        dto.setPlayerLogin(player.getLogin());
+        return dto;
     }
 
 }

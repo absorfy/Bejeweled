@@ -1,6 +1,7 @@
 import {usePlayer} from "../index/PlayerContext";
 import {useEffect, useState} from "react";
 import {fetchScores} from "../../api/score.service";
+import useSocket from "../../api/webSocket";
 
 
 export default function ScoreTable({gameName}) {
@@ -14,10 +15,17 @@ export default function ScoreTable({gameName}) {
     });
   }, [gameName]);
 
+  useSocket('scores', gameName, (newScore) => {
+    (async () => {
+      const response = await fetchScores(gameName);
+      setScores(response.data);
+    })();
+  })
+
 
   return (
     <>
-      <table className="table">
+      <table className="table table-sm">
         <thead className="thead-dark">
         <tr>
           <th scope="col">#</th>

@@ -3,7 +3,7 @@ import {usePlayer} from "../index/PlayerContext";
 import {useEffect, useState} from "react";
 import {handleCommentSubmit} from "./CommentsTableOperations";
 import useSocket from "../../api/webSocket";
-
+import styles from "./CommentsTable.module.css";
 
 export default function CommentsTable({gameName}) {
   const [comments, setComments] = useState([]);
@@ -28,27 +28,44 @@ export default function CommentsTable({gameName}) {
     setComments(response.data)
     setComment("")
   }
-
+  console.log(styles)
   return (
     <>
-      <table className="table">
-        <thead className="thead-dark">
-        <tr>
-          <th scope="col">Player</th>
-          <th scope="col">Comment</th>
-          <th scope="col">Date</th>
-        </tr>
-        </thead>
-        <tbody>
-        {comments.map((comment, index) => (
-          <tr key={index}>
-            <td>{comment.playerLogin}</td>
-            <td>{comment.comment}</td>
-            <td>{new Date(comment.commentedOn).toLocaleDateString()}</td>
+      <div
+        style={{
+          maxHeight: '300px',
+          overflowY: 'auto',
+          overflowX: 'auto',
+          maxWidth: '100%',
+        }}
+      >
+        <table className="table table-sm"
+               style={{ tableLayout: 'fixed', width: '100%' }}
+        >
+          <thead
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+            }}
+          >
+          <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Date</th>
           </tr>
-        ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          {comments.map((comment, index) => (
+            <tr key={index}>
+              <td>{comment.playerLogin}</td>
+              <td className={styles.commentCell}>{comment.comment}</td>
+              <td>{new Date(comment.commentedOn).toLocaleDateString()}</td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+      </div>
 
       {playerLogin === null ? (
         <span>Register to comment</span>

@@ -12,6 +12,7 @@ import sk.tuke.kpi.kp.gamestudio.service.PlayerService;
 import sk.tuke.kpi.kp.gamestudio.service.ScoreService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/score")
@@ -25,8 +26,8 @@ public class ScoreServiceRest {
     private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/{game}")
-    public List<Score> getTopScores(@PathVariable String game) {
-        return scoreService.getTopScores(game);
+    public List<ScoreDTO> getTopScores(@PathVariable String game) {
+        return scoreService.getTopScores(game).stream().map(Score::toDTO).collect(Collectors.toList());
     }
 
     @PostMapping
