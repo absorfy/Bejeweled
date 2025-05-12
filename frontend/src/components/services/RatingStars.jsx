@@ -45,26 +45,34 @@ export default function RatingStars({ gameName }) {
   })
 
   return (
-    <div className={styles.tabContainer}>
+    <div className={styles.tabContainer} style={{paddingBottom: 40}}>
       <h5>Average rating</h5>
       <StarRatings
         rating={averageRating}
-        starRatedColor="gold"
+        starRatedColor="#ff5a5f"
         numberOfStars={5}
         name="game-rating"
         starDimension="30px"
         starSpacing="5px"
       />
-      <h5>Rate the game</h5>
-      <StarRatings
-        rating={playerRating}
-        starRatedColor="gold"
-        changeRating={handleRatingChange}
-        numberOfStars={5}
-        name="game-rating"
-        starDimension="30px"
-        starSpacing="5px"
-      />
+      { playerLogin ? (
+        <>
+          <h5>Rate the game</h5>
+          <StarRatings
+            rating={playerRating}
+            starRatedColor="#ff5a5f"
+            changeRating={handleRatingChange}
+            numberOfStars={5}
+            name="game-rating"
+            starDimension="30px"
+            starSpacing="5px"
+          />
+        </>
+      ) : (
+        <h5>Login to rate the game</h5>
+      )
+      }
+
     </div>
   );
 }

@@ -5,10 +5,10 @@ import { useEffect } from "react";
 
 export default function LockTile({ lockTile }) {
   const controls = useAnimation();
+  const isAppearing = lockTile?.isStart;
+  const { scale, opacity } = getScaleAndOpacity(lockTile.needBreakCount);
 
   useEffect(() => {
-    const { scale, opacity } = getScaleAndOpacity(lockTile.needBreakCount);
-
     controls.start({
       scale: [1, 1.05, 0.98, 1.03, 0.96, scale],
       x: [0, -2, 2, -1, 1, 0],
@@ -31,7 +31,20 @@ export default function LockTile({ lockTile }) {
   }
 
   return (
-    <div className={styles.gemContainer}>
+    <motion.div
+      className={styles.gemContainer}
+      initial={isAppearing ? { scale: 0.6, opacity: 0 } : {}}
+      animate={isAppearing ? { scale: 1, opacity: 1 } : {}}
+      transition={
+        isAppearing
+          ? {
+            duration: 0.4,
+            delay: 1 + Math.random() * 0.5,
+            ease: "easeOut",
+          }
+          : {}
+      }
+    >
       <GemImage color={lockTile.gem.color} />
 
       <div className={styles.lockWrapper}>
@@ -41,6 +54,6 @@ export default function LockTile({ lockTile }) {
           initial={getScaleAndOpacity(lockTile.needBreakCount)}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

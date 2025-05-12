@@ -3,6 +3,7 @@ import styles from "./LoginModal.module.css";
 import {useState} from "react";
 import handleRegister from "./LoginModalOperations";
 import {usePlayer} from "../../PlayerContext";
+import DefaultButton from "../../DefaultButton";
 
 export default function LoginModal({ isOpen, onClose }) {
   const [login, setLogin] = useState("");
@@ -64,15 +65,15 @@ export default function LoginModal({ isOpen, onClose }) {
               >
                 <div className="mb-3">
                   <label className="form-label">Login</label>
-                  <input type="text" className="form-control" onChange={e => setLogin(e.target.value)} />
+                  <input maxLength={20} minLength={3} type="text" className="form-control" onChange={e => setLogin(e.target.value)} />
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Password</label>
-                  <input type="password" className="form-control" onChange={e => setPassword(e.target.value)} />
+                  <input maxLength={20} minLength={3} type="password" className="form-control" onChange={e => setPassword(e.target.value)} />
                 </div>
                 <div className="d-flex justify-content-end gap-2 mt-4">
-                  <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-                  <button type="submit" className="btn btn-primary">Log In</button>
+                  <DefaultButton buttonClickHandler={onClose} textValue={"Cancel"} />
+                  <DefaultButton type={"submit"} textValue={"Log In"} />
                 </div>
               </form>
             </div>

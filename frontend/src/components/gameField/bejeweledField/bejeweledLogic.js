@@ -1,9 +1,20 @@
+
 export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+const hitAudio = new Audio('/sounds/gem_hit.ogg');
+
 export async function animateBreaking(frames, setField, setTiles, oldTiles) {
-  for (const frame of frames) {
+  for (const [index, frame] of frames.entries()) {
+    const breakingAudio = new Audio(`/sounds/combo/combo_${Math.floor(Math.random() * 6)}.ogg`);
     const currentTileIds = frame.tiles.flat().map(tile => tile.id);
     const disappearing = oldTiles?.filter(t => !currentTileIds.includes(t.id)) || [];
+
+    if((index + 2) % 3 === 0 ) {
+      await breakingAudio.play();
+    }
+    if(index !== 0 && (index + 3) % 3 === 0 ) {
+      await hitAudio.play();
+    }
 
     if (disappearing.length > 0) {
 
@@ -36,7 +47,6 @@ export async function animateBreaking(frames, setField, setTiles, oldTiles) {
         };
       })
     );
-
     await sleep(700);
     oldTiles = frame.tiles.flat()
   }

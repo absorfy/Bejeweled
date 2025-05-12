@@ -1,12 +1,4 @@
-
-
-.hintButtonContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.hintButton {
+.defaultButton {
     background: #087e8b;
     color: #f5f5f5;
     font-size: 1rem;
@@ -19,16 +11,16 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.hintButton:hover:not(:disabled) {
+.defaultButton:hover:not(:disabled) {
     background: #c1839f;
     transform: translateY(-2px);
 }
 
-.hintButton:active:not(:disabled) {
+.defaultButton:active:not(:disabled) {
     transform: scale(0.95);
 }
 
-.hintButton:disabled {
+.defaultButton:disabled {
     background: #f5f5f5;
     cursor: not-allowed;
     color: #3c3c3c;

@@ -9,6 +9,8 @@ export default function ScoreDisplay({ score, lastIncrement, chainCombo }) {
   const [increments, setIncrements] = useState([])
   const [combos, setCombos] = useState([])
 
+  const textAnimDuration = 3000
+
   useEffect(() => {
     if (lastIncrement > 0) {
       const id = incrementId++;
@@ -16,7 +18,7 @@ export default function ScoreDisplay({ score, lastIncrement, chainCombo }) {
 
       setTimeout(() => {
         setIncrements((prev) => prev.filter((increment) => increment.id !== id));
-      }, 1000);
+      }, textAnimDuration);
     }
   }, [lastIncrement]);
 
@@ -27,7 +29,7 @@ export default function ScoreDisplay({ score, lastIncrement, chainCombo }) {
 
       setTimeout(() => {
         setCombos((prev) => prev.filter((combo) => combo.id !== id));
-      }, 1000);
+      }, textAnimDuration);
     }
   }, [chainCombo]);
 
@@ -52,9 +54,9 @@ export default function ScoreDisplay({ score, lastIncrement, chainCombo }) {
         <motion.div
           key={increment.id}
           initial={{ y: 0, opacity: 1 }}
-          animate={{ y: 30, opacity: 0 }}
+          animate={{ y: 60, opacity: 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: textAnimDuration / 1000 }}
           className={styles.increment}
         >
           +{increment.value}
@@ -64,9 +66,9 @@ export default function ScoreDisplay({ score, lastIncrement, chainCombo }) {
         <motion.div
           key={combo.id}
           initial={{ y: 0, opacity: 1 }}
-          animate={{ y: 30, opacity: 0 }}
+          animate={{ y: 60, opacity: 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: textAnimDuration / 1000 }}
           className={styles.combo}
         >
           {combo.value}

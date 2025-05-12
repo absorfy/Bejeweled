@@ -1,14 +1,18 @@
 import {useEffect, useState} from "react";
 import bejeweledStyles from './BejeweledField.module.css';
-import TileBackground from "./TileBackground";
-import TileContent from "./TileContent";
+import TileBackground from "./tiles/TileBackground";
+import TileContent from "./tiles/TileContent";
 import {animateBreaking} from "./bejeweledLogic";
-import ScoreDisplay from "./ScoreDisplay";
-import HintButton from "./HintButton";
-import {getHint, startGame, swapGems} from "../../api/bejeweled.service";
-import {usePlayer} from "../PlayerContext";
-import {addScore} from "../../api/score.service";
-import RestartWindow from "./RestartWindow";
+import ScoreDisplay from "../display/ScoreDisplay";
+import HintButton from "../display/HintButton";
+import {getHint, startGame, swapGems} from "../../../api/bejeweled.service";
+import {usePlayer} from "../../PlayerContext";
+import {addScore} from "../../../api/score.service";
+import RestartWindow from "../display/RestartWindow";
+import DefaultButton from "../../DefaultButton";
+
+const swapAudio = new Audio(`/sounds/swap.ogg`);
+const startAudio = new Audio(`/sounds/start.ogg`);
 
 export default function BejeweledField() {
   const [currentField, setCurrentField] = useState({});
@@ -31,6 +35,7 @@ export default function BejeweledField() {
   }, [currentField.fieldState, playerLogin])
 
   useEffect(() => {
+    startAudio.play()
     startGame()
       .then(res => {
         setCurrentField(res.data);
@@ -45,7 +50,7 @@ export default function BejeweledField() {
       })
       .finally(() => {
         setLoading(false);
-        setAnimating(false);
+        setTimeout(() => setAnimating(false), 2000)
       })
   }, []);
 
@@ -55,6 +60,28 @@ export default function BejeweledField() {
 
   if (!currentField || !currentField.tiles) {
     return <div>ERROR: loading field</div>;
+  }
+
+  function handleRestart() {
+    startAudio.currentTime = 0;
+    startAudio.play()
+    setAnimating(true);
+    setLoading(true);
+    startGame()
+      .then(res => {
+        setScoreSent(false)
+        setCurrentField(res.data);
+        setFieldTiles(res.data.tiles.flat().map(tile => ({
+          ...tile,
+          isNew: true,
+          isStart: true,
+        })));
+      })
+      .catch(console.error)
+      .finally(() => {
+        setLoading(false)
+        setTimeout(() => setAnimating(false), 2000)
+      });
   }
 
   function handleDragEnd(event, info, index) {
@@ -97,6 +124,8 @@ export default function BejeweledField() {
       [newOrder[index1], newOrder[index2]] = [newOrder[index2], newOrder[index1]];
       setFieldTiles(newOrder);
 
+      swapAudio.play()
+
       setAnimating(true)
       if (sendToServer) {
         swapGems(row1, col1, row2, col2)
@@ -133,7 +162,8 @@ export default function BejeweledField() {
       <div className={bejeweledStyles.bejeweledContent}>
         <div className={bejeweledStyles.gameInfoPanel}>
           <ScoreDisplay score={currentField.score} lastIncrement={currentField.lastIncrementScore} chainCombo={currentField.chainCombo} speedCombo={currentField.speedCombo}/>
-          <HintButton hintCount={currentField.hintCount} hintHandler={hintHandler} isEnable={!animating} />
+          <HintButton hintCount={currentField.hintCount} hintHandler={hintHandler} isDisabled={animating} />
+          <DefaultButton buttonClickHandler={handleRestart} textValue={"New Game"} />
         </div>
         <ul className={bejeweledStyles.board}>
           {fieldTiles.map((tile, index) => (
@@ -159,10 +189,7 @@ export default function BejeweledField() {
 
         <RestartWindow
           currentField={currentField}
-          setCurrentField={setCurrentField}
-          setFieldTiles={setFieldTiles}
-          setLoading={setLoading}
-          setScoreSent={setScoreSent}
+          handleRestart={handleRestart}
         />
       </div>
   );

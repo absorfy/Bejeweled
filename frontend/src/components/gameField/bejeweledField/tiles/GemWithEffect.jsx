@@ -1,10 +1,10 @@
 import Lottie from "lottie-react";
 
 import styles from "./Gem.module.css";
-import star from "../../lottie/star.json";
-import explode from "../../lottie/explode.json";
-import column from "../../lottie/vertical.json";
-import row from "../../lottie/horizontal.json";
+import star from "../../../../lottie/star.json";
+import explode from "../../../../lottie/explode.json";
+import column from "../../../../lottie/vertical.json";
+import row from "../../../../lottie/horizontal.json";
 import GemImage from "./GemImage";
 
 const effectMap = {

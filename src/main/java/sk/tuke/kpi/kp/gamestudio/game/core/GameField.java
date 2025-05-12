@@ -549,7 +549,11 @@ public class GameField {
         dto.setFieldState(getState());
         dto.setColCount(getColCount());
         dto.setRowCount(getRowCount());
-        dto.setTiles(getTiles());
+        dto.setTiles(Arrays.stream(getTiles())
+                .map((tiles -> Arrays.stream(tiles)
+                        .map(Tile::clone)
+                        .toArray(Tile[]::new)))
+                .toArray(Tile[][]::new));
         dto.setHintCount(getHintCount());
         dto.setSpeedCombo(getSpeedCombo());
         dto.setChainCombo(getChainCombo());

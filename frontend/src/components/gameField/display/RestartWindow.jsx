@@ -1,25 +1,11 @@
 import {AnimatePresence, motion} from "framer-motion";
-import bejeweledStyles from "./BejeweledField.module.css";
-import {startGame} from "../../api/bejeweled.service";
+import bejeweledStyles from "../bejeweledField/BejeweledField.module.css";
+import DefaultButton from "../../DefaultButton";
 
 
-export default function RestartWindow({currentField, setCurrentField, setFieldTiles, setLoading, setScoreSent}) {
+export default function RestartWindow({currentField, handleRestart}) {
 
-  function handleRestart() {
-    setLoading(true);
-    startGame()
-      .then(res => {
-        setScoreSent(false)
-        setCurrentField(res.data);
-        setFieldTiles(res.data.tiles.flat().map(tile => ({
-          ...tile,
-          isNew: true,
-          isStart: true,
-        })));
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }
+
 
   return (
     <AnimatePresence>
@@ -40,7 +26,7 @@ export default function RestartWindow({currentField, setCurrentField, setFieldTi
             <h2>Game Over</h2>
             <p>No possible swaps</p>
             <p>Your score: <strong>{currentField.score}</strong></p>
-            <button onClick={handleRestart}>New game</button>
+            <DefaultButton buttonClickHandler={handleRestart} textValue={"New Game"}/>
           </motion.div>
         </motion.div>
       )}

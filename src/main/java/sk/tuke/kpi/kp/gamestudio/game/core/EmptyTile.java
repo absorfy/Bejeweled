@@ -8,8 +8,17 @@ public class EmptyTile extends Tile {
         super();
     }
 
+    private EmptyTile(UUID id) {
+        super(id);
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public EmptyTile clone() {
+        return new EmptyTile(super.getId());
     }
 }

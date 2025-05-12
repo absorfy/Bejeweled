@@ -1,4 +1,4 @@
-import styles from './BejeweledField.module.css';
+import styles from '../BejeweledField.module.css';
 import { motion } from "framer-motion";
 
 export default function TileBackground({ tile, rowIndex, colIndex }) {

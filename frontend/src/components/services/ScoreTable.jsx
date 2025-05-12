@@ -50,9 +50,9 @@ export default function ScoreTable({gameName}) {
       </table>
 
       {playerLogin === null ? (
-        <span>Register to save your points!</span>
+        <span className={styles.text}>Login to save your points</span>
       ) : (
-        <span>Your points will be saved</span>
+        <></>
       )}
 
     </div>

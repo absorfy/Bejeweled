@@ -4,8 +4,8 @@ import LoginModal from "./LoginModal";
 import {usePlayer} from "../../PlayerContext";
 import gsAxios from "../../../api";
 import styles from "./Header.module.css";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import DefaultButton from "../../DefaultButton";
 
 function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -25,15 +25,7 @@ function Header() {
         <div className="container-fluid d-flex justify-content-between align-items-center position-relative">
           <div>
             {!isHome && (
-              <motion.button
-                className={styles.headerButton}
-                onClick={() => navigate("/")}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                ← Back
-              </motion.button>
+              <DefaultButton buttonClickHandler={() => navigate("/")} textValue={"← Back"} />
             )}
           </div>
 
@@ -45,26 +37,10 @@ function Header() {
             {playerLogin ? (
               <>
                 <span className="navbar-brand me-2">{playerLogin}</span>
-                <motion.button
-                  className={styles.headerButton}
-                  onClick={handleLogout}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  Log Out
-                </motion.button>
+                <DefaultButton buttonClickHandler={handleLogout} textValue={"Log Out"} />
               </>
             ) : (
-              <motion.button
-                className={styles.headerButton}
-                onClick={() => setShowLoginModal(true)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                Log In
-              </motion.button>
+              <DefaultButton buttonClickHandler={() => setShowLoginModal(true)} textValue={"Log In"}/>
             )}
           </div>
         </div>

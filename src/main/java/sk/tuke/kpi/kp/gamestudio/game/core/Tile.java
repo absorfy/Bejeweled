@@ -2,7 +2,7 @@ package sk.tuke.kpi.kp.gamestudio.game.core;
 
 import java.util.UUID;
 
-public abstract class Tile {
+public abstract class Tile implements Cloneable {
 
     private final UUID id;
 
@@ -21,4 +21,6 @@ public abstract class Tile {
     public UUID getId() {
         return id;
     }
+
+    abstract public Tile clone();
 }

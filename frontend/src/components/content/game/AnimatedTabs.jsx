@@ -36,7 +36,7 @@ export default function AnimatedTabs({ tabs }) {
                   style={{
                     position: "absolute",
                     height: 3,
-                    backgroundColor: "#ffd700",
+                    backgroundColor: "#ff5a5f",
                     width: "100%",
                     bottom: -2,
                     left: 0,

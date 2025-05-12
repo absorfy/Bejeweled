@@ -1,9 +1,10 @@
 import {fetchComments} from "../../api/comment.servise";
 import {usePlayer} from "../PlayerContext";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {handleCommentSubmit} from "./CommentsTableOperations";
 import useSocket from "../../api/webSocket";
 import styles from "./Table.module.css";
+import DefaultButton from "../DefaultButton";
 
 
 export default function CommentsTable({gameName}) {
@@ -74,7 +75,7 @@ export default function CommentsTable({gameName}) {
       </div>
 
       {playerLogin === null ? (
-        <span>Register to comment</span>
+        <span className={styles.text}>Login to comment</span>
         ) : (
         <form
           onSubmit={handleSubmit}
@@ -82,10 +83,19 @@ export default function CommentsTable({gameName}) {
           style={{width: "100%"}}
         >
           <div className="mb-3">
-            <label htmlFor="comment" className="form-label" style={{color: "white"}}>Comment</label>
-            <textarea className="form-control" value={comment} onChange={e => setComment(e.target.value)} name="comment" rows="3" required></textarea>
+            <label htmlFor="comment" className={`form-label ${styles.text}`} style={{color: "white"}}>Comment</label>
+            <textarea
+              className="form-control"
+              maxLength={300}
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              name="comment"
+              rows="3"
+              required
+              style={{maxHeight: "100px"}}
+            ></textarea>
           </div>
-          <button type="submit" className="btn btn-primary">Post Comment</button>
+          <DefaultButton type="submit" textValue={"Post"} style={{width: 100}}/>
         </form>
       )}
     </div>
