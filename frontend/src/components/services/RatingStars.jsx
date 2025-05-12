@@ -3,6 +3,7 @@ import { usePlayer } from "../PlayerContext";
 import {fetchAverageRating, fetchRating, setRating} from "../../api/rating.service";
 import {useEffect, useState} from "react";
 import useSocket from "../../api/webSocket";
+import styles from "./Table.module.css"
 
 export default function RatingStars({ gameName }) {
   const { playerLogin } = usePlayer();
@@ -44,7 +45,7 @@ export default function RatingStars({ gameName }) {
   })
 
   return (
-    <div>
+    <div className={styles.tabContainer}>
       <h5>Average rating</h5>
       <StarRatings
         rating={averageRating}

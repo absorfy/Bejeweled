@@ -27,6 +27,21 @@ public class BejeweledServiceRest {
         return ((GameField)session.getAttribute("gameField")).toDTO();
     }
 
+    @GetMapping("/hint")
+    public SwapRequest getHint(HttpSession session) {
+        GameField gameField = (GameField)session.getAttribute("gameField");
+        if(gameField == null)
+            return null;
+
+        Point[] hintPoints = gameField.getHint();
+        SwapRequest swapRequest = new SwapRequest();
+        swapRequest.row1 = hintPoints[0].getRow();
+        swapRequest.col1 = hintPoints[0].getCol();
+        swapRequest.row2 = hintPoints[1].getRow();
+        swapRequest.col2 = hintPoints[1].getCol();
+        return swapRequest;
+    }
+
     @PostMapping("/swap")
     public List<GameFieldDTO> swapGems(@RequestBody SwapRequest request, HttpSession session) {
         GameField gameField = (GameField) session.getAttribute("gameField");

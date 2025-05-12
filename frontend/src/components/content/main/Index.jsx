@@ -1,14 +1,17 @@
 import React from 'react';
-import {NavLink} from "react-router-dom";
+import GameButton from "./GameButton";
+import styles from './GameSelector.module.css';
 
 const Index = () => (
-  <>
-    Our favorite games:<br/>
-    <ol>
-      <li><NavLink to="/bejeweled">Bejeweled</NavLink></li>
-      <li><NavLink to="/otherGame">Other game</NavLink></li>
-    </ol>
-  </>
+  <div className={styles.gameSelector}>
+    <GameButton to="/bejeweled">
+      <img src="/images/bejeweledTitle.png" alt="BejeweledIcon" className={styles.gameIcon} />
+    </GameButton>
+
+    <GameButton disabled>
+      <span>Other Game</span>
+    </GameButton>
+  </div>
 );
 
 export default Index;

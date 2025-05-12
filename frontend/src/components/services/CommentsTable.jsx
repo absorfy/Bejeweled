@@ -3,7 +3,8 @@ import {usePlayer} from "../PlayerContext";
 import {useEffect, useState} from "react";
 import {handleCommentSubmit} from "./CommentsTableOperations";
 import useSocket from "../../api/webSocket";
-import styles from "./CommentsTable.module.css";
+import styles from "./Table.module.css";
+
 
 export default function CommentsTable({gameName}) {
   const [comments, setComments] = useState([]);
@@ -28,19 +29,24 @@ export default function CommentsTable({gameName}) {
     setComments(response.data)
     setComment("")
   }
-  console.log(styles)
+
   return (
-    <>
+    <div className={styles.tabContainer}>
       <div
         style={{
           maxHeight: '300px',
           overflowY: 'auto',
           overflowX: 'auto',
           maxWidth: '100%',
+          boxShadow: "0 0 5px #ffffff",
         }}
       >
         <table className="table table-sm"
-               style={{ tableLayout: 'fixed', width: '100%' }}
+               style={{
+                 tableLayout: 'fixed',
+                 width: '100%',
+                 marginBottom: 0,
+        }}
         >
           <thead
             style={{
@@ -50,16 +56,16 @@ export default function CommentsTable({gameName}) {
             }}
           >
           <tr>
-            <th scope="col">Player</th>
-            <th scope="col">Comment</th>
-            <th scope="col">Date</th>
+            <th scope="col" style={{width: "20%"}}>Player</th>
+            <th scope="col" style={{width: "55%"}}>Comment</th>
+            <th scope="col" style={{width: "25%"}}>Date</th>
           </tr>
           </thead>
           <tbody>
           {comments.map((comment, index) => (
             <tr key={index}>
               <td>{comment.playerLogin}</td>
-              <td className={styles.commentCell}>{comment.comment}</td>
+              <td className={styles.valueCell}>{comment.comment}</td>
               <td>{new Date(comment.commentedOn).toLocaleDateString()}</td>
             </tr>
           ))}
@@ -73,15 +79,15 @@ export default function CommentsTable({gameName}) {
         <form
           onSubmit={handleSubmit}
           className="mt-3"
+          style={{width: "100%"}}
         >
           <div className="mb-3">
-            <label htmlFor="comment" className="form-label">Comment</label>
+            <label htmlFor="comment" className="form-label" style={{color: "white"}}>Comment</label>
             <textarea className="form-control" value={comment} onChange={e => setComment(e.target.value)} name="comment" rows="3" required></textarea>
           </div>
           <button type="submit" className="btn btn-primary">Post Comment</button>
         </form>
       )}
-
-    </>
+    </div>
   );
 }

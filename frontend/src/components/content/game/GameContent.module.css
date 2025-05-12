@@ -1,0 +1,52 @@
+.gameBackdrop {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.contentWrapper {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1rem;
+    width: 100%;
+    padding: 20px;
+}
+
+.gameComponent {
+    width: 100%;
+}
+
+.gameTabs {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .contentWrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+.backdrop0 {
+    background-image: url("/public/images/Backdrop00.webp");
+}
+
+.backdrop1 {
+    background-image: url("/public/images/Backdrop01.webp");
+}
+
+.backdrop2 {
+    background-image: url("/public/images/Backdrop02.webp");
+}
+
+.backdrop3 {
+    background-image: url("/public/images/Backdrop03.webp");
+}
+
+.backdrop4 {
+    background-image: url("/public/images/Backdrop04.webp");
+}

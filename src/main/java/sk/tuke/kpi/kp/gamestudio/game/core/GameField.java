@@ -136,11 +136,13 @@ public class GameField {
     private void blockSideTiles() {
         int widthBlocked = (int) Math.ceil(getColCount() / 5.0);
         for (Point point : Point.iterate(0, 0, getRowCount(), widthBlocked - 1)) {
-            if (getTile(point) == null)
+            Tile tile = getTile(point);
+            if (tile == null || tile instanceof EmptyTile)
                 setTile(point, new LockTile(gemCounter.getRandomGemColor()));
         }
         for (Point point : Point.iterate(0, getColCount() - widthBlocked, getRowCount(), getColCount() - 1)) {
-            if (getTile(point) == null)
+            Tile tile = getTile(point);
+            if (tile == null || tile instanceof EmptyTile)
                 setTile(point, new LockTile(gemCounter.getRandomGemColor()));
         }
     }

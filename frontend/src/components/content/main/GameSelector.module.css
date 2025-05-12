@@ -1,0 +1,42 @@
+.gameSelector {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+}
+
+.gameButtonWrapper {
+    text-decoration: none;
+}
+
+.gameButton {
+    background: linear-gradient(135deg, #ff5a5f, #3c3c3c);
+    color: white;
+    font-size: 1.1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: center;
+    cursor: pointer;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.gameButton img.gameIcon {
+    width: 100px;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.gameButton.disabled {
+    background: #aaa;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}

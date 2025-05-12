@@ -5,6 +5,7 @@ import star from "../../lottie/star.json";
 import explode from "../../lottie/explode.json";
 import column from "../../lottie/vertical.json";
 import row from "../../lottie/horizontal.json";
+import GemImage from "./GemImage";
 
 const effectMap = {
   explode,
@@ -34,12 +35,7 @@ export default function GemWithEffect({ gem }) {
         />
       )}
 
-      <img
-        src={`/gemImages/${gem.color.toLowerCase()}_gem.png`}
-        alt="gem"
-        className={styles.gemImage}
-        draggable={false}
-      />
+      <GemImage color={gem.color} />
     </div>
   );
 }

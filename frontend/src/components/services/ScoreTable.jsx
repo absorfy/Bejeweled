@@ -2,7 +2,7 @@ import {usePlayer} from "../PlayerContext";
 import {useEffect, useState} from "react";
 import {fetchScores} from "../../api/score.service";
 import useSocket from "../../api/webSocket";
-
+import styles from "./Table.module.css";
 
 export default function ScoreTable({gameName}) {
   const [scores, setScores] = useState([]);
@@ -24,14 +24,17 @@ export default function ScoreTable({gameName}) {
 
 
   return (
-    <>
-      <table className="table table-sm">
+    <div className={styles.tabContainer}>
+      <table className="table table-sm" style={{
+        boxShadow: "0 0 5px #ffffff",
+        marginBottom: 0,
+      }}>
         <thead className="thead-dark">
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Player</th>
-          <th scope="col">Points</th>
-          <th scope="col">Date</th>
+          <th scope="col" style={{width: "10%"}}>#</th>
+          <th scope="col" style={{width: "30%"}}>Player</th>
+          <th scope="col" style={{width: "30%"}}>Points</th>
+          <th scope="col" style={{width: "30%"}}>Date</th>
         </tr>
         </thead>
         <tbody>
@@ -46,10 +49,12 @@ export default function ScoreTable({gameName}) {
         </tbody>
       </table>
 
-      {playerLogin === null && (
-        <span>Register to save your points</span>
+      {playerLogin === null ? (
+        <span>Register to save your points!</span>
+      ) : (
+        <span>Your points will be saved</span>
       )}
 
-    </>
+    </div>
   );
 }

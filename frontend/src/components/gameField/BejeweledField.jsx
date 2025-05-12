@@ -1,25 +1,43 @@
 import {useEffect, useState} from "react";
-import gsAxios from "../../api";
 import bejeweledStyles from './BejeweledField.module.css';
 import TileBackground from "./TileBackground";
 import TileContent from "./TileContent";
 import {animateBreaking} from "./bejeweledLogic";
+import ScoreDisplay from "./ScoreDisplay";
+import HintButton from "./HintButton";
+import {getHint, startGame, swapGems} from "../../api/bejeweled.service";
+import {usePlayer} from "../PlayerContext";
+import {addScore} from "../../api/score.service";
+import RestartWindow from "./RestartWindow";
 
 export default function BejeweledField() {
-  const [currentField, setCurrentField] = useState(null);
+  const [currentField, setCurrentField] = useState({});
   const [fieldTiles, setFieldTiles] = useState(null);
   const [loading, setLoading] = useState(true);
   const [direction, setDirection] = useState(null);
-  const [animating, setAnimating] = useState(false);
-
+  const [animating, setAnimating] = useState(true);
+  const {playerLogin} = usePlayer()
+  const [scoreSent, setScoreSent] = useState(false);
 
   useEffect(() => {
-    gsAxios.get('/bejeweled/start')
+    if (currentField.fieldState === "NO_POSSIBLE_MOVE" && !scoreSent && playerLogin) {
+      addScore("bejeweled", playerLogin, currentField.score)
+        .then(() => {
+        console.log("Score sent successfully.");
+        setScoreSent(true);
+      })
+        .catch(console.error);
+    }
+  }, [currentField.fieldState, playerLogin])
+
+  useEffect(() => {
+    startGame()
       .then(res => {
         setCurrentField(res.data);
         setFieldTiles(res.data.tiles.flat().map(tile => ({
           ...tile,
-          isNew: fieldTiles?.find(t => t.id === tile.id)?.isNew !== true
+          isNew: true,
+          isStart: true
         })));
       })
       .catch(error => {
@@ -27,6 +45,7 @@ export default function BejeweledField() {
       })
       .finally(() => {
         setLoading(false);
+        setAnimating(false);
       })
   }, []);
 
@@ -62,48 +81,89 @@ export default function BejeweledField() {
     }
   }
 
-  function swapFromTo(row1, col1, row2, col2) {
-    if(row2 < 0 || row2 > 7 || col2 < 0 || col2 > 7) return;
+  function swapFromTo(row1, col1, row2, col2, sendToServer = true) {
+    if (row2 < 0 || row2 > 7 || col2 < 0 || col2 > 7) return;
 
     const index1 = row1 * 8 + col1;
     const index2 = row2 * 8 + col2;
 
-    if (index1 >= 0 && index1 < fieldTiles.length && index2 >= 0 && index2 < fieldTiles.length) {
-      if(fieldTiles[index2].tileName !== 'Gem') return;
+    if (
+      index1 >= 0 && index1 < fieldTiles.length &&
+      index2 >= 0 && index2 < fieldTiles.length
+    ) {
+      if (fieldTiles[index2].tileName !== 'Gem') return;
 
       const newOrder = [...fieldTiles];
       [newOrder[index1], newOrder[index2]] = [newOrder[index2], newOrder[index1]];
       setFieldTiles(newOrder);
 
-      gsAxios.post('/bejeweled/swap', {
-        row1: row1,
-        col1: col1,
-        row2: row2,
-        col2: col2
-      }).then(res => {
-        animateBreaking(res.data, setCurrentField, setFieldTiles, setAnimating, fieldTiles)
-      }).catch(err => {
-        console.error(err)
-      })
+      setAnimating(true)
+      if (sendToServer) {
+        swapGems(row1, col1, row2, col2)
+          .then(res => {
+            animateBreaking(res.data, setCurrentField, setFieldTiles, fieldTiles)
+              .then(() => {
+                setAnimating(false)
+              });
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } else {
+        setTimeout(() => {
+          [newOrder[index1], newOrder[index2]] = [newOrder[index2], newOrder[index1]];
+          setFieldTiles(newOrder);
+          setAnimating(false)
+        }, 1000);
+      }
     }
   }
 
-  return (
-    <div className={bejeweledStyles.bejeweledContent}>
-      <div className={bejeweledStyles.gameInfoPanel}>
-        <span>+{currentField.lastIncrementScore}</span>
-        <br/>
-        <span>{currentField.score}</span>
-      </div>
-      <ul className={bejeweledStyles.board}>
-        {fieldTiles.map((tile, index) => (
-          <TileBackground key={tile.id} tile={tile} rowIndex={Math.floor(index / 8)} colIndex={index % 8}/>
-        ))}
 
-        {fieldTiles.map((tile, index) => (
-          <TileContent key={tile.id} tile={tile} handleDragEnd={handleDragEnd} setDirection={setDirection} index={index}/>
-        ))}
-      </ul>
-    </div>
+  function hintHandler() {
+    if (currentField.hintCount <= 0) return;
+
+    getHint().then(res => {
+      swapFromTo(res.data.row1, res.data.col1, res.data.row2, res.data.col2, false);
+      currentField.hintCount--;
+    });
+  }
+
+  return (
+      <div className={bejeweledStyles.bejeweledContent}>
+        <div className={bejeweledStyles.gameInfoPanel}>
+          <ScoreDisplay score={currentField.score} lastIncrement={currentField.lastIncrementScore} chainCombo={currentField.chainCombo} speedCombo={currentField.speedCombo}/>
+          <HintButton hintCount={currentField.hintCount} hintHandler={hintHandler} isEnable={!animating} />
+        </div>
+        <ul className={bejeweledStyles.board}>
+          {fieldTiles.map((tile, index) => (
+            <TileBackground
+              key={tile.id}
+              tile={tile}
+              rowIndex={Math.floor(index / 8)}
+              colIndex={index % 8}
+            />
+          ))}
+
+          {fieldTiles.map((tile, index) => (
+            <TileContent
+              key={tile.id}
+              tile={tile}
+              handleDragEnd={handleDragEnd}
+              setDirection={setDirection}
+              index={index}
+              animating={animating}
+            />
+          ))}
+        </ul>
+
+        <RestartWindow
+          currentField={currentField}
+          setCurrentField={setCurrentField}
+          setFieldTiles={setFieldTiles}
+          setLoading={setLoading}
+          setScoreSent={setScoreSent}
+        />
+      </div>
   );
 }
