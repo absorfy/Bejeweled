@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
-const socketUrl = 'http://localhost:8080/ws';
+const socketUrl = import.meta.env.VITE_BASE_URL + '/ws';
 
 /**
  *

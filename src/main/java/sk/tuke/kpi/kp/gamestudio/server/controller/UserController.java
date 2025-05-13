@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
 import sk.tuke.kpi.kp.gamestudio.entity.Player;
 
-@Controller
-@Scope(WebApplicationContext.SCOPE_SESSION)
+//@Controller
+//@Scope(WebApplicationContext.SCOPE_SESSION)
 public class UserController {
     private Player loggedPlayer;
 

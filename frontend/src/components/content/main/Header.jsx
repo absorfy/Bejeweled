@@ -36,8 +36,7 @@ function Header() {
           <div className="d-flex align-items-center gap-2">
             {playerLogin ? (
               <>
-                <span className="navbar-brand me-2">{playerLogin}</span>
-                <DefaultButton buttonClickHandler={handleLogout} textValue={"Log Out"} />
+                <DefaultButton buttonClickHandler={handleLogout} textValue={playerLogin} />
               </>
             ) : (
               <DefaultButton buttonClickHandler={() => setShowLoginModal(true)} textValue={"Log In"}/>

@@ -163,8 +163,8 @@ export default function BejeweledField() {
       <div className={bejeweledStyles.bejeweledContent}>
         <div className={bejeweledStyles.gameInfoPanel}>
           <ScoreDisplay score={currentField.score} lastIncrement={currentField.lastIncrementScore} chainCombo={currentField.chainCombo} speedCombo={currentField.speedCombo}/>
-          <HintButton hintCount={currentField.hintCount} hintHandler={hintHandler} isDisabled={animating} />
-          <DefaultButton buttonClickHandler={handleRestart} textValue={"New Game"} />
+          <DefaultButton buttonClickHandler={hintHandler} textValue={currentField.hintCount > 0 ? `Hint ${currentField.hintCount}` : 'No Hints'} disabled={currentField.hintCount <= 0 || animating} />
+          <DefaultButton buttonClickHandler={handleRestart} textValue={"New Game"} disabled={animating} />
         </div>
         <ul className={bejeweledStyles.board}>
           {fieldTiles.map((tile, index) => (

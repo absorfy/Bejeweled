@@ -20,14 +20,14 @@ import sk.tuke.kpi.kp.gamestudio.service.ScoreService;
 import java.util.Date;
 import java.util.Objects;
 
-@Controller
-@RequestMapping("/bejeweled")
-@Scope(WebApplicationContext.SCOPE_SESSION)
+//@Controller
+//@RequestMapping("/bejeweled")
+//@Scope(WebApplicationContext.SCOPE_SESSION)
 public class BejeweledController {
-    @Autowired
+    //@Autowired
     private UserController userController;
 
-    @Autowired
+    //@Autowired
     private ScoreService scoreService;
     private GameField field = new GameField();
 

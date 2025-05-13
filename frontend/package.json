@@ -22,7 +22,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run copy-to-spring",
+    "copy-to-spring": "powershell -Command \"Remove-Item ../src/main/resources/static/* -Recurse -Force; Copy-Item dist/* -Destination ../src/main/resources/static/ -Recurse\"",
     "preview": "vite preview"
   },
   "eslintConfig": {

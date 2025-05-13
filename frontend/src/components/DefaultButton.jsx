@@ -3,7 +3,7 @@ import {motion} from "framer-motion";
 import React from "react";
 
 
-export default function DefaultButton({buttonClickHandler, textValue, type = "button", style}) {
+export default function DefaultButton({buttonClickHandler, textValue, type = "button", style, disabled=false}) {
   return (
     <motion.button
       type={type}
@@ -13,6 +13,7 @@ export default function DefaultButton({buttonClickHandler, textValue, type = "bu
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 300 }}
       style={style}
+      disabled={disabled}
     >
       {textValue}
     </motion.button>
