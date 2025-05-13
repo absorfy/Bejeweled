@@ -7,7 +7,7 @@ const Footer = () => (
     <div className={styles.footerContent}>
       <img src="/images/kpi-logo.png" alt="Logo" className={styles.footerLogo} />
       <span>
-        &copy; 2023–2025 Gamestudio was developed at{' '}
+        &copy; 2025 Gamestudio was developed by Vladyslav Krykun at{' '}
         <a href="http://kpi.fei.tuke.sk" target="_blank" rel="noopener noreferrer">
           KPI FEI TUKE
         </a>

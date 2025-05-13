@@ -1,7 +1,7 @@
 import gsAxios from "../../../api";
 
 
-export default async function handleRegister(login, password, setPlayerLogin) {
+export default async function handleRegister(login, password, setPlayerLogin, setModalMessage) {
   try {
     const response = await gsAxios.post("/player/login", {
       login,
@@ -11,7 +11,6 @@ export default async function handleRegister(login, password, setPlayerLogin) {
     setPlayerLogin(login)
     console.log("Login success:", response.data);
   } catch (error) {
-    console.error("Login failed:", error.response?.data);
-    alert(error.response?.data);
+    setModalMessage(error.response.data)
   }
 }

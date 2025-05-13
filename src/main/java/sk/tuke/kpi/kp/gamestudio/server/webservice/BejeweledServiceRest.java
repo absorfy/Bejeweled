@@ -14,6 +14,10 @@ import java.util.List;
 @RequestMapping("/api/bejeweled")
 public class BejeweledServiceRest {
 
+    @GetMapping("/test")
+    public GameFieldDTO test(HttpSession session) {
+        return ((GameField)session.getAttribute("gameField")).setDefaultViewField().toDTO();
+    }
 
     @GetMapping("/start")
     public GameFieldDTO startNewGame(HttpSession session) {

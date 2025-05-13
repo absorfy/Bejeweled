@@ -6,15 +6,19 @@ import gsAxios from "../../../api";
 import styles from "./Header.module.css";
 import { useNavigate } from "react-router-dom";
 import DefaultButton from "../../DefaultButton";
+import ModalAskWindow from "./ModalAskWindow";
 
 function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAskModal, setShowAskModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState(null)
   const {playerLogin, setPlayerLogin} = usePlayer()
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await gsAxios.post("/player/logout");
     setPlayerLogin(null);
+    navigate("/")
   };
 
   const isHome = useLocation().pathname === '/';
@@ -36,7 +40,7 @@ function Header() {
           <div className="d-flex align-items-center gap-2">
             {playerLogin ? (
               <>
-                <DefaultButton buttonClickHandler={handleLogout} textValue={playerLogin} />
+                <DefaultButton buttonClickHandler={() => setShowAskModal(true)} textValue={playerLogin} />
               </>
             ) : (
               <DefaultButton buttonClickHandler={() => setShowLoginModal(true)} textValue={"Log In"}/>
@@ -45,7 +49,18 @@ function Header() {
         </div>
       </nav>
 
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} setModalMessage={setModalMessage} />
+      <ModalAskWindow
+        isOpen={showAskModal}
+        onClose={() => setShowAskModal(false)}
+        textValue={"Are you sure you want to log out?" + (!isHome ? " You will be returned to the main page" : "")}
+        onAccept={handleLogout}
+      />
+      <ModalAskWindow
+        isOpen={modalMessage}
+        onClose={() => setModalMessage(null)}
+        textValue={modalMessage}
+      />
     </>
   );
 }

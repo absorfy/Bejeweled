@@ -4,8 +4,7 @@ import TileBackground from "./tiles/TileBackground";
 import TileContent from "./tiles/TileContent";
 import {animateBreaking} from "./bejeweledLogic";
 import ScoreDisplay from "../display/ScoreDisplay";
-import HintButton from "../display/HintButton";
-import {getHint, startGame, swapGems} from "../../../api/bejeweled.service";
+import {getHint, startGame, swapGems, testField} from "../../../api/bejeweled.service";
 import {usePlayer} from "../../PlayerContext";
 import {addScore} from "../../../api/score.service";
 import RestartWindow from "../display/RestartWindow";
@@ -109,6 +108,13 @@ export default function BejeweledField() {
     }
   }
 
+  function handleTestGameOver() {
+    testField().then(res => {
+      setCurrentField(res.data)
+      setFieldTiles(res.data.tiles.flat())
+    })
+  }
+
   function swapFromTo(row1, col1, row2, col2, sendToServer = true) {
     if (row2 < 0 || row2 > 7 || col2 < 0 || col2 > 7) return;
 
@@ -165,6 +171,7 @@ export default function BejeweledField() {
           <ScoreDisplay score={currentField.score} lastIncrement={currentField.lastIncrementScore} chainCombo={currentField.chainCombo} speedCombo={currentField.speedCombo}/>
           <DefaultButton buttonClickHandler={hintHandler} textValue={currentField.hintCount > 0 ? `Hint ${currentField.hintCount}` : 'No Hints'} disabled={currentField.hintCount <= 0 || animating} />
           <DefaultButton buttonClickHandler={handleRestart} textValue={"New Game"} disabled={animating} />
+          <DefaultButton buttonClickHandler={handleTestGameOver} textValue={"Test (Game Over)"} disabled={animating} />
         </div>
         <ul className={bejeweledStyles.board}>
           {fieldTiles.map((tile, index) => (

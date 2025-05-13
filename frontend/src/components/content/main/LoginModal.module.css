@@ -22,8 +22,9 @@
     padding: 2rem;
     border-radius: 10px;
     min-width: 350px;
-    max-width: 90%;
+    max-width: 500px;
     pointer-events: auto;
+    text-wrap: wrap;
 }
 
 .title {
