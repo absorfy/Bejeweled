@@ -28,14 +28,14 @@ export default function Gem({ gem, handleDragEnd, setDirection, index, animating
       transition={{
         layout: {
           type: "spring",
-          stiffness: 400,
-          damping: 25,
+          stiffness: 700,
+          damping: 40,
           delay: (Math.random() / 2) * fallDelay,
         },
         y: {
           type: "spring",
-          stiffness: 120,
-          damping: 18,
+          stiffness: 700,
+          damping: 40,
           delay: isAppearing ? 0 : fallDuration - row * fallDelay + (Math.random() - 0.5) * fallDelay,
         },
         opacity: { duration: 0.4 },

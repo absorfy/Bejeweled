@@ -10,11 +10,15 @@ export async function animateBreaking(frames, setField, setTiles, oldTiles) {
     const disappearing = oldTiles?.filter(t => !currentTileIds.includes(t.id)) || [];
 
     if((index + 2) % 3 === 0 ) {
+      breakingAudio.currentTime = 0
       await breakingAudio.play();
     }
     if(index !== 0 && (index + 3) % 3 === 0 ) {
+      hitAudio.currentTime = 0
       await hitAudio.play();
     }
+
+
 
     if (disappearing.length > 0) {
 
@@ -47,7 +51,15 @@ export async function animateBreaking(frames, setField, setTiles, oldTiles) {
         };
       })
     );
-    await sleep(700);
+
+    if(index !== 0 && (index + 2) % 3 === 0 ) {
+      setTimeout(() => {
+        hitAudio.currentTime = 0
+        hitAudio.play()
+      }, 350)
+    }
+    await sleep(300);
+
     oldTiles = frame.tiles.flat()
   }
 }

@@ -35,6 +35,7 @@ export default function BejeweledField() {
   }, [currentField.fieldState, playerLogin])
 
   useEffect(() => {
+    startAudio.currentTime = 0;
     startAudio.play()
     startGame()
       .then(res => {
@@ -55,7 +56,7 @@ export default function BejeweledField() {
   }, []);
 
   if (loading) {
-    return <div>Loading field..</div>;
+    return <></>;
   }
 
   if (!currentField || !currentField.tiles) {
