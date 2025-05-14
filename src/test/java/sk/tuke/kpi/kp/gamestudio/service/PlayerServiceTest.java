@@ -41,10 +41,10 @@ class PlayerServiceTest {
     @Test
     void getPassword() {
         playerService.reset();
-        String storedPassword = playerService.getPlayer("admin").getPassword();
-        assertNull(storedPassword);
+        Player storedPlayer = playerService.getPlayer("admin");
+        assertNull(storedPlayer);
         playerService.addPlayer(new Player("admin", "admin"));
-        storedPassword = playerService.getPlayer("admin").getPassword();
+        String storedPassword = playerService.getPlayer("admin").getPassword();
         assertTrue(passwordEncoder.matches("admin", storedPassword));
         assertNull(playerService.getPlayer("jano"));
     }
