@@ -1,10 +1,13 @@
 import axios from "axios";
 
+const rawBase = import.meta.env?.VITE_BASE_URL?.trim();
+const baseURL = (rawBase ? rawBase.replace(/\/+$/, "") : "") + "/api";
+
 const gsAxios = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL + '/api',
+    baseURL,
     withCredentials: true,
     headers: {
-        'ngrok-skip-browser-warning': 'true',
+        "ngrok-skip-browser-warning": "true",
     },
 });
 

@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    container_name: bej_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: supersecret
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks: [appnet]
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bej_backend
+    depends_on: [db]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/appdb
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: supersecret
+      # JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "8080:8080"
+    networks: [appnet]
+    volumes:
+      - maven_repo:/root/.m2
+
+volumes:
+  db_data:
+  maven_repo:
+
+networks:
+  appnet:
+    driver: bridge
