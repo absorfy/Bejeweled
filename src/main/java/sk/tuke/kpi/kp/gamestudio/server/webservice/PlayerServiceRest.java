@@ -23,6 +23,10 @@ public class PlayerServiceRest {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginPlayer(@RequestBody PlayerDTO playerDTO, HttpSession session) {
+        if(playerDTO.getLogin() == null || playerDTO.getPassword() == null || playerDTO.getLogin().length() < 3 || playerDTO.getPassword().length() < 3) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid login or password");
+        }
+
         Player player = playerService.getPlayer(playerDTO.getLogin());
 
         if (player == null) {
